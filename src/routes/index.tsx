@@ -52,10 +52,11 @@ function Index() {
             transition={{ duration: 0.8 }}
             className="lg:col-span-5"
           >
-            <p className="mono-label text-accent">— {t("story.kicker")}</p>
-            <h2 className="display-mega text-6xl lg:text-8xl mt-6 text-bone">
+            <p className="mono-label text-gold">— {t("story.kicker")}</p>
+            <h2 className="display-serif text-6xl lg:text-8xl mt-6 text-gradient-gold">
               {t("story.title")}
             </h2>
+            <div className="mt-6 h-px w-32 hairline-gold" />
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -73,8 +74,8 @@ function Index() {
                 { n: "120", l: "Sitzplätze" },
                 { n: "03:00", l: "Open until" },
               ].map((s) => (
-                <div key={s.l} className="border-l border-accent/40 pl-4">
-                  <p className="font-display text-3xl lg:text-4xl text-accent">{s.n}</p>
+                <div key={s.l} className="border-l border-gold/40 pl-4">
+                  <p className="display-serif text-4xl lg:text-5xl text-gradient-gold">{s.n}</p>
                   <p className="mono-label text-muted-foreground mt-2">{s.l}</p>
                 </div>
               ))}
@@ -88,8 +89,8 @@ function Index() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="flex flex-wrap items-end justify-between gap-6 mb-14">
             <div>
-              <p className="mono-label text-accent">// Konzepte</p>
-              <h2 className="display-mega text-5xl lg:text-7xl mt-4 text-bone">Vier Räume.<br/>Eine Nacht.</h2>
+              <p className="mono-label text-gold">— Konzepte —</p>
+              <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">Vier Räume.<br/>Eine Nacht.</h2>
             </div>
             <p className="max-w-md text-muted-foreground">
               Von Dinner zu Drinks, von Lounge zu Dancefloor — bei uns geht der Abend nahtlos weiter.
@@ -115,11 +116,11 @@ function Index() {
                     loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/30 to-transparent" />
-                  <div className="absolute inset-0 ring-0 ring-accent/0 group-hover:ring-2 group-hover:ring-accent/60 transition-all duration-500" />
+                  <div className="absolute inset-0 ring-0 ring-gold/0 group-hover:ring-1 group-hover:ring-gold/70 transition-all duration-500" />
                   <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-between">
-                    <p className="mono-label text-accent">{d.tag}</p>
+                    <p className="mono-label text-gold">— {d.tag}</p>
                     <div>
-                      <h3 className="display-mega text-5xl lg:text-7xl text-bone">{d.title}</h3>
+                      <h3 className="display-serif text-5xl lg:text-7xl text-bone">{d.title}</h3>
                       <p className="mt-4 text-foreground/70 max-w-sm opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-500">
                         {d.sub}
                       </p>
@@ -136,7 +137,7 @@ function Index() {
       <section className="relative py-24 lg:py-32 border-t border-border bg-onyx">
         <div className="mx-auto max-w-7xl px-6 lg:px-10 grid md:grid-cols-3 gap-12 lg:gap-16">
           <div>
-            <p className="mono-label text-accent">// {t("about.hours")}</p>
+            <p className="mono-label text-gold">— {t("about.hours")}</p>
             <ul className="mt-6 space-y-2">
               {RESTAURANT.hours.map((h) => {
                 const parts = [h.lunch, h.dinner].filter(Boolean).join(" · ");
@@ -150,24 +151,24 @@ function Index() {
             </ul>
           </div>
           <div>
-            <p className="mono-label text-accent">// {t("about.address")}</p>
-            <p className="mt-6 font-display text-3xl leading-snug">
+            <p className="mono-label text-gold">— {t("about.address")}</p>
+            <p className="mt-6 display-serif text-4xl leading-snug">
               {RESTAURANT.street}<br />{RESTAURANT.city}
             </p>
             <a
               href={`https://maps.google.com/?q=${encodeURIComponent(RESTAURANT.street + " " + RESTAURANT.city)}`}
               target="_blank"
               rel="noreferrer"
-              className="mt-6 inline-block mono-label text-accent hover:underline"
+              className="mt-6 inline-block mono-label text-gold hover:underline"
             >
               → Google Maps
             </a>
           </div>
           <div>
-            <p className="mono-label text-accent">// {t("about.contact")}</p>
-            <a href={`tel:${RESTAURANT.phoneRaw}`} className="mt-6 block font-display text-3xl hover:text-accent transition-colors">{RESTAURANT.phone}</a>
-            <a href={`mailto:${RESTAURANT.email}`} className="block text-muted-foreground mt-2 hover:text-accent transition-colors">{RESTAURANT.email}</a>
-            <a href="#reserve" className="mt-6 inline-flex items-center px-6 py-3 mono-label bg-accent text-accent-foreground hover:bg-foreground hover:text-background transition-colors">
+            <p className="mono-label text-gold">— {t("about.contact")}</p>
+            <a href={`tel:${RESTAURANT.phoneRaw}`} className="mt-6 block display-serif text-4xl hover:text-gold transition-colors">{RESTAURANT.phone}</a>
+            <a href={`mailto:${RESTAURANT.email}`} className="block text-muted-foreground mt-2 hover:text-gold transition-colors">{RESTAURANT.email}</a>
+            <a href="#reserve" className="btn-luxury mt-6">
               {t("nav.reserve")}
             </a>
           </div>

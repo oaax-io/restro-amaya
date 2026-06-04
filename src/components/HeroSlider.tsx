@@ -71,11 +71,12 @@ export function HeroSlider() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
             >
-              <p className="mono-label text-accent">{data.tag}</p>
-              <h1 className="display-mega text-[14vw] lg:text-[10rem] mt-6 text-bone glow-neon">
+              <p className="mono-label text-gold">— {data.tag} —</p>
+              <h1 className="display-serif text-[16vw] lg:text-[11rem] mt-6 text-gradient-gold glow-gold">
                 {data.title}
               </h1>
-              <p className="mt-8 max-w-xl text-lg text-foreground/80 leading-relaxed">
+              <div className="mt-6 h-px w-40 hairline-gold" />
+              <p className="mt-6 max-w-xl text-lg text-foreground/80 leading-relaxed font-light">
                 {data.sub}
               </p>
             </motion.div>
@@ -91,7 +92,7 @@ export function HeroSlider() {
                 aria-label={`Slide ${i + 1}`}
               >
                 <span
-                  className={`absolute inset-y-0 left-0 bg-accent transition-all duration-500 ${
+                  className={`absolute inset-y-0 left-0 gradient-gold transition-all duration-500 ${
                     i === idx ? "w-full" : i < idx ? "w-full opacity-40" : "w-0"
                   }`}
                 />
@@ -115,7 +116,7 @@ export function HeroSlider() {
           {Array.from({ length: 2 }).map((_, r) => (
             <div key={r} className="flex shrink-0 gap-12 pr-12">
               {["RESTAURANT", "★", "CIGAR LOUNGE", "★", "BAR", "★", "EVENTS", "★", "ROTHENBURG LU", "★", "OPEN UNTIL 03:00", "★"].map((w, i) => (
-                <span key={`${r}-${i}`} className={w === "★" ? "text-accent" : ""}>{w}</span>
+                <span key={`${r}-${i}`} className={w === "★" ? "text-gold" : ""}>{w}</span>
               ))}
             </div>
           ))}
@@ -176,11 +177,11 @@ function ReservationWidget() {
       initial={{ opacity: 0, x: 30 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.8, delay: 0.3 }}
-      className="relative bg-onyx/90 backdrop-blur-xl border border-accent/30 p-6 lg:p-7 shadow-[0_0_50px_-10px_var(--color-accent)]"
+      className="relative luxury-card p-6 lg:p-7"
     >
       <div className="flex items-center justify-between mb-5">
-        <p className="mono-label text-accent">// {t("reserveWidget.title")}</p>
-        <span className="w-1.5 h-1.5 rounded-full bg-accent shadow-[0_0_10px_var(--color-accent)] animate-pulse" />
+        <p className="mono-label text-gold">— {t("reserveWidget.title")}</p>
+        <span className="w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_10px_var(--color-gold)] animate-pulse" />
       </div>
 
       {step === "form" && (
@@ -190,7 +191,7 @@ function ReservationWidget() {
             <WField label={t("reserveWidget.time")} name="reservation_time" type="time" defaultValue={base.reservation_time} required />
             <WField label={t("reserveWidget.guests")} name="party_size" type="number" min={1} max={20} defaultValue={base.party_size} required />
           </div>
-          <button type="submit" className="w-full mt-2 py-3.5 mono-label bg-accent text-accent-foreground hover:bg-foreground hover:text-background transition-colors">
+          <button type="submit" className="btn-luxury w-full mt-2">
             {t("reserveWidget.cta")} →
           </button>
         </form>
@@ -199,7 +200,7 @@ function ReservationWidget() {
       {step === "details" && (
         <form onSubmit={submit} className="space-y-4">
           <p className="text-sm text-foreground/80">
-            <span className="text-accent">{base.reservation_date}</span> · {base.reservation_time} · {base.party_size} {t("reserveWidget.guests")}
+            <span className="text-gold">{base.reservation_date}</span> · {base.reservation_time} · {base.party_size} {t("reserveWidget.guests")}
           </p>
           <WField label={t("reserve.name")} name="name" required />
           <WField label={t("reserve.email")} name="email" type="email" required />
@@ -207,7 +208,7 @@ function ReservationWidget() {
           {err && <p className="text-xs text-destructive">{err}</p>}
           <div className="flex gap-2">
             <button type="button" onClick={() => setStep("form")} className="flex-1 py-3 mono-label border border-border text-foreground/70 hover:text-foreground transition">←</button>
-            <button type="submit" disabled={loading} className="flex-[3] py-3 mono-label bg-accent text-accent-foreground hover:bg-foreground hover:text-background transition disabled:opacity-50">
+            <button type="submit" disabled={loading} className="btn-luxury flex-[3] disabled:opacity-50">
               {loading ? "..." : t("reserve.submit")}
             </button>
           </div>
@@ -216,16 +217,16 @@ function ReservationWidget() {
 
       {step === "done" && (
         <div className="py-4">
-          <p className="mono-label text-accent">✓ confirmed</p>
-          <p className="mt-3 font-display text-2xl leading-tight">{t("reserve.success")}</p>
-          <button onClick={() => setStep("form")} className="mt-5 mono-label text-foreground/60 hover:text-accent">
+          <p className="mono-label text-gold">✓ confirmed</p>
+          <p className="mt-3 display-serif text-3xl leading-tight text-gradient-gold">{t("reserve.success")}</p>
+          <button onClick={() => setStep("form")} className="mt-5 mono-label text-foreground/60 hover:text-gold">
             ↻ neue Anfrage
           </button>
         </div>
       )}
 
       <p className="mt-5 pt-5 border-t border-border mono-label text-muted-foreground text-center">
-        <Link to="/reservation" className="hover:text-accent">Volles Formular →</Link>
+        <Link to="/reservation" className="hover:text-gold">Volles Formular →</Link>
       </p>
     </motion.div>
   );
@@ -237,7 +238,7 @@ function WField({ label, ...rest }: React.InputHTMLAttributes<HTMLInputElement> 
       <span className="mono-label text-muted-foreground block mb-1.5">{label}</span>
       <input
         {...rest}
-        className="w-full bg-transparent border-b border-border px-0 py-2 text-foreground focus:outline-none focus:border-accent transition-colors [color-scheme:dark]"
+        className="w-full bg-transparent border-b border-border px-0 py-2 text-foreground focus:outline-none focus:border-gold transition-colors [color-scheme:dark]"
       />
     </label>
   );

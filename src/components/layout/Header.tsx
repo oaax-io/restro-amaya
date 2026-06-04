@@ -31,9 +31,9 @@ export function Header() {
       }`}
     >
       <div className="mx-auto max-w-7xl px-6 lg:px-10 h-20 flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 group">
-          <span className="w-2 h-2 rounded-full bg-accent shadow-[0_0_15px_var(--color-accent)] group-hover:scale-150 transition-transform" />
-          <span className="font-display text-2xl font-bold tracking-tighter uppercase">
+        <Link to="/" className="flex items-center gap-3 group">
+          <span className="w-2 h-2 rounded-full bg-gold shadow-[0_0_15px_var(--color-gold)] group-hover:scale-150 transition-transform" />
+          <span className="display-serif text-3xl tracking-wide uppercase text-gradient-gold">
             Amaya
           </span>
         </Link>
@@ -43,8 +43,8 @@ export function Header() {
             <Link
               key={`${l.to}-${i}`}
               to={l.to}
-              className="text-foreground/70 hover:text-accent transition-colors relative"
-              activeProps={{ className: "text-accent" }}
+              className="text-foreground/70 hover:text-gold transition-colors relative"
+              activeProps={{ className: "text-gold" }}
             >
               {l.label}
             </Link>
@@ -53,10 +53,7 @@ export function Header() {
 
         <div className="flex items-center gap-5">
           <LanguageSwitcher />
-          <a
-            href="#reserve"
-            className="hidden sm:inline-flex items-center px-5 py-2.5 mono-label bg-accent text-accent-foreground hover:bg-foreground hover:text-background transition-colors"
-          >
+          <a href="#reserve" className="btn-luxury hidden sm:inline-flex">
             {t("nav.reserve")}
           </a>
           <button
@@ -79,11 +76,7 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
-            <a
-              href="#reserve"
-              onClick={() => setOpen(false)}
-              className="mt-2 inline-flex justify-center py-3 bg-accent text-accent-foreground"
-            >
+            <a href="#reserve" onClick={() => setOpen(false)} className="btn-luxury mt-2">
               {t("nav.reserve")}
             </a>
           </div>
