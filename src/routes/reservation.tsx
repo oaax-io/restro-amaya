@@ -60,7 +60,7 @@ function ReservationPage() {
             transition={{ duration: 0.6 }}
             className="lg:col-span-5"
           >
-            <p className="text-xs tracking-[0.4em] uppercase text-clay">— {t("reserve.kicker")}</p>
+            <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("reserve.kicker")}</p>
             <h1 className="font-display text-6xl lg:text-7xl mt-6 leading-[1.0]">
               {t("reserve.title")}.
             </h1>
@@ -70,11 +70,11 @@ function ReservationPage() {
 
             <div className="mt-12 space-y-6 text-sm">
               <div>
-                <p className="text-xs tracking-[0.3em] uppercase text-clay mb-1">{t("about.contact")}</p>
+                <p className="text-xs tracking-[0.3em] uppercase text-accent mb-1">{t("about.contact")}</p>
                 <a href={`tel:${RESTAURANT.phoneRaw}`} className="font-display text-2xl hover:text-accent">{RESTAURANT.phone}</a>
               </div>
               <div>
-                <p className="text-xs tracking-[0.3em] uppercase text-clay mb-1">{t("about.address")}</p>
+                <p className="text-xs tracking-[0.3em] uppercase text-accent mb-1">{t("about.address")}</p>
                 <p>{RESTAURANT.street}, {RESTAURANT.city}</p>
               </div>
             </div>
@@ -88,7 +88,7 @@ function ReservationPage() {
           >
             {status === "success" ? (
               <div className="border border-border bg-card p-10 lg:p-14">
-                <p className="text-xs tracking-[0.3em] uppercase text-clay">✓ Confirmed</p>
+                <p className="text-xs tracking-[0.3em] uppercase text-accent">✓ Confirmed</p>
                 <h2 className="font-display text-4xl mt-4">{t("reserve.success")}</h2>
                 <div className="mt-8 flex gap-4">
                   <button

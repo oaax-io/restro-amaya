@@ -4,18 +4,23 @@ import { initReactI18next } from "react-i18next";
 const resources = {
   de: {
     translation: {
-      nav: { home: "Start", menu: "Speisekarte", gallery: "Galerie", about: "Über uns", jobs: "Stellen", reserve: "Reservieren" },
+      nav: { home: "Start", menu: "Speisekarte", gallery: "Galerie", about: "Über uns", jobs: "Stellen", reserve: "Reservieren", events: "Events", lounge: "Lounge" },
       hero: {
-        kicker: "Restaurant & Bar · Rothenburg LU",
-        title: "Wo Geschmack zur Geschichte wird.",
-        subtitle: "Indische Küche mit Schweizer Eleganz – im Herzen von Luzern.",
+        kicker: "Restaurant · Cigar Lounge · Events · Rothenburg LU",
         cta: "Tisch reservieren",
-        secondary: "Speisekarte ansehen",
+        secondary: "Mehr entdecken",
+        slides: {
+          restaurant: { tag: "01 — Restaurant", title: "Wild gewachsen.", sub: "Küche zwischen Dschungel und Stadt — kompromisslos modern, geerdet in Aromen aus aller Welt." },
+          lounge:     { tag: "02 — Cigar Lounge", title: "Rauch & Samt.", sub: "Premium Zigarren, gereifte Spirituosen, gedämpftes Licht. Ein Refugium für Kenner." },
+          bar:        { tag: "03 — Bar", title: "Liquid Jungle.", sub: "Signature Cocktails, botanische Infusionen, ausgefallene Spirits — handcrafted hinter der Bar." },
+          events:     { tag: "04 — Events", title: "Nächte ohne Regeln.", sub: "Private Events, DJ-Nights, Geburtstage. Wir verwandeln den Raum in deine Bühne." },
+        },
       },
+      reserveWidget: { title: "Reservierung", date: "Datum", time: "Uhrzeit", guests: "Gäste", cta: "Verfügbarkeit prüfen" },
       story: {
-        kicker: "Unsere Philosophie",
-        title: "Eine Reise von Bombay nach Rothenburg.",
-        body: "Im Amaya verbinden wir traditionelle indische Aromen mit modernem Handwerk. Jedes Gericht erzählt eine Geschichte aus Gewürzen, Glut und Zeit.",
+        kicker: "Über Amaya",
+        title: "Vier Welten. Ein Ort.",
+        body: "Amaya ist mehr als ein Restaurant. Wir vereinen Küche, Bar, Cigar Lounge und Eventfläche in einer dramatischen Dschungel-Atmosphäre — mitten in Rothenburg, Luzern.",
       },
       menu: { title: "Speisekarte", kicker: "Karte", empty: "Bald verfügbar." },
       gallery: { title: "Galerie", kicker: "Eindrücke" },
@@ -36,18 +41,23 @@ const resources = {
   },
   en: {
     translation: {
-      nav: { home: "Home", menu: "Menu", gallery: "Gallery", about: "About", jobs: "Careers", reserve: "Reserve" },
+      nav: { home: "Home", menu: "Menu", gallery: "Gallery", about: "About", jobs: "Careers", reserve: "Reserve", events: "Events", lounge: "Lounge" },
       hero: {
-        kicker: "Restaurant & Bar · Rothenburg LU",
-        title: "Where flavour becomes a story.",
-        subtitle: "Indian cuisine with Swiss elegance — in the heart of Lucerne.",
+        kicker: "Restaurant · Cigar Lounge · Events · Rothenburg LU",
         cta: "Reserve a table",
-        secondary: "View the menu",
+        secondary: "Discover more",
+        slides: {
+          restaurant: { tag: "01 — Restaurant", title: "Wildly grown.", sub: "A kitchen between jungle and city — uncompromisingly modern, rooted in flavours from around the world." },
+          lounge:     { tag: "02 — Cigar Lounge", title: "Smoke & velvet.", sub: "Premium cigars, aged spirits, dimmed light. A refuge for connoisseurs." },
+          bar:        { tag: "03 — Bar", title: "Liquid jungle.", sub: "Signature cocktails, botanical infusions, rare spirits — hand-crafted behind the bar." },
+          events:     { tag: "04 — Events", title: "Nights without rules.", sub: "Private events, DJ nights, birthdays. We turn the room into your stage." },
+        },
       },
+      reserveWidget: { title: "Reservation", date: "Date", time: "Time", guests: "Guests", cta: "Check availability" },
       story: {
-        kicker: "Our philosophy",
-        title: "A journey from Bombay to Rothenburg.",
-        body: "At Amaya we blend traditional Indian flavours with modern craft. Every dish tells a story of spice, ember, and time.",
+        kicker: "About Amaya",
+        title: "Four worlds. One place.",
+        body: "Amaya is more than a restaurant. We unite kitchen, bar, cigar lounge and events in a dramatic jungle atmosphere — right in Rothenburg, Lucerne.",
       },
       menu: { title: "Menu", kicker: "Carte", empty: "Coming soon." },
       gallery: { title: "Gallery", kicker: "Impressions" },
@@ -74,7 +84,12 @@ if (!i18n.isInitialized) {
     lng: typeof window !== "undefined" ? localStorage.getItem("amaya-lang") || "de" : "de",
     fallbackLng: "de",
     interpolation: { escapeValue: false },
+    returnObjects: true,
   });
+} else {
+  // refresh bundles on HMR
+  i18n.addResourceBundle("de", "translation", resources.de.translation, true, true);
+  i18n.addResourceBundle("en", "translation", resources.en.translation, true, true);
 }
 
 export default i18n;
