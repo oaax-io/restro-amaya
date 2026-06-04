@@ -84,7 +84,12 @@ if (!i18n.isInitialized) {
     lng: typeof window !== "undefined" ? localStorage.getItem("amaya-lang") || "de" : "de",
     fallbackLng: "de",
     interpolation: { escapeValue: false },
+    returnObjects: true,
   });
+} else {
+  // refresh bundles on HMR
+  i18n.addResourceBundle("de", "translation", resources.de.translation, true, true);
+  i18n.addResourceBundle("en", "translation", resources.en.translation, true, true);
 }
 
 export default i18n;

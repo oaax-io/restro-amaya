@@ -40,21 +40,22 @@ export function HeroSlider() {
 
   return (
     <section className="relative min-h-screen overflow-hidden bg-onyx" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)}>
-      {/* Slide images */}
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={slide.key}
-          initial={{ opacity: 0, scale: 1.08 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
-          className="absolute inset-0"
-        >
-          <img src={slide.img} alt="" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-gradient-to-r from-onyx via-onyx/70 to-onyx/30" />
-          <div className="absolute inset-0 bg-gradient-to-t from-onyx via-transparent to-onyx/40" />
-        </motion.div>
-      </AnimatePresence>
+      {/* Slide images - render all, fade between */}
+      <div className="absolute inset-0">
+        {SLIDES.map((s, i) => (
+          <motion.div
+            key={s.key}
+            initial={false}
+            animate={{ opacity: i === idx ? 1 : 0, scale: i === idx ? 1 : 1.06 }}
+            transition={{ duration: 1.4, ease: [0.22, 1, 0.36, 1] }}
+            className="absolute inset-0"
+          >
+            <img src={s.img} alt="" className="w-full h-full object-cover" />
+          </motion.div>
+        ))}
+        <div className="absolute inset-0 bg-gradient-to-r from-onyx via-onyx/70 to-onyx/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-onyx via-transparent to-onyx/40" />
+      </div>
 
       {/* Top brand bar */}
       <div className="relative z-10 pt-28 lg:pt-32" />
