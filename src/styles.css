@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Italiana&display=swap');
 
 /* AMAYA — Dark Jungle design system */
 
@@ -54,7 +54,11 @@
   --color-neon: var(--neon);
   --color-bone: var(--bone);
   --color-onyx: var(--onyx);
+  --color-gold: var(--gold);
+  --color-gold-soft: var(--gold-soft);
+  --color-champagne: var(--champagne);
   --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Italiana', 'Cormorant Garamond', ui-serif, Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
 }
 
@@ -66,6 +70,10 @@
   --moss: oklch(0.52 0.14 150);
   --neon: oklch(0.82 0.22 145);
   --bone: oklch(0.96 0.012 95);
+  /* Dubai-luxury gold layer */
+  --gold: oklch(0.82 0.13 86);
+  --gold-soft: oklch(0.72 0.10 82);
+  --champagne: oklch(0.92 0.06 88);
 
   --background: oklch(0.08 0.005 160);
   --foreground: oklch(0.96 0.012 95);
@@ -138,6 +146,12 @@
     line-height: 0.85;
     text-transform: uppercase;
   }
+  .display-serif {
+    font-family: var(--font-serif);
+    font-weight: 400;
+    letter-spacing: 0.01em;
+    line-height: 0.95;
+  }
   .mono-label {
     font-family: ui-monospace, 'JetBrains Mono', monospace;
     text-transform: uppercase;
@@ -148,6 +162,80 @@
   .glow-neon {
     text-shadow: 0 0 30px color-mix(in oklab, var(--color-accent) 60%, transparent),
                  0 0 80px color-mix(in oklab, var(--color-accent) 30%, transparent);
+  }
+  .glow-gold {
+    text-shadow: 0 0 30px color-mix(in oklab, var(--color-gold) 55%, transparent),
+                 0 0 90px color-mix(in oklab, var(--color-gold) 25%, transparent);
+  }
+  .text-gold { color: var(--color-gold); }
+  .bg-gold { background-color: var(--color-gold); }
+  .border-gold { border-color: var(--color-gold); }
+  .gradient-gold {
+    background-image: linear-gradient(135deg, var(--color-champagne) 0%, var(--color-gold) 45%, var(--color-gold-soft) 100%);
+  }
+  .text-gradient-gold {
+    background-image: linear-gradient(135deg, var(--color-champagne), var(--color-gold) 55%, color-mix(in oklab, var(--color-gold) 70%, var(--color-accent)));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .hairline-gold {
+    background: linear-gradient(90deg, transparent, color-mix(in oklab, var(--color-gold) 70%, transparent), transparent);
+    height: 1px;
+  }
+  .btn-luxury {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.6rem;
+    padding: 0.95rem 1.6rem;
+    font-family: ui-monospace, 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    font-size: 0.7rem;
+    color: var(--color-onyx);
+    background-image: linear-gradient(135deg, var(--color-champagne), var(--color-gold) 55%, var(--color-gold-soft));
+    border: 1px solid color-mix(in oklab, var(--color-gold) 60%, transparent);
+    box-shadow: 0 10px 40px -10px color-mix(in oklab, var(--color-gold) 50%, transparent),
+                inset 0 1px 0 color-mix(in oklab, var(--color-champagne) 80%, transparent);
+    transition: transform .35s ease, box-shadow .35s ease, filter .35s ease;
+  }
+  .btn-luxury:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 18px 50px -8px color-mix(in oklab, var(--color-gold) 60%, transparent),
+                inset 0 1px 0 color-mix(in oklab, var(--color-champagne) 90%, transparent);
+  }
+  .btn-ghost-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.9rem 1.6rem;
+    font-family: ui-monospace, 'JetBrains Mono', monospace;
+    text-transform: uppercase;
+    letter-spacing: 0.35em;
+    font-size: 0.7rem;
+    color: var(--color-gold);
+    border: 1px solid color-mix(in oklab, var(--color-gold) 55%, transparent);
+    background: color-mix(in oklab, var(--color-onyx) 60%, transparent);
+    backdrop-filter: blur(8px);
+    transition: background .3s ease, color .3s ease, border-color .3s ease;
+  }
+  .btn-ghost-gold:hover {
+    background: var(--color-gold);
+    color: var(--color-onyx);
+    border-color: var(--color-gold);
+  }
+  .luxury-card {
+    position: relative;
+    background: linear-gradient(180deg,
+      color-mix(in oklab, var(--color-onyx) 88%, transparent),
+      color-mix(in oklab, var(--color-onyx) 96%, transparent));
+    border: 1px solid color-mix(in oklab, var(--color-gold) 25%, transparent);
+    box-shadow:
+      0 30px 80px -30px color-mix(in oklab, var(--color-gold) 35%, transparent),
+      inset 0 1px 0 color-mix(in oklab, var(--color-gold) 20%, transparent);
   }
   .noise::after {
     content: '';
