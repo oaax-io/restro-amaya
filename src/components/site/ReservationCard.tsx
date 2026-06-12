@@ -1,0 +1,178 @@
+import { useState } from "react";
+import { toast } from "sonner";
+import { supabase } from "@/integrations/supabase/client";
+
+const COUNTRY_CODES = [
+  { code: "+41", label: "+41" },
+  { code: "+49", label: "+49" },
+  { code: "+43", label: "+43" },
+  { code: "+39", label: "+39" },
+  { code: "+33", label: "+33" },
+  { code: "+44", label: "+44" },
+];
+
+const PARTY_SIZES = Array.from({ length: 16 }, (_, i) => `${i + 1} Personen`);
+
+const TIME_SLOTS = [
+  "12:00", "12:30", "13:00", "13:30", "14:00",
+  "18:00", "18:30", "19:00", "19:30", "20:00", "20:30", "21:00", "21:30", "22:00",
+];
+
+export interface ReservationCardProps {
+  variant?: "overlay" | "page";
+}
+
+export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
+  const [submitting, setSubmitting] = useState(false);
+  const [done, setDone] = useState(false);
+
+  const today = new Date().toISOString().slice(0, 10);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const fd = new FormData(e.currentTarget);
+      const partyNum = parseInt(String(fd.get("party_size") ?? "2"), 10);
+      const phoneRaw = String(fd.get("phone") ?? "").trim();
+      const cc = String(fd.get("country_code") ?? "");
+      const phone = phoneRaw ? `${cc} ${phoneRaw}`.trim() : null;
+
+      const payload = {
+        name: String(fd.get("name") ?? ""),
+        email: String(fd.get("email") ?? ""),
+        phone,
+        party_size: Number.isFinite(partyNum) ? Math.max(1, Math.min(50, partyNum)) : 2,
+        reservation_date: String(fd.get("reservation_date") ?? today),
+        reservation_time: String(fd.get("reservation_time") ?? "19:30"),
+        notes: String(fd.get("notes") ?? "") || null,
+        status: "pending" as const,
+      };
+
+      const { error } = await supabase.from("reservations").insert(payload);
+      if (error) throw error;
+
+      setDone(true);
+      toast.success("Anfrage gesendet! Wir melden uns per E-Mail.");
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Senden fehlgeschlagen");
+    } finally {
+      setSubmitting(false);
+    }
+  }
+
+  const wrapperBase =
+    "bg-[#fdfbf7]/55 text-[#1a1a1a] border border-gold/40 rounded-2xl shadow-2xl backdrop-blur-xl";
+  const wrapperClass =
+    variant === "overlay" ? `${wrapperBase} p-5 sm:p-6` : `${wrapperBase} p-6 sm:p-8`;
+
+  if (done) {
+    return (
+      <div className={wrapperClass}>
+        <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-2 font-bold">Merci!</p>
+        <h3 className="font-[family-name:var(--font-balk-display)] text-2xl text-[#1a1a1a] mb-2">Anfrage erhalten.</h3>
+        <p className="text-sm text-[#2d2d2d]">
+          Du erhältst gleich eine Bestätigungs-E-Mail. Wir melden uns mit der finalen Zusage.
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <form id="reserve" onSubmit={onSubmit} className={`${wrapperClass} space-y-3`}>
+      <div className="text-center pb-1">
+        <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-1 font-bold">
+          Amaya · Booking
+        </p>
+        <h3 className="font-[family-name:var(--font-balk-display)] text-xl sm:text-2xl leading-tight text-[#1a1a1a]">
+          Wir freuen uns, dich bei uns verwöhnen zu dürfen.
+        </h3>
+      </div>
+
+      <Input label="Name *" name="name" required maxLength={120} autoComplete="name" />
+
+      <Input
+        label="E-Mail *"
+        name="email"
+        type="email"
+        required
+        maxLength={255}
+        autoComplete="email"
+        inputMode="email"
+      />
+
+      <div className="grid grid-cols-[7.5rem_1fr] gap-2">
+        <Select label="Vorwahl" name="country_code" defaultValue="+41">
+          {COUNTRY_CODES.map((c) => (
+            <option key={c.code} value={c.code}>{c.label}</option>
+          ))}
+        </Select>
+        <Input label="Telefon" name="phone" type="tel" maxLength={40} autoComplete="tel" inputMode="tel" />
+      </div>
+
+      <div className="grid grid-cols-2 gap-2">
+        <Input label="Datum *" name="reservation_date" type="date" required min={today} defaultValue={today} />
+        <Select label="Uhrzeit *" name="reservation_time" required defaultValue="19:30">
+          {TIME_SLOTS.map((t) => (
+            <option key={t} value={t}>{t}</option>
+          ))}
+        </Select>
+      </div>
+
+      <Select label="Personen *" name="party_size" required defaultValue="2">
+        {PARTY_SIZES.map((p, i) => (
+          <option key={p} value={String(i + 1)}>{p}</option>
+        ))}
+      </Select>
+
+      <Textarea
+        label="Bemerkung (Allergien, Wünsche)"
+        name="notes"
+        maxLength={1000}
+        rows={3}
+        placeholder="z.B. Allergien, Geburtstag, Sitzwünsche …"
+      />
+
+      <button
+        type="submit"
+        disabled={submitting}
+        className="w-full rounded-full bg-gold px-6 py-3 text-sm font-bold uppercase tracking-widest text-[#0d0d0d] hover:bg-[#0d0d0d] hover:text-gold border border-gold active:scale-[0.99] transition disabled:opacity-50"
+      >
+        {submitting ? "Wird gesendet …" : "Reservieren"}
+      </button>
+    </form>
+  );
+}
+
+const fieldBase =
+  "w-full bg-white/85 border border-gold/40 rounded-lg px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#8a8a8a] focus:border-gold focus:ring-2 focus:ring-gold/40 outline-none transition";
+
+function Input(props: React.InputHTMLAttributes<HTMLInputElement> & { label: string }) {
+  const { label, ...rest } = props;
+  return (
+    <div>
+      <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a] mb-1 font-semibold">{label}</label>
+      <input {...rest} className={fieldBase} />
+    </div>
+  );
+}
+
+function Select(props: React.SelectHTMLAttributes<HTMLSelectElement> & { label: string }) {
+  const { label, children, ...rest } = props;
+  return (
+    <div>
+      <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a] mb-1 font-semibold">{label}</label>
+      <select {...rest} className={fieldBase}>{children}</select>
+    </div>
+  );
+}
+
+function Textarea(props: React.TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string }) {
+  const { label, ...rest } = props;
+  return (
+    <div>
+      <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a] mb-1 font-semibold">{label}</label>
+      <textarea {...rest} className={`${fieldBase} resize-none`} />
+    </div>
+  );
+}
