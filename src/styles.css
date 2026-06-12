@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Italiana&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Italiana&family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 /* AMAYA — Dark Jungle design system */
 
@@ -57,9 +57,11 @@
   --color-gold: var(--gold);
   --color-gold-soft: var(--gold-soft);
   --color-champagne: var(--champagne);
+  --color-gold-foreground: var(--gold-foreground);
   --font-display: 'Syne', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Italiana', 'Cormorant Garamond', ui-serif, Georgia, serif;
   --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif;
+  --font-balk-display: 'Playfair Display', Georgia, serif;
 }
 
 :root {
@@ -74,6 +76,7 @@
   --gold: oklch(0.82 0.13 86);
   --gold-soft: oklch(0.72 0.10 82);
   --champagne: oklch(0.92 0.06 88);
+  --gold-foreground: oklch(0.15 0.01 60);
 
   --background: oklch(0.08 0.005 160);
   --foreground: oklch(0.96 0.012 95);
