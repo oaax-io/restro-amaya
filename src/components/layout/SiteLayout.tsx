@@ -1,11 +1,11 @@
 import { type ReactNode } from "react";
-import { Header } from "./Header";
+import { SiteHeader } from "@/components/site/SiteHeader";
 import { Footer } from "./Footer";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Header />
+      <SiteHeader />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

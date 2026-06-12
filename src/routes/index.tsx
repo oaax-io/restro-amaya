@@ -2,7 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
-import { HeroSlider } from "@/components/HeroSlider";
+import { HeroSlider } from "@/components/site/HeroSlider";
+import { ReservationCard } from "@/components/site/ReservationCard";
 import { RESTAURANT } from "@/lib/restaurant";
 import jungleTex from "@/assets/jungle-texture.jpg";
 import slideRestaurant from "@/assets/slide-restaurant.jpg";
@@ -35,7 +36,14 @@ function Index() {
 
   return (
     <SiteLayout>
-      <HeroSlider />
+      <HeroSlider
+        images={[slideRestaurant, slideLounge, slideBar, slideEvents]}
+        eyebrow="Restaurant · Cigar Lounge · Bar · Events"
+        title="Amaya — Eine Nacht, vier Welten."
+        subtitle="Modernste Küche, Cigar Lounge, Cocktailbar und Events unter einem Dach. Mitten in Rothenburg, Luzern."
+      >
+        <ReservationCard variant="overlay" />
+      </HeroSlider>
 
       {/* STORY / INTRO */}
       <section className="relative py-28 lg:py-40 overflow-hidden">
