@@ -79,6 +79,24 @@ export function Footer() {
             </ul>
           </div>
 
+          {/* Hours */}
+          <div className="text-sm">
+            <p className="mono-label text-accent mb-4">{t("about.hours")}</p>
+            <ul className="divide-y divide-border/60 border-y border-border/60">
+              {RESTAURANT.hours.map((h) => {
+                const dayLabel = t(`days.${h.day}`, { defaultValue: h.day });
+                const closed = lang === "de" ? "Geschlossen" : "Closed";
+                const times = [h.lunch, h.dinner].filter(Boolean).join(" · ") || closed;
+                return (
+                  <li key={h.day} className="flex items-center justify-between gap-3 py-2">
+                    <span className="text-muted-foreground uppercase tracking-wider text-xs">{dayLabel}</span>
+                    <span className="text-right tabular-nums">{times}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
           {/* Legal */}
           <div className="text-sm">
             <p className="mono-label text-accent mb-4">{lang === "de" ? "Rechtliches" : "Legal"}</p>
@@ -86,24 +104,6 @@ export function Footer() {
               <li><Link to="/impressum" className="hover:text-accent transition-colors">{lang === "de" ? "Impressum" : "Imprint"}</Link></li>
               <li><Link to="/datenschutz" className="hover:text-accent transition-colors">{lang === "de" ? "Datenschutz" : "Privacy"}</Link></li>
               <li><Link to="/agb" className="hover:text-accent transition-colors">{lang === "de" ? "AGB" : "Terms"}</Link></li>
-            </ul>
-          </div>
-
-          {/* Hours */}
-          <div className="text-sm">
-            <p className="mono-label text-accent mb-4">{t("about.hours")}</p>
-            <ul className="space-y-1.5">
-              {RESTAURANT.hours.map((h) => {
-                const dayLabel = t(`days.${h.day}`, { defaultValue: h.day });
-                const closed = lang === "de" ? "Geschlossen" : "Closed";
-                const times = [h.lunch, h.dinner].filter(Boolean).join(" · ") || closed;
-                return (
-                  <li key={h.day} className="flex justify-between gap-3">
-                    <span className="text-muted-foreground uppercase tracking-wider text-xs pt-0.5">{dayLabel}</span>
-                    <span className="text-right">{times}</span>
-                  </li>
-                );
-              })}
             </ul>
           </div>
         </div>
