@@ -17,7 +17,16 @@ export function Footer() {
     <footer className="relative mt-32 bg-onyx overflow-hidden">
       {/* Newsletter CTA */}
       <div className="relative border-y border-border/60 bg-gradient-to-b from-transparent via-accent/[0.04] to-transparent">
-        <div className="mx-auto max-w-5xl px-6 lg:px-10 py-16 lg:py-20 text-center">
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-25 mix-blend-multiply"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "520px auto",
+          }}
+        />
+        <div className="relative mx-auto max-w-5xl px-6 lg:px-10 py-16 lg:py-20 text-center">
           <p className="mono-label text-accent">/ Newsletter</p>
           <h3 className="font-display text-4xl lg:text-5xl mt-4 leading-[0.95] uppercase font-bold">
             {lang === "de" ? "Bleib im Dschungel." : "Stay in the jungle."}
