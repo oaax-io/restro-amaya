@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from "react";
-import { Volume2, VolumeX } from "lucide-react";
+import { Volume2, VolumeX, ArrowLeft, ArrowRight } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 
 export interface HeroSlide {
@@ -42,6 +42,8 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
   };
 
   const current = slides[index];
+  const go = (dir: 1 | -1) =>
+    setIndex((i) => (i + dir + slides.length) % slides.length);
 
   return (
     <section className="relative min-h-[100svh] w-full overflow-hidden">
@@ -91,36 +93,57 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
               <p className="text-base sm:text-lg text-foreground/85 max-w-xl mx-auto lg:mx-0">{current.subtitle}</p>
             </motion.div>
           </AnimatePresence>
+
+          {/* Slider controls — arrows + dots + mute */}
+          <div className="mt-8 flex items-center gap-4 justify-center lg:justify-start">
+            <button
+              type="button"
+              onClick={() => go(-1)}
+              aria-label="Vorheriger Slide"
+              className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-gold/40 bg-background/40 backdrop-blur-md text-gold hover:bg-gold hover:text-gold-foreground transition"
+            >
+              <ArrowLeft size={16} />
+            </button>
+
+            {slides.length > 1 && (
+              <div className="flex gap-2">
+                {slides.map((_, i) => (
+                  <button
+                    key={i}
+                    type="button"
+                    aria-label={`Slide ${i + 1}`}
+                    onClick={() => setIndex(i)}
+                    className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-gold" : "w-2 bg-white/40"}`}
+                  />
+                ))}
+              </div>
+            )}
+
+            <button
+              type="button"
+              onClick={() => go(1)}
+              aria-label="Nächster Slide"
+              className="h-10 w-10 inline-flex items-center justify-center rounded-full border border-gold/40 bg-background/40 backdrop-blur-md text-gold hover:bg-gold hover:text-gold-foreground transition"
+            >
+              <ArrowRight size={16} />
+            </button>
+
+            {audioSrc && (
+              <button
+                type="button"
+                onClick={toggleSound}
+                aria-label={muted ? "Dschungel-Sound einschalten" : "Ton stummschalten"}
+                className="ml-2 h-10 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-background/40 backdrop-blur-md px-3 text-xs uppercase tracking-widest text-gold hover:bg-gold hover:text-gold-foreground transition"
+              >
+                {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                <span className="hidden sm:inline">{muted ? "Sound" : "Mute"}</span>
+              </button>
+            )}
+          </div>
         </div>
         <div className="w-full max-w-md lg:max-w-none">{children}</div>
       </div>
 
-      {/* Sound toggle */}
-      {audioSrc && (
-        <button
-          type="button"
-          onClick={toggleSound}
-          aria-label={muted ? "Dschungel-Sound einschalten" : "Ton stummschalten"}
-          className="absolute top-24 right-4 sm:right-6 z-20 flex items-center gap-2 rounded-full border border-gold/40 bg-background/50 backdrop-blur-md px-3 py-2 text-xs uppercase tracking-widest text-gold hover:bg-gold hover:text-gold-foreground transition"
-        >
-          {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-          <span className="hidden sm:inline">{muted ? "Sound" : "Mute"}</span>
-        </button>
-      )}
-
-      {slides.length > 1 && (
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex gap-2">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              aria-label={`Slide ${i + 1}`}
-              onClick={() => setIndex(i)}
-              className={`h-1.5 rounded-full transition-all ${i === index ? "w-6 bg-gold" : "w-2 bg-white/40"}`}
-            />
-          ))}
-        </div>
-      )}
     </section>
   );
 }
