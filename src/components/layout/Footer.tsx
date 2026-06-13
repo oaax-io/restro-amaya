@@ -64,7 +64,21 @@ export function Footer() {
               <div>
                 <p className="text-lg font-medium">{RESTAURANT.street}</p>
                 <p className="text-lg font-medium">{RESTAURANT.city}</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  {lang === "de" ? "Mit Lift im 5. OG" : "5th floor, elevator access"}
+                </p>
               </div>
+              <a
+                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${RESTAURANT.street}, ${RESTAURANT.city}`)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="inline-flex items-center gap-3 text-sm hover:text-accent transition-colors"
+              >
+                <span className="inline-flex items-center justify-center size-10 rounded-full border border-border">
+                  <MapPin className="size-4" />
+                </span>
+                {lang === "de" ? "Auf Google Maps anzeigen" : "View on Google Maps"}
+              </a>
               <a
                 href={`tel:${RESTAURANT.phoneRaw}`}
                 className="inline-flex items-center gap-3 text-2xl font-display font-bold uppercase tracking-wide hover:text-accent transition-colors"
