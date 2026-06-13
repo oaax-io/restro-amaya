@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
 
 const COUNTRY_CODES = [
   { code: "+41", label: "+41" },
@@ -62,25 +63,54 @@ export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
   }
 
   const wrapperBase =
-    "bg-[#fdfbf7]/55 text-[#1a1a1a] border border-gold/40 rounded-2xl shadow-2xl backdrop-blur-xl";
+    "relative overflow-hidden bg-[#fdfbf7]/35 text-[#1a1a1a] border border-gold/40 rounded-2xl shadow-2xl backdrop-blur-2xl";
   const wrapperClass =
     variant === "overlay" ? `${wrapperBase} p-5 sm:p-6` : `${wrapperBase} p-6 sm:p-8`;
+
+  const Decor = () => (
+    <>
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-10 -right-16 w-[26rem] h-[14rem] opacity-[0.18] mix-blend-multiply"
+        style={{
+          backgroundImage: `url(${junglePattern.url})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "contain",
+          backgroundPosition: "top right",
+        }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-12 -left-20 w-[24rem] h-[12rem] opacity-[0.14] mix-blend-multiply -scale-x-100"
+        style={{
+          backgroundImage: `url(${junglePattern.url})`,
+          backgroundRepeat: "no-repeat",
+          backgroundSize: "contain",
+          backgroundPosition: "bottom left",
+        }}
+      />
+    </>
+  );
 
   if (done) {
     return (
       <div className={wrapperClass}>
-        <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-2 font-bold">Merci!</p>
-        <h3 className="font-[family-name:var(--font-balk-display)] text-2xl text-[#1a1a1a] mb-2">Anfrage erhalten.</h3>
-        <p className="text-sm text-[#2d2d2d]">
-          Du erhältst gleich eine Bestätigungs-E-Mail. Wir melden uns mit der finalen Zusage.
-        </p>
+        <Decor />
+        <div className="relative">
+          <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-2 font-bold">Merci!</p>
+          <h3 className="font-[family-name:var(--font-balk-display)] text-2xl text-[#1a1a1a] mb-2">Anfrage erhalten.</h3>
+          <p className="text-sm text-[#2d2d2d]">
+            Du erhältst gleich eine Bestätigungs-E-Mail. Wir melden uns mit der finalen Zusage.
+          </p>
+        </div>
       </div>
     );
   }
 
   return (
     <form id="reserve" onSubmit={onSubmit} className={`${wrapperClass} space-y-3`}>
-      <div className="text-center pb-1">
+      <Decor />
+      <div className="relative text-center pb-1">
         <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-1 font-bold">
           Amaya · Booking
         </p>
