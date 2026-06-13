@@ -164,7 +164,7 @@ export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
 }
 
 const fieldBase =
-  "w-full bg-white/85 border border-gold/40 rounded-lg px-3 py-2 text-sm text-[#1a1a1a] placeholder:text-[#8a8a8a] focus:border-gold focus:ring-2 focus:ring-gold/40 outline-none transition";
+  "w-full bg-white/85 border border-gold/40 rounded-lg px-3 py-2 text-sm text-[#4a4a4a] placeholder:text-[#4a4a4a] focus:border-gold focus:ring-2 focus:ring-gold/40 outline-none transition";
 
 function Input(props: React.InputHTMLAttributes<HTMLInputElement> & { label?: string }) {
   const { label, ...rest } = props;
