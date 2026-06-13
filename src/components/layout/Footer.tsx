@@ -4,7 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, Youtube, Send, Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import logoAsset from "@/assets/amaya-footer-logo.svg.asset.json";
-import plantsImg from "@/assets/footer-plants.png";
+import plantsImg from "@/assets/footer-plants-hanging.png.asset.json";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
 
 export function Footer() {
@@ -111,16 +111,16 @@ export function Footer() {
             </div>
           </div>
 
-          {/* Plants — decorative divider */}
-          <div className="hidden lg:flex lg:col-span-2 justify-center items-end -mb-20 relative z-10 pointer-events-none">
+          {/* Plants — hanging from top of section */}
+          <div className="hidden lg:flex lg:col-span-2 justify-center items-start -mt-20 relative z-10 pointer-events-none">
             <img
-              src={plantsImg}
+              src={plantsImg.url}
               alt=""
               aria-hidden="true"
               loading="lazy"
-              width={512}
-              height={1024}
-              className="h-[28rem] w-auto object-contain object-bottom opacity-90 select-none"
+              width={768}
+              height={1536}
+              className="h-[32rem] w-auto object-contain object-top opacity-95 select-none"
             />
           </div>
 
