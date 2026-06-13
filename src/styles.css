@@ -161,6 +161,8 @@
     font-size: 0.7rem;
     font-weight: 500;
   }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   .glow-neon {
     text-shadow: 0 0 30px color-mix(in oklab, var(--color-accent) 60%, transparent),
                  0 0 80px color-mix(in oklab, var(--color-accent) 30%, transparent);
