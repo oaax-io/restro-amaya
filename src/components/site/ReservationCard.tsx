@@ -68,28 +68,15 @@ export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
     variant === "overlay" ? `${wrapperBase} p-5 sm:p-6` : `${wrapperBase} p-6 sm:p-8`;
 
   const Decor = () => (
-    <>
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-10 -right-16 w-[26rem] h-[14rem] opacity-[0.18] mix-blend-multiply"
-        style={{
-          backgroundImage: `url(${junglePattern.url})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-          backgroundPosition: "top right",
-        }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-12 -left-20 w-[24rem] h-[12rem] opacity-[0.14] mix-blend-multiply -scale-x-100"
-        style={{
-          backgroundImage: `url(${junglePattern.url})`,
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "contain",
-          backgroundPosition: "bottom left",
-        }}
-      />
-    </>
+    <div
+      aria-hidden
+      className="pointer-events-none absolute inset-0 opacity-25 mix-blend-multiply"
+      style={{
+        backgroundImage: `url(${junglePattern.url})`,
+        backgroundRepeat: "repeat",
+        backgroundSize: "520px auto",
+      }}
+    />
   );
 
   if (done) {
