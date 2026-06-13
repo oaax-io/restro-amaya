@@ -16,7 +16,7 @@ export function Footer() {
   return (
     <footer className="relative mt-32 bg-onyx overflow-hidden">
       {/* Newsletter CTA */}
-      <div className="relative border-y border-border/60 bg-gradient-to-b from-transparent via-accent/[0.04] to-transparent">
+      <div className="relative border-y border-border/60 bg-[#1a1815]">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-25 mix-blend-multiply"
