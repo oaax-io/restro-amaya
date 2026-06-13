@@ -63,7 +63,7 @@ export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
   }
 
   const wrapperBase =
-    "relative overflow-hidden bg-[#fdfbf7]/35 text-[#1a1a1a] border border-gold/40 rounded-2xl shadow-2xl backdrop-blur-2xl";
+    "relative overflow-hidden bg-[#fdfbf7]/65 text-[#1a1a1a] border border-gold/40 rounded-2xl shadow-2xl backdrop-blur-2xl";
   const wrapperClass =
     variant === "overlay" ? `${wrapperBase} p-5 sm:p-6` : `${wrapperBase} p-6 sm:p-8`;
 
