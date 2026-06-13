@@ -55,8 +55,61 @@ export function Footer() {
 
       {/* Main footer */}
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
-        {/* Logo + claim — centered full-width */}
-        <div className="flex flex-col items-center text-center">
+        {/* Contact + Navigation + Legal + Hours — top */}
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+          {/* Contact */}
+          <div className="text-sm leading-relaxed">
+            <p className="mono-label text-accent mb-4">{t("about.contact")}</p>
+            <p>{RESTAURANT.street}</p>
+            <p>{RESTAURANT.city}</p>
+            <a href={`tel:${RESTAURANT.phoneRaw}`} className="block mt-4 hover:text-accent transition-colors">{RESTAURANT.phone}</a>
+            <a href={`mailto:${RESTAURANT.email}`} className="block hover:text-accent transition-colors">{RESTAURANT.email}</a>
+          </div>
+
+          {/* Navigation */}
+          <div className="text-sm">
+            <p className="mono-label text-accent mb-4">Navigation</p>
+            <ul className="space-y-2">
+              <li><Link to="/menu" className="hover:text-accent transition-colors">{t("nav.menu")}</Link></li>
+              <li><Link to="/lounge" className="hover:text-accent transition-colors">{t("nav.lounge")}</Link></li>
+              <li><Link to="/events" className="hover:text-accent transition-colors">{t("nav.events")}</Link></li>
+              <li><Link to="/gallery" className="hover:text-accent transition-colors">{t("nav.gallery")}</Link></li>
+              <li><Link to="/about" className="hover:text-accent transition-colors">{t("nav.about")}</Link></li>
+              <li><Link to="/reservation" className="hover:text-accent transition-colors">{t("nav.reserve")}</Link></li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div className="text-sm">
+            <p className="mono-label text-accent mb-4">{lang === "de" ? "Rechtliches" : "Legal"}</p>
+            <ul className="space-y-2">
+              <li><Link to="/impressum" className="hover:text-accent transition-colors">{lang === "de" ? "Impressum" : "Imprint"}</Link></li>
+              <li><Link to="/datenschutz" className="hover:text-accent transition-colors">{lang === "de" ? "Datenschutz" : "Privacy"}</Link></li>
+              <li><Link to="/agb" className="hover:text-accent transition-colors">{lang === "de" ? "AGB" : "Terms"}</Link></li>
+            </ul>
+          </div>
+
+          {/* Hours */}
+          <div className="text-sm">
+            <p className="mono-label text-accent mb-4">{t("about.hours")}</p>
+            <ul className="space-y-1.5">
+              {RESTAURANT.hours.map((h) => {
+                const dayLabel = t(`days.${h.day}`, { defaultValue: h.day });
+                const closed = lang === "de" ? "Geschlossen" : "Closed";
+                const times = [h.lunch, h.dinner].filter(Boolean).join(" · ") || closed;
+                return (
+                  <li key={h.day} className="flex justify-between gap-3">
+                    <span className="text-muted-foreground uppercase tracking-wider text-xs pt-0.5">{dayLabel}</span>
+                    <span className="text-right">{times}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        </div>
+
+        {/* Logo + claim + social — bottom, centered */}
+        <div className="mt-20 pt-12 border-t border-border/60 flex flex-col items-center text-center">
           <img src={logoAsset.url} alt="Amaya" className="h-16 w-auto" />
           <h3 className="font-display text-3xl mt-6 leading-[0.95] uppercase font-bold whitespace-pre-line">
             {lang === "de" ? "Vier Welten,\nein Ort." : "Four worlds,\none place."}
@@ -83,41 +136,6 @@ export function Footer() {
               className="size-10 inline-flex items-center justify-center rounded-full border border-border hover:border-accent hover:text-accent transition-colors">
               <Youtube className="size-4" />
             </a>
-          </div>
-        </div>
-
-        {/* Contact + Navigation — centered below */}
-        <div className="mt-16 grid gap-12 sm:grid-cols-2 lg:grid-cols-3 max-w-3xl mx-auto text-center">
-          {/* Contact */}
-          <div className="text-sm leading-relaxed">
-            <p className="mono-label text-accent mb-4">{t("about.contact")}</p>
-            <p>{RESTAURANT.street}</p>
-            <p>{RESTAURANT.city}</p>
-            <a href={`tel:${RESTAURANT.phoneRaw}`} className="block mt-4 hover:text-accent transition-colors">{RESTAURANT.phone}</a>
-            <a href={`mailto:${RESTAURANT.email}`} className="block hover:text-accent transition-colors">{RESTAURANT.email}</a>
-          </div>
-
-          {/* Navigation */}
-          <div className="text-sm">
-            <p className="mono-label text-accent mb-4">Navigation</p>
-            <ul className="space-y-2">
-              <li><Link to="/menu" className="hover:text-accent transition-colors">{t("nav.menu")}</Link></li>
-              <li><Link to="/lounge" className="hover:text-accent transition-colors">{t("nav.lounge")}</Link></li>
-              <li><Link to="/events" className="hover:text-accent transition-colors">{t("nav.events")}</Link></li>
-              <li><Link to="/gallery" className="hover:text-accent transition-colors">{t("nav.gallery")}</Link></li>
-              <li><Link to="/about" className="hover:text-accent transition-colors">{t("nav.about")}</Link></li>
-              <li><Link to="/reservation" className="hover:text-accent transition-colors">{t("nav.reserve")}</Link></li>
-            </ul>
-          </div>
-
-          {/* Legal */}
-          <div className="text-sm sm:col-span-2 lg:col-span-1">
-            <p className="mono-label text-accent mb-4">{lang === "de" ? "Rechtliches" : "Legal"}</p>
-            <ul className="space-y-2">
-              <li><Link to="/impressum" className="hover:text-accent transition-colors">{lang === "de" ? "Impressum" : "Imprint"}</Link></li>
-              <li><Link to="/datenschutz" className="hover:text-accent transition-colors">{lang === "de" ? "Datenschutz" : "Privacy"}</Link></li>
-              <li><Link to="/agb" className="hover:text-accent transition-colors">{lang === "de" ? "AGB" : "Terms"}</Link></li>
-            </ul>
           </div>
         </div>
       </div>
