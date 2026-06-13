@@ -102,7 +102,7 @@ export function Footer() {
           </div>
 
           {/* Plants — decorative divider */}
-          <div className="hidden lg:flex lg:col-span-2 justify-center self-stretch -my-20 -mb-12 overflow-hidden">
+          <div className="hidden lg:flex lg:col-span-2 justify-center self-stretch -mt-20 -mb-[8rem] relative z-10">
             <img
               src={plantsImg}
               alt=""
