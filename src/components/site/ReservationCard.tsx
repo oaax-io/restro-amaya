@@ -185,7 +185,7 @@ function Select(props: React.SelectHTMLAttributes<HTMLSelectElement> & { label?:
       {label && (
         <label className="block text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a] mb-1 font-semibold">{label}</label>
       )}
-      <select {...rest} className={`${fieldBase} ${!rest.value && !rest.defaultValue ? "text-[#8a8a8a]" : "text-[#1a1a1a]"}`}>{children}</select>
+      <select {...rest} className={fieldBase}>{children}</select>
     </div>
   );
 }
