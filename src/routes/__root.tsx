@@ -78,14 +78,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
+      { title: "Amaya Restaurant" },
+      { name: "description", content: "A modern, luxury restaurant website with an integrated admin panel for managing content and reservations." },
       { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { property: "og:title", content: "Amaya Restaurant" },
+      { property: "og:description", content: "A modern, luxury restaurant website with an integrated admin panel for managing content and reservations." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Amaya Restaurant" },
+      { name: "twitter:description", content: "A modern, luxury restaurant website with an integrated admin panel for managing content and reservations." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db7f1c9c-f194-480a-bfc1-76bde8ef74bc/id-preview-635291df--3edc45cf-5d89-4931-a563-f598f3c6fde6.lovable.app-1781311733548.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/db7f1c9c-f194-480a-bfc1-76bde8ef74bc/id-preview-635291df--3edc45cf-5d89-4931-a563-f598f3c6fde6.lovable.app-1781311733548.png" },
     ],
     links: [
       {
