@@ -5,6 +5,7 @@ import { Instagram, Facebook, Youtube, Send, Phone, Mail, MapPin } from "lucide-
 import { useState } from "react";
 import logoAsset from "@/assets/amaya-footer-logo.svg.asset.json";
 import plantsImg from "@/assets/footer-plants.png";
+import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
 
 export function Footer() {
   const { t, i18n } = useTranslation();
