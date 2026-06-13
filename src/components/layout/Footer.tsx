@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { RESTAURANT } from "@/lib/restaurant";
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Send } from "lucide-react";
+import { Instagram, Facebook, Youtube, Send, Phone, Mail } from "lucide-react";
 import { useState } from "react";
 import logoAsset from "@/assets/amaya-footer-logo.svg.asset.json";
 
@@ -55,28 +55,35 @@ export function Footer() {
 
       {/* Main footer */}
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
-        {/* Contact + Navigation + Hours — top */}
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Contact + Hours — top */}
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
           {/* Contact */}
-          <div className="text-sm leading-relaxed">
-            <p className="mono-label text-accent mb-4">{t("about.contact")}</p>
-            <p>{RESTAURANT.street}</p>
-            <p>{RESTAURANT.city}</p>
-            <a href={`tel:${RESTAURANT.phoneRaw}`} className="block mt-4 hover:text-accent transition-colors">{RESTAURANT.phone}</a>
-            <a href={`mailto:${RESTAURANT.email}`} className="block hover:text-accent transition-colors">{RESTAURANT.email}</a>
-          </div>
-
-          {/* Navigation */}
-          <div className="text-sm">
-            <p className="mono-label text-accent mb-4">Navigation</p>
-            <ul className="space-y-2">
-              <li><Link to="/menu" className="hover:text-accent transition-colors">{t("nav.menu")}</Link></li>
-              <li><Link to="/lounge" className="hover:text-accent transition-colors">{t("nav.lounge")}</Link></li>
-              <li><Link to="/events" className="hover:text-accent transition-colors">{t("nav.events")}</Link></li>
-              <li><Link to="/gallery" className="hover:text-accent transition-colors">{t("nav.gallery")}</Link></li>
-              <li><Link to="/about" className="hover:text-accent transition-colors">{t("nav.about")}</Link></li>
-              <li><Link to="/reservation" className="hover:text-accent transition-colors">{t("nav.reserve")}</Link></li>
-            </ul>
+          <div className="lg:col-span-1">
+            <p className="mono-label text-accent mb-6">{t("about.contact")}</p>
+            <div className="space-y-4">
+              <div>
+                <p className="text-lg font-medium">{RESTAURANT.street}</p>
+                <p className="text-lg font-medium">{RESTAURANT.city}</p>
+              </div>
+              <a
+                href={`tel:${RESTAURANT.phoneRaw}`}
+                className="inline-flex items-center gap-3 text-2xl font-display font-bold uppercase tracking-wide hover:text-accent transition-colors"
+              >
+                <span className="inline-flex items-center justify-center size-10 rounded-full border border-border">
+                  <Phone className="size-4" />
+                </span>
+                {RESTAURANT.phone}
+              </a>
+              <a
+                href={`mailto:${RESTAURANT.email}`}
+                className="inline-flex items-center gap-3 text-base hover:text-accent transition-colors"
+              >
+                <span className="inline-flex items-center justify-center size-10 rounded-full border border-border">
+                  <Mail className="size-4" />
+                </span>
+                {RESTAURANT.email}
+              </a>
+            </div>
           </div>
 
           {/* Hours */}
