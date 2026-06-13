@@ -10,6 +10,7 @@ import slideRestaurant from "@/assets/slide-restaurant.jpg";
 import slideLounge from "@/assets/slide-lounge.jpg";
 import slideBar from "@/assets/slide-bar.jpg";
 import slideEvents from "@/assets/slide-events.jpg";
+import slideAmayaBar from "@/assets/slide-amaya-bar.jpg.asset.json";
 import jungleVideo from "@/assets/jungle-loop.mp4.asset.json";
 import jungleAudio from "@/assets/jungle-ambience.mp3.asset.json";
 
@@ -37,6 +38,12 @@ function Index() {
   ] as const;
 
   const heroSlides = [
+    {
+      image: slideAmayaBar.url,
+      eyebrow: "00 — Welcome to Amaya",
+      title: "Mitten im Dschungel.",
+      subtitle: "Eine grüne Oase mitten in Rothenburg — Bar, Restaurant und Lounge unter einem lebenden Blätterdach.",
+    },
     {
       image: slideRestaurant,
       eyebrow: "01 — Restaurant",
