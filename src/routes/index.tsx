@@ -10,9 +10,15 @@ import slideRestaurant from "@/assets/slide-restaurant.jpg";
 import slideLounge from "@/assets/slide-lounge.jpg";
 import slideBar from "@/assets/slide-bar.jpg";
 import slideEvents from "@/assets/slide-events.jpg";
-import slideAmayaBar from "@/assets/slide-amaya-bar.jpg.asset.json";
 import jungleVideo from "@/assets/jungle-loop.mp4.asset.json";
 import jungleAudio from "@/assets/jungle-ambience.mp3.asset.json";
+import amayaFirst from "@/assets/amaya-first.jpg.asset.json";
+import amayaSecond from "@/assets/amaya-second.jpg.asset.json";
+import amayaThird from "@/assets/amaya-third.jpg.asset.json";
+import amayaFourth from "@/assets/amaya-fourth.jpg.asset.json";
+import amayaSeventh from "@/assets/amaya-seventh.jpg.asset.json";
+import amayaEight from "@/assets/amaya-eight.jpg.asset.json";
+import amayaNine from "@/assets/amaya-nine.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -39,34 +45,46 @@ function Index() {
 
   const heroSlides = [
     {
-      image: slideAmayaBar.url,
+      image: amayaNine.url,
       eyebrow: "00 — Welcome to Amaya",
       title: "Mitten im Dschungel.",
-      subtitle: "Eine grüne Oase mitten in Rothenburg — Bar, Restaurant und Lounge unter einem lebenden Blätterdach.",
+      subtitle: "Lebendes Blätterdach, warmes Licht, Fischgrät-Parkett — eine grüne Oase mitten in Rothenburg.",
     },
     {
-      image: slideRestaurant,
+      image: amayaSeventh.url,
       eyebrow: "01 — Restaurant",
       title: "Wild gewachsene Küche.",
-      subtitle: "Modernste Küche zwischen Dschungel und Stadt — kompromisslos, aromenstark, mitten in Rothenburg.",
+      subtitle: "Modernste Küche unter handgeflochtenen Lampen und dichtem Blätterhimmel — kompromisslos und aromenstark.",
     },
     {
-      image: slideLounge,
+      image: amayaThird.url,
       eyebrow: "02 — Cigar Lounge",
       title: "Rauch & Samt.",
-      subtitle: "Premium Zigarren, gereifte Spirituosen und gedämpftes Licht — ein Refugium für Kenner.",
+      subtitle: "Gedämpftes Licht, samtige Sessel und gereifte Spirituosen — ein Refugium für Kenner.",
     },
     {
-      image: slideBar,
+      image: amayaEight.url,
       eyebrow: "03 — Bar",
       title: "Liquid Jungle.",
-      subtitle: "Signature Cocktails, botanische Infusionen und seltene Spirits — handcrafted hinter der Bar.",
+      subtitle: "Signature Cocktails vor lebender Pflanzenwand — handcrafted hinter der Amaya-Bar.",
     },
     {
-      image: slideEvents,
-      eyebrow: "04 — Events & Nights",
+      image: amayaFirst.url,
+      eyebrow: "04 — Signature Drinks",
+      title: "Botanische Alchemie.",
+      subtitle: "Hand-gravierte Eiswürfel, Rosmarinrauch und seltene Spirits — jedes Glas ein kleines Ritual.",
+    },
+    {
+      image: amayaSecond.url,
+      eyebrow: "05 — Bar Garden",
+      title: "Grüner Aperitivo.",
+      subtitle: "Frisch gepresst, botanisch infundiert, serviert vor dichtem Blätterwerk.",
+    },
+    {
+      image: amayaFourth.url,
+      eyebrow: "06 — Events & Nights",
       title: "Nächte ohne Regeln.",
-      subtitle: "Private Events, DJ-Nights, Geburtstage. Wir verwandeln den Raum in deine Bühne.",
+      subtitle: "Private Events, DJ-Nights, Geburtstage — wir verwandeln den Raum in deine Bühne.",
     },
   ];
 
