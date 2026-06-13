@@ -26,12 +26,12 @@ export function Footer() {
             backgroundSize: "520px auto",
           }}
         />
-        <div className="relative mx-auto max-w-5xl px-6 lg:px-10 py-16 lg:py-20 text-center">
+        <div className="relative mx-auto max-w-5xl px-6 lg:px-10 py-16 lg:py-20 text-center text-[#1a1815]">
           <p className="mono-label text-accent">/ Newsletter</p>
           <h3 className="font-display text-4xl lg:text-5xl mt-4 leading-[0.95] uppercase font-bold">
             {lang === "de" ? "Bleib im Dschungel." : "Stay in the jungle."}
           </h3>
-          <p className="mt-5 text-muted-foreground max-w-xl mx-auto leading-relaxed">
+          <p className="mt-5 text-[#1a1815]/70 max-w-xl mx-auto leading-relaxed">
             {lang === "de"
               ? "Events, neue Karten und private Sessions — exklusive News direkt in dein Postfach."
               : "Events, new menus and private sessions — exclusive news straight to your inbox."}
@@ -46,7 +46,7 @@ export function Footer() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={lang === "de" ? "Deine E-Mail" : "Your email"}
-              className="flex-1 bg-background/40 border border-border rounded-full px-5 py-3 text-sm outline-none focus:border-accent transition-colors"
+              className="flex-1 bg-white/60 border border-[#1a1815]/20 rounded-full px-5 py-3 text-sm outline-none focus:border-accent transition-colors text-[#1a1815] placeholder:text-[#1a1815]/50"
             />
             <button
               type="submit"
