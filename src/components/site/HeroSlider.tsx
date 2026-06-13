@@ -47,7 +47,19 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
 
   return (
     <section className="relative min-h-[100svh] w-full overflow-hidden">
-      {/* Background: video preferred, image fallback per slide */}
+      {/* Slide images — primary background, fully visible */}
+      {slides.map((s, i) => (
+        <div
+          key={s.image + i}
+          className="absolute inset-0 bg-cover bg-center transition-opacity duration-[1400ms]"
+          style={{
+            backgroundImage: `url(${s.image})`,
+            opacity: i === index ? 1 : 0,
+          }}
+          aria-hidden={i !== index}
+        />
+      ))}
+      {/* Subtle jungle video as ambient overlay (does not hide restaurant) */}
       {videoSrc && (
         <video
           src={videoSrc}
@@ -55,22 +67,12 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover"
+          className="absolute inset-0 w-full h-full object-cover opacity-20 mix-blend-soft-light pointer-events-none"
         />
       )}
-      {slides.map((s, i) => (
-        <div
-          key={s.image + i}
-          className="absolute inset-0 bg-cover bg-center transition-opacity duration-[1400ms]"
-          style={{
-            backgroundImage: `url(${s.image})`,
-            opacity: i === index ? (videoSrc ? 0.35 : 1) : 0,
-          }}
-          aria-hidden={i !== index}
-        />
-      ))}
-      <div className="absolute inset-0 bg-gradient-to-b from-background/80 via-background/40 to-background/95" />
-      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-transparent to-background/30" />
+      {/* Readability gradients — lighter so the photo stays visible */}
+      <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-background/10 to-background/90" />
+      <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/10 to-transparent" />
 
       {audioSrc && (
         <audio ref={audioRef} src={audioSrc} loop preload="auto" muted />
