@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { RESTAURANT } from "@/lib/restaurant";
 import { Link } from "@tanstack/react-router";
-import { Instagram, Facebook, Youtube, Send, Phone, Mail } from "lucide-react";
+import { Instagram, Facebook, Youtube, Send, Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import logoAsset from "@/assets/amaya-footer-logo.svg.asset.json";
 
