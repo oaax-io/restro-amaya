@@ -16,10 +16,10 @@ export function Footer() {
   return (
     <footer className="relative mt-32 bg-onyx overflow-hidden">
       {/* Newsletter CTA */}
-      <div className="relative border-y border-border/60 bg-[#1a1815]">
+      <div className="relative border-y border-border/60 bg-[#F3E7D7]">
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-0 opacity-25 mix-blend-multiply"
+          className="pointer-events-none absolute inset-0 opacity-60 mix-blend-multiply"
           style={{
             backgroundImage: `url(${junglePattern.url})`,
             backgroundRepeat: "repeat",
