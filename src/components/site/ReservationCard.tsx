@@ -95,65 +95,67 @@ export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
   }
 
   return (
-    <form id="reserve" onSubmit={onSubmit} className={`${wrapperClass} space-y-3`}>
+    <form id="reserve" onSubmit={onSubmit} className={`${wrapperClass} space-y-1.5`}>
       <Decor />
       <div className="relative text-center pb-1">
-        <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-1 font-bold">
+        <p className="text-[#8a6a14] tracking-[0.3em] uppercase text-[10px] mb-0.5 font-bold">
           Amaya · Booking
         </p>
-        <h3 className="font-[family-name:var(--font-balk-display)] text-xl sm:text-2xl leading-tight text-[#1a1a1a]">
+        <h3 className="font-[family-name:var(--font-balk-display)] text-lg sm:text-xl leading-tight text-[#1a1a1a]">
           Wir freuen uns, dich bei uns verwöhnen zu dürfen.
         </h3>
       </div>
 
-      <Input label="Name *" name="name" required maxLength={120} autoComplete="name" />
+      <Input name="name" placeholder="Name *" required maxLength={120} autoComplete="name" aria-label="Name" />
 
       <Input
-        label="E-Mail *"
         name="email"
         type="email"
+        placeholder="E-Mail *"
         required
         maxLength={255}
         autoComplete="email"
         inputMode="email"
+        aria-label="E-Mail"
       />
 
-      <div className="grid grid-cols-[7.5rem_1fr] gap-2">
-        <Select label="Vorwahl" name="country_code" defaultValue="+41">
+      <div className="grid grid-cols-[6rem_1fr] gap-1.5">
+        <Select name="country_code" defaultValue="+41" aria-label="Vorwahl">
           {COUNTRY_CODES.map((c) => (
             <option key={c.code} value={c.code}>{c.label}</option>
           ))}
         </Select>
-        <Input label="Telefon" name="phone" type="tel" maxLength={40} autoComplete="tel" inputMode="tel" />
+        <Input name="phone" type="tel" placeholder="Telefon" maxLength={40} autoComplete="tel" inputMode="tel" aria-label="Telefon" />
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <Input label="Datum *" name="reservation_date" type="date" required min={today} defaultValue={today} />
-        <Select label="Uhrzeit *" name="reservation_time" required defaultValue="19:30">
+      <div className="grid grid-cols-2 gap-1.5">
+        <Input name="reservation_date" type="date" placeholder="Datum *" required min={today} defaultValue={today} aria-label="Datum" />
+        <Select name="reservation_time" required defaultValue="19:30" aria-label="Uhrzeit">
+          <option value="" disabled>Uhrzeit *</option>
           {TIME_SLOTS.map((t) => (
             <option key={t} value={t}>{t}</option>
           ))}
         </Select>
       </div>
 
-      <Select label="Personen *" name="party_size" required defaultValue="2">
+      <Select name="party_size" required defaultValue="2" aria-label="Personen">
         {PARTY_SIZES.map((p, i) => (
           <option key={p} value={String(i + 1)}>{p}</option>
         ))}
       </Select>
 
       <Textarea
-        label="Bemerkung (Allergien, Wünsche)"
         name="notes"
         maxLength={1000}
-        rows={3}
-        placeholder="z.B. Allergien, Geburtstag, Sitzwünsche …"
+        rows={2}
+        placeholder="Bemerkung (Allergien, Wünsche …)"
+        aria-label="Bemerkung"
       />
 
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-full bg-gold px-6 py-3 text-sm font-bold uppercase tracking-widest text-[#0d0d0d] hover:bg-[#0d0d0d] hover:text-gold border border-gold active:scale-[0.99] transition disabled:opacity-50"
+        className="w-full rounded-full bg-gold px-6 py-2.5 text-xs font-bold uppercase tracking-widest text-[#0d0d0d] hover:bg-[#0d0d0d] hover:text-gold border border-gold active:scale-[0.99] transition disabled:opacity-50 mt-1"
       >
         {submitting ? "Wird gesendet …" : "Reservieren"}
       </button>
