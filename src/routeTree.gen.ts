@@ -13,6 +13,7 @@ import { Route as ReservationRouteImport } from './routes/reservation'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as GalleryRouteImport } from './routes/gallery'
+import { Route as EventsRouteImport } from './routes/events'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 
@@ -36,6 +37,11 @@ const GalleryRoute = GalleryRouteImport.update({
   path: '/gallery',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsRoute = EventsRouteImport.update({
+  id: '/events',
+  path: '/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
@@ -50,6 +56,7 @@ const IndexRoute = IndexRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
   '/menu': typeof MenuRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
   '/menu': typeof MenuRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
   '/menu': typeof MenuRoute
@@ -74,13 +83,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/gallery' | '/jobs' | '/menu' | '/reservation'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/events'
+    | '/gallery'
+    | '/jobs'
+    | '/menu'
+    | '/reservation'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/gallery' | '/jobs' | '/menu' | '/reservation'
+  to:
+    | '/'
+    | '/about'
+    | '/events'
+    | '/gallery'
+    | '/jobs'
+    | '/menu'
+    | '/reservation'
   id:
     | '__root__'
     | '/'
     | '/about'
+    | '/events'
     | '/gallery'
     | '/jobs'
     | '/menu'
@@ -90,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
+  EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
   JobsRoute: typeof JobsRoute
   MenuRoute: typeof MenuRoute
@@ -126,6 +151,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof GalleryRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/about': {
       id: '/about'
       path: '/about'
@@ -146,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
+  EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
   JobsRoute: JobsRoute,
   MenuRoute: MenuRoute,
@@ -154,3 +187,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
