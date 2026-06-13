@@ -66,15 +66,24 @@ export function Footer() {
 
       {/* Main footer */}
       <div className="relative mx-auto max-w-7xl px-6 lg:px-10 py-20">
-        {/* Hanging jungle plants — decorative, spans middle, extends a bit left & right */}
-        <img
-          src={plantsImg.url}
-          alt=""
+        {/* Hanging jungle plants — subtle, dark, behind text, fades on sides & top */}
+        <div
           aria-hidden="true"
-          loading="lazy"
-          width={1920}
-          height={1080}
-          className="hidden lg:block pointer-events-none select-none absolute left-1/2 -translate-x-1/2 top-0 w-[60%] h-[26rem] object-contain object-top opacity-95 z-10"
+          className="hidden lg:block pointer-events-none select-none absolute inset-x-0 top-0 h-[22rem] z-0"
+          style={{
+            backgroundImage: `url(${plantsImg.url})`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "center top",
+            backgroundSize: "100% auto",
+            opacity: 0.22,
+            filter: "brightness(0.45) saturate(0.7)",
+            WebkitMaskImage:
+              "linear-gradient(to bottom, transparent 0%, black 40%, black 75%, transparent 100%), linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)",
+            WebkitMaskComposite: "source-in",
+            maskImage:
+              "linear-gradient(to bottom, transparent 0%, black 40%, black 75%, transparent 100%), linear-gradient(to right, transparent 0%, black 18%, black 82%, transparent 100%)",
+            maskComposite: "intersect",
+          }}
         />
         {/* Contact + Plants + Hours — top */}
         <div className="relative grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:items-start">
