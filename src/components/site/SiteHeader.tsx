@@ -4,6 +4,7 @@ import { Instagram, Facebook, Menu, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
 import { LanguageSwitcher } from "@/components/layout/LanguageSwitcher";
 import { useTranslation } from "react-i18next";
+import logoAsset from "@/assets/amaya-logo.svg.asset.json";
 
 export function SiteHeader() {
   const { t } = useTranslation();
@@ -39,9 +40,11 @@ export function SiteHeader() {
         }`}
       >
         <Link to="/" className="flex items-center gap-3">
-          <span className={`font-[family-name:var(--font-balk-display)] tracking-[0.25em] uppercase text-gold transition-all duration-300 ${scrolled ? "text-xl" : "text-2xl"}`}>
-            Amaya
-          </span>
+          <img
+            src={logoAsset.url}
+            alt="Amaya"
+            className={`w-auto transition-all duration-300 ${scrolled ? "h-8" : "h-10"}`}
+          />
         </Link>
 
         <nav className="hidden md:flex items-center gap-6 lg:gap-8 text-sm tracking-widest uppercase">
@@ -99,7 +102,7 @@ export function SiteHeader() {
             <SheetContent side="right" className="w-[280px] bg-background border-l border-gold/20 p-6">
               <div className="flex flex-col h-full">
                 <div className="flex items-center justify-between mb-8">
-                  <span className="font-[family-name:var(--font-balk-display)] tracking-[0.25em] uppercase text-gold text-xl">Amaya</span>
+                  <img src={logoAsset.url} alt="Amaya" className="h-8 w-auto" />
                   <SheetClose asChild>
                     <button className="p-2 rounded-full text-foreground/80 hover:text-gold hover:bg-gold/10 transition" aria-label="Menü schliessen">
                       <X size={24} />
