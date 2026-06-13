@@ -109,6 +109,7 @@ if (!i18n.isInitialized) {
     fallbackLng: "de",
     interpolation: { escapeValue: false },
     returnObjects: true,
+    react: { useSuspense: false },
   });
 } else {
   // refresh bundles on HMR
