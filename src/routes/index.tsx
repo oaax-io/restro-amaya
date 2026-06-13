@@ -10,6 +10,8 @@ import slideRestaurant from "@/assets/slide-restaurant.jpg";
 import slideLounge from "@/assets/slide-lounge.jpg";
 import slideBar from "@/assets/slide-bar.jpg";
 import slideEvents from "@/assets/slide-events.jpg";
+import jungleVideo from "@/assets/jungle-loop.mp4.asset.json";
+import jungleAudio from "@/assets/jungle-ambience.mp3.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -34,13 +36,39 @@ function Index() {
     { key: "events", img: slideEvents, label: "04" },
   ] as const;
 
+  const heroSlides = [
+    {
+      image: slideRestaurant,
+      eyebrow: "01 — Restaurant",
+      title: "Wild gewachsene Küche.",
+      subtitle: "Modernste Küche zwischen Dschungel und Stadt — kompromisslos, aromenstark, mitten in Rothenburg.",
+    },
+    {
+      image: slideLounge,
+      eyebrow: "02 — Cigar Lounge",
+      title: "Rauch & Samt.",
+      subtitle: "Premium Zigarren, gereifte Spirituosen und gedämpftes Licht — ein Refugium für Kenner.",
+    },
+    {
+      image: slideBar,
+      eyebrow: "03 — Bar",
+      title: "Liquid Jungle.",
+      subtitle: "Signature Cocktails, botanische Infusionen und seltene Spirits — handcrafted hinter der Bar.",
+    },
+    {
+      image: slideEvents,
+      eyebrow: "04 — Events & Nights",
+      title: "Nächte ohne Regeln.",
+      subtitle: "Private Events, DJ-Nights, Geburtstage. Wir verwandeln den Raum in deine Bühne.",
+    },
+  ];
+
   return (
     <SiteLayout>
       <HeroSlider
-        images={[slideRestaurant, slideLounge, slideBar, slideEvents]}
-        eyebrow="Restaurant · Cigar Lounge · Bar · Events"
-        title="Amaya — Eine Nacht, vier Welten."
-        subtitle="Modernste Küche, Cigar Lounge, Cocktailbar und Events unter einem Dach. Mitten in Rothenburg, Luzern."
+        slides={heroSlides}
+        videoSrc={jungleVideo.url}
+        audioSrc={jungleAudio.url}
       >
         <ReservationCard variant="overlay" />
       </HeroSlider>
