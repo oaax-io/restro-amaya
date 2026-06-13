@@ -4,6 +4,7 @@ import { Link } from "@tanstack/react-router";
 import { Instagram, Facebook, Youtube, Send, Phone, Mail, MapPin } from "lucide-react";
 import { useState } from "react";
 import logoAsset from "@/assets/amaya-footer-logo.svg.asset.json";
+import plantsImg from "@/assets/footer-plants.png";
 
 export function Footer() {
   const { t, i18n } = useTranslation();
@@ -55,10 +56,10 @@ export function Footer() {
 
       {/* Main footer */}
       <div className="mx-auto max-w-7xl px-6 lg:px-10 py-20">
-        {/* Contact + Hours — top */}
-        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Contact + Plants + Hours — top */}
+        <div className="grid gap-12 sm:grid-cols-2 lg:grid-cols-12 lg:items-start">
           {/* Contact */}
-          <div className="lg:col-span-1">
+          <div className="lg:col-span-5">
             <p className="mono-label text-accent mb-6">{t("about.contact")}</p>
             <div className="space-y-4">
               <div>
@@ -100,8 +101,21 @@ export function Footer() {
             </div>
           </div>
 
+          {/* Plants — decorative divider */}
+          <div className="hidden lg:flex lg:col-span-2 justify-center self-stretch">
+            <img
+              src={plantsImg}
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+              width={512}
+              height={1024}
+              className="h-full max-h-[420px] w-auto object-contain opacity-90 pointer-events-none select-none"
+            />
+          </div>
+
           {/* Hours */}
-          <div className="text-base sm:col-span-2">
+          <div className="text-sm sm:col-span-2 lg:col-span-5">
             <p className="mono-label text-accent mb-4">{t("about.hours")}</p>
             <ul className="divide-y divide-border/60 border-y border-border/60">
               {RESTAURANT.hours.map((h) => {
@@ -109,8 +123,8 @@ export function Footer() {
                 const closed = lang === "de" ? "Geschlossen" : "Closed";
                 const times = [h.lunch, h.dinner].filter(Boolean).join(" · ") || closed;
                 return (
-                  <li key={h.day} className="flex items-center justify-between gap-6 py-3">
-                    <span className="text-muted-foreground uppercase tracking-wider text-sm">{dayLabel}</span>
+                  <li key={h.day} className="flex items-center justify-between gap-4 py-2.5">
+                    <span className="text-muted-foreground uppercase tracking-wider text-xs">{dayLabel}</span>
                     <span className="text-right tabular-nums">{times}</span>
                   </li>
                 );
