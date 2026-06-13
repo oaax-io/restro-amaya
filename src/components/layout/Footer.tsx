@@ -102,7 +102,7 @@ export function Footer() {
           </div>
 
           {/* Plants — decorative divider */}
-          <div className="hidden lg:flex lg:col-span-2 justify-center self-stretch -mt-20 -mb-[8rem] relative z-10">
+          <div className="hidden lg:flex lg:col-span-2 justify-center items-end -mb-20 relative z-10 pointer-events-none">
             <img
               src={plantsImg}
               alt=""
@@ -110,7 +110,7 @@ export function Footer() {
               loading="lazy"
               width={512}
               height={1024}
-              className="h-full w-auto object-contain object-bottom opacity-90 pointer-events-none select-none"
+              className="h-[28rem] w-auto object-contain object-bottom opacity-90 select-none"
             />
           </div>
 
