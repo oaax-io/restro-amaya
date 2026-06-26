@@ -32,12 +32,12 @@ export const Route = createFileRoute("/menu")({
       {
         name: "description",
         content:
-          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Amaya Mesa, Sushi Sharing und Wein Karte in Rothenburg LU.",
+          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Amaya Mesa, Asian Fusion und Wein Karte in Rothenburg LU.",
       },
       { property: "og:title", content: "Speisekarte — Amaya Restaurant" },
       {
         property: "og:description",
-        content: "Wochenmenü, Lunch, Amaya Mesa, Sushi Sharing und Wein Karte — Küche zwischen Dschungel und Stadt.",
+        content: "Wochenmenü, Lunch, Amaya Mesa, Asian Fusion und Wein Karte — Küche zwischen Dschungel und Stadt.",
       },
     ],
   }),
@@ -765,7 +765,7 @@ function MesaStep({ label, value }: { label: string; value: string }) {
   );
 }
 
-/* ---------- Sushi Sharing — editorial sheet + Amaya Asian Fusion ---------- */
+/* ---------- Asian Fusion — editorial sheet + Amaya Asian Fusion ---------- */
 
 function SushiView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
@@ -828,7 +828,7 @@ function SushiView({ lang }: { lang: Lang }) {
         <div className="relative grid lg:grid-cols-[1.4fr_1fr] gap-10 px-6 py-12 sm:px-12 lg:px-16 lg:py-14">
           <div>
             <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
-              {lang === "de" ? "Sushi Sharing Experience" : "Sushi sharing experience"}
+              {lang === "de" ? "Asian Fusion Experience" : "Asian fusion experience"}
             </p>
             <h3
               className="mt-4 italic font-light text-4xl sm:text-5xl"
