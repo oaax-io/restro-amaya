@@ -19,6 +19,7 @@ import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
 import lunchPdf from "@/assets/lunch-menu-pdf.asset.json";
 import mesaPdf from "@/assets/mesa-menu-pdf.asset.json";
 import sushiPdf from "@/assets/sushi-menu-pdf.asset.json";
+import winePdf from "@/assets/wine-menu-pdf.asset.json";
 
 type Lang = "de" | "en";
 type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
@@ -287,65 +288,144 @@ function Tag({ tag }: { tag: NonNullable<MenuItem["tags"]>[number] }) {
 function WineView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
   return (
-    <div>
+    <div className="relative">
       <Header title={t("menu.wine.title")} lead={t("menu.wine.lead")} />
-      <div className="mt-16 space-y-20">
-        {WINE_MENU.map((s) => (
-          <WineSectionBlock key={s.id} lang={lang} section={s} />
-        ))}
+
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href={winePdf.url}
+          download="Amaya-Wein-Karte.pdf"
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+        >
+          <Download className="size-4" />
+          {lang === "de" ? "Wein-Karte als PDF" : "Wine list as PDF"}
+        </a>
+        <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+          {lang === "de" ? "Sommelier-Auswahl" : "Sommelier selection"}
+        </span>
+      </div>
+
+      <div
+        className="relative mt-12 overflow-hidden rounded-3xl border border-[#E9A580]/40 shadow-2xl"
+        style={{ backgroundColor: "#F3E7D7", color: "#0D2517" }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "420px",
+            opacity: 0.18,
+            mixBlendMode: "multiply",
+          }}
+        />
+        <div aria-hidden className="absolute inset-3 rounded-2xl border border-[#E9A580]/45 pointer-events-none" />
+
+        <div className="relative px-6 py-12 sm:px-12 lg:px-16 lg:py-16">
+          <div className="text-center">
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              Amaya Restaurant & Bar
+            </p>
+            <h3
+              className="mt-4 italic font-light text-4xl sm:text-5xl flex items-center justify-center gap-4"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              <Wine className="size-8" />
+              Wein-Karte
+            </h3>
+            <div className="mx-auto mt-5 h-px w-24 bg-[#E9A580]/60" />
+          </div>
+
+          <div className="mt-14 space-y-14">
+            {WINE_MENU.map((s) => (
+              <WineSheetSection key={s.id} lang={lang} section={s} />
+            ))}
+          </div>
+
+          <p className="mt-14 text-center text-[11px] text-[#0D2517]/60 italic">
+            {lang === "de"
+              ? "Alle Preise in Schweizer Franken inkl. 8.1% MWST · Jahrgangs- und Verfügbarkeitsänderungen vorbehalten."
+              : "All prices in Swiss Francs incl. 8.1% VAT · Vintages and availability subject to change."}
+          </p>
+        </div>
       </div>
     </div>
   );
 }
 
-function WineSectionBlock({ lang, section }: { lang: Lang; section: WineMenuSection }) {
+function WineSheetSection({ lang, section }: { lang: Lang; section: WineMenuSection }) {
+  const hasGlass = section.items.some((i) => i.glass);
   return (
     <section>
-      <div className="grid gap-4 lg:grid-cols-[280px_1fr] lg:gap-16 mb-8">
-        <div>
-          <h2 className="font-display text-3xl lg:text-4xl uppercase font-bold leading-tight flex items-center gap-3">
-            <Wine className="size-6 text-accent" />
-            {section.title[lang]}
-          </h2>
-          {section.subtitle && (
-            <p className="mt-3 text-sm text-muted-foreground max-w-xs leading-relaxed">
-              {section.subtitle[lang]}
-            </p>
-          )}
-        </div>
-        <div className="hidden lg:block border-t border-border/60 mt-6" />
+      <div className="text-center">
+        <h4
+          className="italic font-light text-2xl sm:text-3xl"
+          style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+        >
+          {section.title[lang]}
+        </h4>
+        {section.subtitle && (
+          <p className="mt-2 text-xs uppercase tracking-[0.25em] text-[#0D2517]/60">
+            {section.subtitle[lang]}
+          </p>
+        )}
+        <div className="mx-auto mt-3 mb-6 h-px w-12 bg-[#E9A580]/50" />
       </div>
 
-      <ul className="divide-y divide-border/50">
+      {hasGlass && (
+        <div className="hidden sm:grid grid-cols-[1fr_auto_auto] gap-x-8 pb-2 mb-3 border-b border-[#0D2517]/15 text-[10px] tracking-[0.25em] uppercase text-[#0D2517]/50">
+          <span />
+          <span className="text-right w-20">Glas</span>
+          <span className="text-right w-24">Flasche</span>
+        </div>
+      )}
+
+      <ul className="divide-y divide-[#0D2517]/10">
         {section.items.map((item, i) => (
-          <WineItemRow key={`${section.id}-${i}`} item={item} lang={lang} />
+          <WineSheetItem key={`${section.id}-${i}`} item={item} lang={lang} showGlassCol={hasGlass} />
         ))}
       </ul>
     </section>
   );
 }
 
-function WineItemRow({ item, lang }: { item: WineItem; lang: Lang }) {
+function WineSheetItem({
+  item,
+  lang,
+  showGlassCol,
+}: {
+  item: WineItem;
+  lang: Lang;
+  showGlassCol: boolean;
+}) {
   return (
-    <li className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_auto] gap-6 py-6 items-baseline">
+    <li
+      className={[
+        "grid gap-x-6 gap-y-1 py-4 items-baseline",
+        showGlassCol
+          ? "grid-cols-[1fr_auto] sm:grid-cols-[1fr_auto_auto]"
+          : "grid-cols-[1fr_auto]",
+      ].join(" ")}
+    >
       <div className="min-w-0">
-        <h3 className="font-display text-xl lg:text-2xl uppercase tracking-wide font-semibold">
+        <h5 className="uppercase tracking-[0.14em] text-sm sm:text-base font-semibold text-[#0D2517]">
           {item.name[lang]}
-        </h3>
-        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground leading-relaxed max-w-2xl">
+        </h5>
+        <div className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs sm:text-sm text-[#0D2517]/70 leading-snug">
           {item.desc && <span>{item.desc[lang]}</span>}
-          {item.origin && <span className="text-accent">{item.origin[lang]}</span>}
+          {item.origin && <span className="italic text-[#E9A580]">{item.origin[lang]}</span>}
         </div>
       </div>
-      {item.glass && (
-        <div className="hidden lg:flex flex-col items-end min-w-[7rem]">
-          <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Glas</span>
-          <span className="font-display text-xl tabular-nums text-accent">CHF {item.glass}</span>
+      {showGlassCol && (
+        <div className="hidden sm:block text-right tabular-nums text-[#0D2517] w-20">
+          {item.glass ? item.glass : <span className="text-[#0D2517]/25">—</span>}
         </div>
       )}
-      <div className="flex flex-col items-end min-w-[7rem]">
-        <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Flasche</span>
-        <span className="font-display text-xl lg:text-2xl tabular-nums text-accent">CHF {item.bottle}</span>
+      <div className="text-right tabular-nums text-[#0D2517] font-semibold w-24">
+        {item.bottle}
       </div>
     </li>
   );
