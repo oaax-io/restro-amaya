@@ -29,58 +29,39 @@ export type WineMenuSection = {
   items: WineItem[];
 };
 
-export type WeeklyDay = {
-  day: "mon" | "tue" | "wed" | "thu" | "fri";
-  starter: { de: string; en: string };
-  main: { de: string; en: string };
-  dessert: { de: string; en: string };
-};
-
 export const WEEKLY_MENU: {
-  priceTwo: string;
-  priceThree: string;
-  note: { de: string; en: string };
-  days: WeeklyDay[];
+  dateRange: { de: string; en: string };
+  title: { de: string; en: string };
+  suppeSalat: { de: string; en: string; price: string };
+  items: MenuItem[];
 } = {
-  priceTwo: "CHF 28",
-  priceThree: "CHF 36",
-  note: {
-    de: "Wochenmenü Mo–Fr, 11:30–14:00. Inkl. Tagessuppe oder Salat.",
-    en: "Weekly menu Mon–Fri, 11:30–14:00. Includes soup or salad of the day.",
-  },
-  days: [
+  dateRange: { de: "22/06 - 26/06", en: "22/06 - 26/06" },
+  title: { de: "WOCHENGERICHTE", en: "WEEKLY DISHES" },
+  suppeSalat: { de: "Suppe oder Salat", en: "Soup or salad", price: "CHF 3.50" },
+  items: [
     {
-      day: "mon",
-      starter: { de: "Grüne Papaya · Erdnuss · Limette", en: "Green papaya · peanut · lime" },
-      main: { de: "Massaman Curry vom Rind · Jasminreis", en: "Beef massaman curry · jasmine rice" },
-      dessert: { de: "Kokos-Panna-Cotta · Mango", en: "Coconut panna cotta · mango" },
+      name: { de: "TROFIE MIT BASILIKUM PESTO", en: "TROFIE WITH BASIL PESTO" },
+      desc: { de: "Haselnuss-Crunch / Melanzane-Chips", en: "Hazelnut crunch / aubergine chips" },
+      price: "CHF 19.50",
     },
     {
-      day: "tue",
-      starter: { de: "Geflämmter Lachs · Yuzu · Avocado", en: "Torched salmon · yuzu · avocado" },
-      main: { de: "Miso-glasierter Black Cod · Pak Choi", en: "Miso-glazed black cod · pak choi" },
-      dessert: { de: "Matcha-Crème · weisse Schokolade", en: "Matcha cream · white chocolate" },
+      name: { de: "SÜSSKARTOFFEL AUS DEM OFEN", en: "OVEN-ROASTED SWEET POTATO" },
+      desc: { de: "gefüllt mit Rahmpilzen / dazu Kürbiskern-Krokant", en: "stuffed with cream mushrooms / pumpkin seed brittle" },
+      price: "CHF 25.50",
     },
     {
-      day: "wed",
-      starter: { de: "Burrata · gegrillte Feige · Basilikumöl", en: "Burrata · grilled fig · basil oil" },
-      main: { de: "Hausgemachte Ravioli · brauner Salbeibutter · Trüffel", en: "Hand-made ravioli · sage butter · truffle" },
-      dessert: { de: "Tiramisu Amaya-Style", en: "Tiramisu Amaya-style" },
+      name: { de: "POULET-CURRY", en: "CHICKEN CURRY" },
+      desc: { de: "asiatischem Gemüse / Basmatireis und Koriander", en: "Asian vegetables / basmati rice and coriander" },
+      price: "CHF 27.50",
     },
     {
-      day: "thu",
-      starter: { de: "Ceviche vom Wolfsbarsch · Leche de Tigre", en: "Sea bass ceviche · leche de tigre" },
-      main: { de: "Argentinisches Entrecôte · Chimichurri · Süsskartoffel", en: "Argentinian entrecôte · chimichurri · sweet potato" },
-      dessert: { de: "Dulce de Leche · gesalzene Karamell-Glace", en: "Dulce de leche · salted caramel ice cream" },
-    },
-    {
-      day: "fri",
-      starter: { de: "Tom Kha Gai · Galgant · Koriander", en: "Tom kha gai · galangal · cilantro" },
-      main: { de: "Pad Thai mit Tigergarnelen", en: "Pad thai with tiger prawns" },
-      dessert: { de: "Ananas-Carpaccio · Chili · Limetten-Sorbet", en: "Pineapple carpaccio · chili · lime sorbet" },
+      name: { de: "ZANDERFILET", en: "ZANDER FILLET" },
+      desc: { de: "Cherry-Tomaten-gremolata / Salzkartoffel / Blattspinat", en: "Cherry tomato gremolata / baby potatoes / leaf spinach" },
+      price: "CHF 28.50",
     },
   ],
 };
+
 
 export const LUNCH_MENU: MenuSection[] = [
   {
