@@ -143,48 +143,53 @@ function WeeklyView({ lang }: { lang: Lang }) {
     <div>
       <Header title={t("menu.weekly.title")} lead={t("menu.weekly.lead")} />
 
-      {/* Pricing strip */}
-      <div className="mt-10 flex flex-wrap items-center gap-4 text-sm">
-        <span className="inline-flex items-center gap-3 rounded-full border border-border/70 px-5 py-2.5">
-          <span className="mono-label text-accent">{t("menu.weekly.twoCourse")}</span>
-          <span className="font-display text-lg">{WEEKLY_MENU.priceTwo}</span>
-        </span>
-        <span className="inline-flex items-center gap-3 rounded-full border border-border/70 px-5 py-2.5">
-          <span className="mono-label text-accent">{t("menu.weekly.threeCourse")}</span>
-          <span className="font-display text-lg">{WEEKLY_MENU.priceThree}</span>
-        </span>
-        <span className="text-muted-foreground">{WEEKLY_MENU.note[lang]}</span>
-      </div>
+      <div className="mt-12 max-w-4xl mx-auto">
+        {/* Date range + title */}
+        <div className="text-center mb-12">
+          <p className="text-xs tracking-[0.4em] uppercase text-accent mb-4">
+            {WEEKLY_MENU.dateRange[lang]}
+          </p>
+          <h2 className="font-display text-4xl md:text-5xl uppercase tracking-wide font-bold text-gradient-gold">
+            {WEEKLY_MENU.title[lang]}
+          </h2>
+        </div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-        {WEEKLY_MENU.days.map((d) => (
-          <article
-            key={d.day}
-            className="group relative border border-border/60 rounded-2xl p-7 hover:border-accent/60 transition-colors bg-card/40"
-          >
-            <div className="flex items-baseline justify-between">
-              <h3 className="font-display text-2xl uppercase tracking-wide font-bold">
-                {t(`days.${d.day}`)}
-              </h3>
-              <span className="mono-label text-accent">{indexLabel(d.day)}</span>
+        {/* Soup or salad */}
+        <div className="flex items-center justify-between border-b border-border/60 pb-4 mb-8">
+          <span className="font-display text-xl md:text-2xl uppercase tracking-wide">
+            {WEEKLY_MENU.suppeSalat[lang]}
+          </span>
+          <span className="font-display text-xl md:text-2xl text-accent">
+            {WEEKLY_MENU.suppeSalat.price}
+          </span>
+        </div>
+
+        {/* Dishes */}
+        <div className="space-y-8">
+          {WEEKLY_MENU.items.map((item, i) => (
+            <div
+              key={i}
+              className="group flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-8 border-b border-border/30 pb-8"
+            >
+              <div className="flex-1">
+                <h3 className="font-display text-lg md:text-xl uppercase tracking-wide font-semibold">
+                  {item.name[lang]}
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground leading-relaxed">
+                  {item.desc[lang]}
+                </p>
+              </div>
+              <span className="font-display text-lg md:text-xl text-accent whitespace-nowrap">
+                {item.price}
+              </span>
             </div>
-            <ul className="mt-6 space-y-5">
-              <CourseLine label={t("menu.weekly.starter")} text={d.starter[lang]} />
-              <CourseLine label={t("menu.weekly.main")} text={d.main[lang]} />
-              <CourseLine label={t("menu.weekly.dessert")} text={d.dessert[lang]} />
-            </ul>
-          </article>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-function indexLabel(day: WeeklyDayKey): string {
-  const map: Record<WeeklyDayKey, string> = { mon: "01", tue: "02", wed: "03", thu: "04", fri: "05" };
-  return map[day];
-}
-type WeeklyDayKey = "mon" | "tue" | "wed" | "thu" | "fri";
 
 function CourseLine({ label, text }: { label: string; text: string }) {
   return (
