@@ -535,76 +535,51 @@ export const AMAYA_MESA: MenuSection[] = [
 
 export const SUSHI_SHARING: MenuSection[] = [
   {
-    id: "sushi-set-pieces",
-    title: { de: "Sushi & Sashimi", en: "Sushi & sashimi" },
+    id: "sushi-sharing-rolls",
+    title: { de: "Sushi & Sharing", en: "Sushi & Sharing" },
     subtitle: {
-      de: "Sorgfältig ausgewählter Fisch, Reis nach traditioneller Art.",
-      en: "Carefully selected fish, rice prepared the traditional way.",
+      de: "Frisch gerollt — zum Teilen oder ganz für sich.",
+      en: "Freshly rolled — to share or all for yourself.",
     },
     items: [
       {
-        name: { de: "Sashimi Moriawase · 12 Stück", en: "Sashimi moriawase · 12 pieces" },
-        desc: { de: "Thunfisch, Lachs, Gelbschwanz, Jakobsmuschel", en: "Tuna, salmon, yellowtail, scallop" },
-        price: "38",
-        tags: ["signature", "gf"],
+        name: { de: "Lachs-Avocado Rolls · 4 Stk.", en: "Salmon-Avocado Rolls · 4 pcs" },
+        desc: {
+          de: "Avocado-Tatar & Tomaten-Chutney",
+          en: "Avocado tartare & tomato chutney",
+        },
+        price: "26.00",
       },
       {
-        name: { de: "Nigiri Selection · 10 Stück", en: "Nigiri selection · 10 pieces" },
-        desc: { de: "Klassische und saisonale Fischsorten auf Sushi-Reis", en: "Classic and seasonal fish on sushi rice" },
-        price: "34",
-        tags: ["gf"],
+        name: { de: "Uramaki mit Feige & Nori · 4 Stk.", en: "Uramaki with Fig & Nori · 4 pcs" },
+        desc: {
+          de: "Getrocknetes Tomaten-Tatar & Federkohl",
+          en: "Dried tomato tartare & kale",
+        },
+        price: "27.00",
       },
       {
-        name: { de: "Maki Mix · 16 Stück", en: "Maki mix · 16 pieces" },
-        desc: { de: "Gurke, Avocado, Lachs, Thunfisch-Spicy-Mayo", en: "Cucumber, avocado, salmon, tuna-spicy mayo" },
-        price: "28",
+        name: { de: "Spicy Tuna Maki · 2 Stk.", en: "Spicy Tuna Maki · 2 pcs" },
+        desc: { de: "", en: "" },
+        price: "12.00",
+        tags: ["spicy"],
       },
-    ],
-  },
-  {
-    id: "sushi-sharing",
-    title: { de: "Sharing Platten", en: "Sharing platters" },
-    subtitle: { de: "Ideal für zwei bis vier Personen.", en: "Ideal for two to four people." },
-    items: [
       {
-        name: { de: "Amaya Sushi Boat · für 2–3 Personen", en: "Amaya sushi boat · for 2–3 people" },
-        desc: { de: "Sashimi, Nigiri, Maki, Sushi-Rollen — die Auswahl des Küchenchefs", en: "Sashimi, nigiri, maki, chef's selection rolls" },
-        price: "78",
+        name: { de: "Flambierte Wagyu Nigiri · 4 Stk.", en: "Flambéed Wagyu Nigiri · 4 pcs" },
+        desc: {
+          de: "Geräucherte Paprika-Emulsion",
+          en: "Smoked pepper emulsion",
+        },
+        price: "38.00",
         tags: ["signature"],
+        highlight: true,
       },
       {
-        name: { de: "Veggie Sushi Boat · für 2 Personen", en: "Veggie sushi boat · for 2 people" },
-        desc: { de: "Avocado, Gurke, eingelegter Rettich, Tamago, Shiso, Sesam", en: "Avocado, cucumber, pickled radish, tamago, shiso, sesame" },
-        price: "52",
-        tags: ["v"],
-      },
-      {
-        name: { de: "Temaki-Handrollen · 3 Stück", en: "Temaki handrolls · 3 pieces" },
-        desc: { de: "Spicy Thunfisch, Lachs-Avocado, California-Gemüse", en: "Spicy tuna, salmon-avocado, California vegetable" },
-        price: "24",
-      },
-    ],
-  },
-  {
-    id: "sushi-rolls",
-    title: { de: "Signature Rolls", en: "Signature rolls" },
-    items: [
-      {
-        name: { de: "Amaya Dragon Roll", en: "Amaya dragon roll" },
-        desc: { de: "Gegrillter Aal, Avocado, Gurke, Unagi-Sauce, Sesam", en: "Grilled eel, avocado, cucumber, unagi sauce, sesame" },
-        price: "26",
+        name: { de: "Wagyu Rolls · 4 Stk.", en: "Wagyu Rolls · 4 pcs" },
+        desc: { de: "Feine Reduktion", en: "Fine reduction" },
+        price: "34.00",
         tags: ["signature"],
-      },
-      {
-        name: { de: "Tropical Crunch Roll", en: "Tropical crunch roll" },
-        desc: { de: "Tempura-Garnelen, Mango, Avocado, Kokos-Furikake", en: "Tempura prawns, mango, avocado, coconut furikake" },
-        price: "24",
-      },
-      {
-        name: { de: "Wagyu Truffle Roll", en: "Wagyu truffle roll" },
-        desc: { de: "Wagyu, Trüffel-Mayo, schwarzer Knoblauch, Kresse", en: "Wagyu, truffle mayo, black garlic, cress" },
-        price: "32",
-        tags: ["signature"],
+        highlight: true,
       },
     ],
   },
