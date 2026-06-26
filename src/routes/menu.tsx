@@ -17,6 +17,7 @@ import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
 import { Download } from "lucide-react";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
 import lunchPdf from "@/assets/lunch-menu-pdf.asset.json";
+import mesaPdf from "@/assets/mesa-menu-pdf.asset.json";
 
 type Lang = "de" | "en";
 type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
@@ -104,12 +105,7 @@ function MenuPage() {
             <LunchView lang={lang} />
           )}
           {tab === "amaya-mesa" && (
-            <SectionsView
-              lang={lang}
-              title={t("menu.amayaMesa.title")}
-              lead={t("menu.amayaMesa.lead")}
-              sections={AMAYA_MESA}
-            />
+            <MesaView lang={lang} />
           )}
           {tab === "sushi-sharing" && (
             <SectionsView
@@ -522,5 +518,172 @@ function LunchItem({ item, lang }: { item: MenuItem; lang: Lang }) {
         {item.price}
       </p>
     </li>
+  );
+}
+
+/* ---------- Amaya Mesa — editorial print-style + sharing concept ---------- */
+
+function MesaView({ lang }: { lang: Lang }) {
+  const { t } = useTranslation();
+  return (
+    <div className="relative">
+      <Header title={t("menu.amayaMesa.title")} lead={t("menu.amayaMesa.lead")} />
+
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href={mesaPdf.url}
+          download="Amaya-Mesa-Menu.pdf"
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+        >
+          <Download className="size-4" />
+          {lang === "de" ? "Mesa-Karte als PDF" : "Mesa menu as PDF"}
+        </a>
+      </div>
+
+      {/* Mesa Sharing concept */}
+      <div
+        className="relative mt-12 overflow-hidden rounded-3xl border border-[#E9A580]/50 shadow-2xl"
+        style={{ backgroundColor: "#0D2517", color: "#F3E7D7" }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "420px",
+            opacity: 0.18,
+            mixBlendMode: "screen",
+          }}
+        />
+        <div className="relative grid lg:grid-cols-[1.4fr_1fr] gap-10 px-6 py-12 sm:px-12 lg:px-16 lg:py-14">
+          <div>
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              {lang === "de" ? "Sharing-Erlebnis" : "Sharing experience"}
+            </p>
+            <h3
+              className="mt-4 italic font-light text-4xl sm:text-5xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              Mesa AMAYA
+            </h3>
+            <p className="mt-5 text-[#F3E7D7]/85 leading-relaxed max-w-xl">
+              {lang === "de"
+                ? "Das perfekte Erlebnis für Gruppen ab 2 Personen (ab 11 Personen auf Vorbestellung). Teilen Sie besondere Momente und geniessen Sie ein Mesa AMAYA zusammengestelltes Sharing-Menu, das alle Sinne anspricht."
+                : "The perfect experience for groups from 2 people (from 11 people by reservation). Share special moments and enjoy a Mesa AMAYA sharing menu that engages all the senses."}
+            </p>
+
+            <div className="mt-8 grid sm:grid-cols-3 gap-6 text-sm">
+              <MesaStep
+                label={lang === "de" ? "Vorspeisen" : "Starters"}
+                value={lang === "de" ? "1½ pro Person · max. 6 Sorten" : "1½ per person · max. 6 kinds"}
+              />
+              <MesaStep
+                label={lang === "de" ? "Hauptgang" : "Main"}
+                value={lang === "de" ? "1 zur Auswahl pro Person" : "1 of your choice p.p."}
+              />
+              <MesaStep
+                label={lang === "de" ? "Dessert" : "Dessert"}
+                value={lang === "de" ? "1 zur Auswahl pro Person" : "1 of your choice p.p."}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center justify-center text-center rounded-2xl border border-[#E9A580]/40 bg-[#0D2517]/40 px-8 py-10">
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              {lang === "de" ? "Preis pro Person" : "Price per person"}
+            </p>
+            <p
+              className="mt-3 text-6xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              CHF 89
+            </p>
+            <p className="mt-2 text-xs text-[#F3E7D7]/60 italic">
+              {lang === "de" ? "exklusive Getränke" : "drinks not included"}
+            </p>
+            <Link
+              to="/reservation"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+            >
+              {lang === "de" ? "Tisch reservieren" : "Book a table"}
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* À la carte editorial sheet */}
+      <div
+        className="relative mt-14 overflow-hidden rounded-3xl border border-[#E9A580]/40 shadow-2xl"
+        style={{ backgroundColor: "#F3E7D7", color: "#0D2517" }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "420px",
+            opacity: 0.18,
+            mixBlendMode: "multiply",
+          }}
+        />
+        <div aria-hidden className="absolute inset-3 rounded-2xl border border-[#E9A580]/45 pointer-events-none" />
+
+        <div className="relative px-6 py-12 sm:px-12 lg:px-16 lg:py-16">
+          <div className="text-center">
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              Amaya Restaurant & Bar
+            </p>
+            <h3
+              className="mt-4 italic font-light text-4xl sm:text-5xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              À la carte
+            </h3>
+            <div className="mx-auto mt-5 h-px w-24 bg-[#E9A580]/60" />
+          </div>
+
+          <div className="mt-14 grid gap-14 lg:grid-cols-2 lg:gap-x-20">
+            {AMAYA_MESA.map((section) => (
+              <LunchSection key={section.id} section={section} lang={lang} />
+            ))}
+          </div>
+
+          <div className="mt-16 pt-8 border-t border-[#0D2517]/15 flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-[11px] uppercase tracking-[0.25em] text-[#0D2517]/70">
+            <span className="inline-flex items-center gap-2">
+              <Leaf className="size-3.5 text-emerald-700" /> Vegetarian
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Leaf className="size-3.5 text-emerald-600" /> Vegan
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Flame className="size-3.5 text-red-600" /> Spicy
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <Sparkles className="size-3.5 text-[#E9A580]" /> Signature
+            </span>
+          </div>
+
+          <p className="mt-6 text-center text-[11px] text-[#0D2517]/60 italic">
+            {lang === "de"
+              ? "Alle Preise in Schweizer Franken inkl. 8.1% MWST · Informationen zu Allergenen sind beim Service erhältlich."
+              : "All prices in Swiss Francs incl. 8.1% VAT · Allergen information available on request."}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MesaStep({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-xl border border-[#E9A580]/30 px-4 py-4">
+      <p className="text-[10px] tracking-[0.3em] uppercase text-[#E9A580]">{label}</p>
+      <p className="mt-2 text-sm text-[#F3E7D7]/85 leading-snug">{value}</p>
+    </div>
   );
 }
