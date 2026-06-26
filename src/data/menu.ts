@@ -3,6 +3,8 @@ export type MenuItem = {
   desc: { de: string; en: string };
   price: string;
   tags?: ("v" | "vg" | "gf" | "spicy" | "signature")[];
+  allergens?: string;
+  highlight?: boolean;
 };
 
 export type MenuSection = {
