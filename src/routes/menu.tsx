@@ -14,6 +14,9 @@ import {
   type WineMenuSection,
 } from "@/data/menu";
 import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
+import { Download } from "lucide-react";
+import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
+import lunchPdf from "@/assets/lunch-menu-pdf.asset.json";
 
 type Lang = "de" | "en";
 type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
@@ -98,12 +101,7 @@ function MenuPage() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           {tab === "weekly" && <WeeklyView lang={lang} />}
           {tab === "lunch" && (
-            <SectionsView
-              lang={lang}
-              title={t("menu.lunch.title")}
-              lead={t("menu.lunch.lead")}
-              sections={LUNCH_MENU}
-            />
+            <LunchView lang={lang} />
           )}
           {tab === "amaya-mesa" && (
             <SectionsView
