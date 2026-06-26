@@ -2,25 +2,35 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
-import { WEEKLY_MENU, LUNCH_MENU, DINNER_MENU, type MenuItem, type MenuSection } from "@/data/menu";
-import { Leaf, Flame, Sparkles, ArrowRight } from "lucide-react";
+import {
+  WEEKLY_MENU,
+  LUNCH_MENU,
+  AMAYA_MESA,
+  SUSHI_SHARING,
+  WINE_MENU,
+  type MenuItem,
+  type MenuSection,
+  type WineItem,
+  type WineMenuSection,
+} from "@/data/menu";
+import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
 
 type Lang = "de" | "en";
-type TabKey = "weekly" | "lunch" | "dinner";
+type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
 
 export const Route = createFileRoute("/menu")({
   head: () => ({
     meta: [
-      { title: "Speisekarte — Wochen-, Mittags- & Abendmenü | Amaya Restaurant" },
+      { title: "Speisekarte — Wochen-, Lunch-, Amaya Mesa, Sushi & Wein | Amaya Restaurant" },
       {
         name: "description",
         content:
-          "Entdecken Sie die Amaya Speisekarte: täglich wechselndes Wochenmenü, Mittagsmenü und à-la-carte Abendmenü in Rothenburg LU.",
+          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Amaya Mesa, Sushi Sharing und Wein Karte in Rothenburg LU.",
       },
       { property: "og:title", content: "Speisekarte — Amaya Restaurant" },
       {
         property: "og:description",
-        content: "Wochenmenü, Mittagskarte und Abendkarte — Küche zwischen Dschungel und Stadt.",
+        content: "Wochenmenü, Lunch, Amaya Mesa, Sushi Sharing und Wein Karte — Küche zwischen Dschungel und Stadt.",
       },
     ],
   }),
@@ -35,7 +45,9 @@ function MenuPage() {
   const tabs: { key: TabKey; label: string }[] = [
     { key: "weekly", label: t("menu.tabs.weekly") },
     { key: "lunch", label: t("menu.tabs.lunch") },
-    { key: "dinner", label: t("menu.tabs.dinner") },
+    { key: "amaya-mesa", label: t("menu.tabs.amayaMesa") },
+    { key: "sushi-sharing", label: t("menu.tabs.sushiSharing") },
+    { key: "wine", label: t("menu.tabs.wine") },
   ];
 
   return (
@@ -93,14 +105,23 @@ function MenuPage() {
               sections={LUNCH_MENU}
             />
           )}
-          {tab === "dinner" && (
+          {tab === "amaya-mesa" && (
             <SectionsView
               lang={lang}
-              title={t("menu.dinner.title")}
-              lead={t("menu.dinner.lead")}
-              sections={DINNER_MENU}
+              title={t("menu.amayaMesa.title")}
+              lead={t("menu.amayaMesa.lead")}
+              sections={AMAYA_MESA}
             />
           )}
+          {tab === "sushi-sharing" && (
+            <SectionsView
+              lang={lang}
+              title={t("menu.sushiSharing.title")}
+              lead={t("menu.sushiSharing.lead")}
+              sections={SUSHI_SHARING}
+            />
+          )}
+          {tab === "wine" && <WineView lang={lang} />}
 
           {/* Allergen note + CTA */}
           <div className="mt-24 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center border-t border-border/60 pt-10">
@@ -270,6 +291,73 @@ function Tag({ tag }: { tag: NonNullable<MenuItem["tags"]>[number] }) {
       {icon}
       {t(`menu.tags.${tag}`)}
     </span>
+  );
+}
+
+function WineView({ lang }: { lang: Lang }) {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <Header title={t("menu.wine.title")} lead={t("menu.wine.lead")} />
+      <div className="mt-16 space-y-20">
+        {WINE_MENU.map((s) => (
+          <WineSectionBlock key={s.id} lang={lang} section={s} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function WineSectionBlock({ lang, section }: { lang: Lang; section: WineMenuSection }) {
+  return (
+    <section>
+      <div className="grid gap-4 lg:grid-cols-[280px_1fr] lg:gap-16 mb-8">
+        <div>
+          <h2 className="font-display text-3xl lg:text-4xl uppercase font-bold leading-tight flex items-center gap-3">
+            <Wine className="size-6 text-accent" />
+            {section.title[lang]}
+          </h2>
+          {section.subtitle && (
+            <p className="mt-3 text-sm text-muted-foreground max-w-xs leading-relaxed">
+              {section.subtitle[lang]}
+            </p>
+          )}
+        </div>
+        <div className="hidden lg:block border-t border-border/60 mt-6" />
+      </div>
+
+      <ul className="divide-y divide-border/50">
+        {section.items.map((item, i) => (
+          <WineItemRow key={`${section.id}-${i}`} item={item} lang={lang} />
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+function WineItemRow({ item, lang }: { item: WineItem; lang: Lang }) {
+  return (
+    <li className="grid grid-cols-[1fr_auto] lg:grid-cols-[1fr_auto_auto] gap-6 py-6 items-baseline">
+      <div className="min-w-0">
+        <h3 className="font-display text-xl lg:text-2xl uppercase tracking-wide font-semibold">
+          {item.name[lang]}
+        </h3>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground leading-relaxed max-w-2xl">
+          {item.desc && <span>{item.desc[lang]}</span>}
+          {item.origin && <span className="text-accent">{item.origin[lang]}</span>}
+        </div>
+      </div>
+      {item.glass && (
+        <div className="hidden lg:flex flex-col items-end min-w-[7rem]">
+          <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Glas</span>
+          <span className="font-display text-xl tabular-nums text-accent">CHF {item.glass}</span>
+        </div>
+      )}
+      <div className="flex flex-col items-end min-w-[7rem]">
+        <span className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">Flasche</span>
+        <span className="font-display text-xl lg:text-2xl tabular-nums text-accent">CHF {item.bottle}</span>
+      </div>
+    </li>
   );
 }
 
