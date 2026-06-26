@@ -4,7 +4,7 @@ import { motion } from "motion/react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { ReservationCard } from "@/components/site/ReservationCard";
-import { RESTAURANT } from "@/lib/restaurant";
+
 import jungleTex from "@/assets/jungle-texture.jpg";
 import slideRestaurant from "@/assets/slide-restaurant.jpg";
 import slideLounge from "@/assets/slide-lounge.jpg";
