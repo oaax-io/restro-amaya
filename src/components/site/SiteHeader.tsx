@@ -110,7 +110,7 @@ export function SiteHeader() {
                     </button>
                   </SheetClose>
                 </div>
-                <nav className="flex flex-col gap-4 text-sm tracking-widest uppercase">
+                <nav className="flex flex-col gap-3 text-sm tracking-widest uppercase">
                   {navLinks.map((l) => (
                     <Link
                       key={l.to + l.label}
@@ -123,7 +123,11 @@ export function SiteHeader() {
                       {l.label}
                     </Link>
                   ))}
-                  <a href="#reserve" onClick={() => setOpen(false)} className="py-2 hover:text-gold transition-colors">
+                  <a
+                    href="#reserve"
+                    onClick={() => setOpen(false)}
+                    className="mt-2 inline-flex items-center justify-center rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-widest text-gold-foreground hover:opacity-90 transition shadow-lg"
+                  >
                     {t("nav.reserve")}
                   </a>
                 </nav>
