@@ -28,7 +28,7 @@ type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
 export const Route = createFileRoute("/menu")({
   head: () => ({
     meta: [
-      { title: "Speisekarte — Wochen-, Lunch-, Amaya Mesa, Sushi & Wein | Amaya Restaurant" },
+      { title: "Speisekarte — Wochen-, Lunch-, Amaya Mesa, Asian Fusion & Wein | Amaya Restaurant" },
       {
         name: "description",
         content:
