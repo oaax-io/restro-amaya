@@ -191,15 +191,6 @@ function WeeklyView({ lang }: { lang: Lang }) {
 }
 
 
-function CourseLine({ label, text }: { label: string; text: string }) {
-  return (
-    <li>
-      <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">{label}</p>
-      <p className="mt-1.5 leading-snug">{text}</p>
-    </li>
-  );
-}
-
 function SectionsView({
   lang,
   title,
