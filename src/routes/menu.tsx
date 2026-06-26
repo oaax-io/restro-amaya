@@ -77,31 +77,29 @@ function MenuPage() {
         </div>
       </section>
 
-      {/* Tab bar (sticky) */}
-      <div className="sticky top-20 z-30 bg-background/85 backdrop-blur border-y border-border/60">
+      {/* Tab bar (sticky) — floating dark pills */}
+      <div className="sticky top-20 z-30 py-4">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex gap-2 sm:gap-6 overflow-x-auto no-scrollbar">
-            {tabs.map((tb) => {
-              const active = tab === tb.key;
-              return (
-                <button
-                  key={tb.key}
-                  onClick={() => setTab(tb.key)}
-                  className={[
-                    "relative py-5 text-sm uppercase tracking-[0.25em] whitespace-nowrap transition-colors",
-                    active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
-                  ].join(" ")}
-                >
-                  {tb.label}
-                  <span
+          <div className="flex justify-center">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar rounded-full bg-[#0D2517]/70 backdrop-blur-xl border border-[#E9A580]/20 px-2 py-2 shadow-lg shadow-black/20">
+              {tabs.map((tb) => {
+                const active = tab === tb.key;
+                return (
+                  <button
+                    key={tb.key}
+                    onClick={() => setTab(tb.key)}
                     className={[
-                      "absolute left-0 right-0 -bottom-px h-px transition-all",
-                      active ? "bg-accent" : "bg-transparent",
+                      "relative rounded-full px-4 sm:px-6 py-2.5 text-xs sm:text-sm uppercase tracking-[0.2em] whitespace-nowrap transition-all",
+                      active
+                        ? "bg-[#E9A580] text-[#0D2517] font-semibold shadow-md"
+                        : "text-[#F3E7D7]/80 hover:text-[#F3E7D7] hover:bg-[#E9A580]/10",
                     ].join(" ")}
-                  />
-                </button>
-              );
-            })}
+                  >
+                    {tb.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>
