@@ -190,7 +190,6 @@ function WeeklyView({ lang }: { lang: Lang }) {
   );
 }
 
-
 function SectionsView({
   lang,
   title,
