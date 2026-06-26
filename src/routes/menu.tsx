@@ -683,3 +683,172 @@ function MesaStep({ label, value }: { label: string; value: string }) {
     </div>
   );
 }
+
+/* ---------- Sushi Sharing — editorial sheet + Amaya Asian Fusion ---------- */
+
+function SushiView({ lang }: { lang: Lang }) {
+  const { t } = useTranslation();
+
+  const fusionItems: { qty: string; name: string; desc?: string }[] = lang === "de"
+    ? [
+        { qty: "2 Stk.", name: "Lachs-Avocado Rolls", desc: "Avocado-Tatar & Tomaten-Chutney" },
+        { qty: "2 Stk.", name: "Uramaki mit Feige & Nori", desc: "Getrocknetes Tomaten-Tatar & Federkohl" },
+        { qty: "2 Stk.", name: "Spicy Tuna Maki" },
+        { qty: "1 Stk.", name: "Flambierte Wagyu Nigiri", desc: "Geräucherte Paprika-Emulsion" },
+        { qty: "1 Stk.", name: "Wagyu Rolls", desc: "Feine Reduktion" },
+        { qty: "2 Stk.", name: "Gyozas Pulled Pork" },
+        { qty: "2 Stk.", name: "Nikkei Thunfisch-Sashimi", desc: "Zitrusmarinade & pikante Akzente" },
+        { qty: "3 Stk.", name: "Black Tiger Crevetten", desc: "Papaya-Salat, Ahornlack, Hibiskusgel & Petersilienemulsion" },
+      ]
+    : [
+        { qty: "2 pcs", name: "Salmon-Avocado Rolls", desc: "Avocado tartare & tomato chutney" },
+        { qty: "2 pcs", name: "Uramaki with Fig & Nori", desc: "Dried tomato tartare & kale" },
+        { qty: "2 pcs", name: "Spicy Tuna Maki" },
+        { qty: "1 pc", name: "Flambéed Wagyu Nigiri", desc: "Smoked pepper emulsion" },
+        { qty: "1 pc", name: "Wagyu Rolls", desc: "Fine reduction" },
+        { qty: "2 pcs", name: "Pulled Pork Gyoza" },
+        { qty: "2 pcs", name: "Nikkei Tuna Sashimi", desc: "Citrus marinade & spicy accents" },
+        { qty: "3 pcs", name: "Black Tiger Prawns", desc: "Papaya salad, maple glaze, hibiscus gel & parsley emulsion" },
+      ];
+
+  return (
+    <div className="relative">
+      <Header title={t("menu.sushiSharing.title")} lead={t("menu.sushiSharing.lead")} />
+
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href={sushiPdf.url}
+          download="Amaya-Sushi-Menu.pdf"
+          target="_blank"
+          rel="noopener"
+          className="inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+        >
+          <Download className="size-4" />
+          {lang === "de" ? "Sushi-Karte als PDF" : "Sushi menu as PDF"}
+        </a>
+      </div>
+
+      {/* Amaya Asian Fusion — sharing hero (dark) */}
+      <div
+        className="relative mt-12 overflow-hidden rounded-3xl border border-[#E9A580]/50 shadow-2xl"
+        style={{ backgroundColor: "#0D2517", color: "#F3E7D7" }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "420px",
+            opacity: 0.18,
+            mixBlendMode: "screen",
+          }}
+        />
+        <div className="relative grid lg:grid-cols-[1.4fr_1fr] gap-10 px-6 py-12 sm:px-12 lg:px-16 lg:py-14">
+          <div>
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              {lang === "de" ? "Sushi Sharing Experience" : "Sushi sharing experience"}
+            </p>
+            <h3
+              className="mt-4 italic font-light text-4xl sm:text-5xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              Amaya Asian Fusion
+            </h3>
+            <p className="mt-5 text-[#F3E7D7]/85 leading-relaxed max-w-xl">
+              {lang === "de"
+                ? "Eine kuratierte Auswahl unserer Signature-Gerichte — Fusion aus Nikkei und asiatischen Einflüssen, perfekt zum Teilen als kulinarische Reise."
+                : "A curated selection of our signature dishes — fusion of Nikkei and Asian influences, perfect to share as a culinary journey."}
+            </p>
+
+            <ul className="mt-8 grid sm:grid-cols-2 gap-x-8 gap-y-4">
+              {fusionItems.map((it, i) => (
+                <li key={i} className="flex gap-3 border-b border-[#E9A580]/15 pb-3">
+                  <span className="text-[10px] tracking-[0.25em] uppercase text-[#E9A580] pt-1 shrink-0 w-12">
+                    {it.qty}
+                  </span>
+                  <div>
+                    <p className="text-sm uppercase tracking-[0.15em] font-medium text-[#F3E7D7]">
+                      {it.name}
+                    </p>
+                    {it.desc && (
+                      <p className="mt-0.5 text-xs text-[#F3E7D7]/65 leading-snug">{it.desc}</p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex flex-col items-center justify-center text-center rounded-2xl border border-[#E9A580]/40 bg-[#0D2517]/40 px-8 py-10">
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              {lang === "de" ? "15 Stück" : "15 pieces"}
+            </p>
+            <p
+              className="mt-3 text-6xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              CHF 69
+            </p>
+            <p className="mt-2 text-xs text-[#F3E7D7]/60 italic">
+              {lang === "de" ? "exklusive Getränke" : "drinks not included"}
+            </p>
+            <Link
+              to="/reservation"
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
+            >
+              {lang === "de" ? "Tisch reservieren" : "Book a table"}
+              <ArrowRight className="size-4" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* À la carte sushi editorial sheet */}
+      <div
+        className="relative mt-14 overflow-hidden rounded-3xl border border-[#E9A580]/40 shadow-2xl"
+        style={{ backgroundColor: "#F3E7D7", color: "#0D2517" }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "420px",
+            opacity: 0.18,
+            mixBlendMode: "multiply",
+          }}
+        />
+        <div aria-hidden className="absolute inset-3 rounded-2xl border border-[#E9A580]/45 pointer-events-none" />
+
+        <div className="relative px-6 py-12 sm:px-12 lg:px-16 lg:py-16">
+          <div className="text-center">
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              Amaya Restaurant & Bar
+            </p>
+            <h3
+              className="mt-4 italic font-light text-4xl sm:text-5xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              Sushi à la carte
+            </h3>
+            <div className="mx-auto mt-5 h-px w-24 bg-[#E9A580]/60" />
+          </div>
+
+          <div className="mt-14 grid gap-14 lg:grid-cols-2 lg:gap-x-20">
+            {SUSHI_SHARING.map((section) => (
+              <LunchSection key={section.id} section={section} lang={lang} />
+            ))}
+          </div>
+
+          <p className="mt-12 text-center text-[11px] text-[#0D2517]/60 italic">
+            {lang === "de"
+              ? "Alle Preise in Schweizer Franken inkl. 8.1% MWST · Informationen zu Allergenen sind beim Service erhältlich."
+              : "All prices in Swiss Francs incl. 8.1% VAT · Allergen information available on request."}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
