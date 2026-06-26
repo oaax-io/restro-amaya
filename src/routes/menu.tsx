@@ -80,7 +80,34 @@ function MenuPage() {
       {/* Tab bar (sticky) — floating dark pills */}
       <div className="sticky top-20 z-30 py-4">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          <div className="flex justify-center">
+          {/* Mobile: native select dropdown so all tabs are reachable */}
+          <div className="sm:hidden">
+            <div className="relative mx-auto max-w-xs rounded-full bg-[#0D2517]/80 backdrop-blur-xl border border-[#E9A580]/30 shadow-lg shadow-black/30">
+              <select
+                value={tab}
+                onChange={(e) => setTab(e.target.value as TabKey)}
+                aria-label="Speisekarte auswählen"
+                className="appearance-none w-full bg-transparent text-[#E9A580] font-semibold uppercase tracking-[0.2em] text-sm px-6 py-3 pr-12 focus:outline-none"
+              >
+                {tabs.map((tb) => (
+                  <option key={tb.key} value={tb.key} className="bg-[#0D2517] text-[#F3E7D7]">
+                    {tb.label}
+                  </option>
+                ))}
+              </select>
+              <svg
+                aria-hidden
+                viewBox="0 0 20 20"
+                className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 size-4 text-[#E9A580]"
+                fill="currentColor"
+              >
+                <path d="M5.5 7.5L10 12l4.5-4.5z" />
+              </svg>
+            </div>
+          </div>
+
+          {/* Desktop/tablet: pill bar */}
+          <div className="hidden sm:flex justify-center">
             <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar rounded-full bg-[#0D2517]/70 backdrop-blur-xl border border-[#E9A580]/20 px-2 py-2 shadow-lg shadow-black/20">
               {tabs.map((tb) => {
                 const active = tab === tb.key;
