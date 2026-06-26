@@ -16,6 +16,7 @@ import {
 import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
 import { Download } from "lucide-react";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
+import jungleTex from "@/assets/jungle-texture.jpg";
 import lunchPdf from "@/assets/lunch-menu-pdf.asset.json";
 import mesaPdf from "@/assets/mesa-menu-pdf.asset.json";
 import sushiPdf from "@/assets/sushi-menu-pdf.asset.json";
@@ -59,10 +60,15 @@ function MenuPage() {
   return (
     <SiteLayout>
       {/* Hero */}
-      <section className="pt-40 pb-16 lg:pb-20">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+      <section className="relative pt-40 pb-20 lg:pb-28 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-25 pointer-events-none"
+          style={{ backgroundImage: `url(${jungleTex})`, backgroundSize: "cover", backgroundPosition: "center" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background pointer-events-none" />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("menu.kicker")}</p>
-          <h1 className="font-display text-6xl lg:text-8xl mt-6 leading-[0.95] uppercase font-bold">
+          <h1 className="font-display text-6xl lg:text-8xl mt-6 leading-[0.95] uppercase font-bold text-gradient-gold">
             {t("menu.title")}.
           </h1>
           <p className="mt-8 max-w-2xl text-muted-foreground leading-relaxed text-lg">
