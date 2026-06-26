@@ -194,47 +194,6 @@ function Index() {
         </div>
       </section>
 
-      {/* VISIT */}
-      <section className="relative py-24 lg:py-32 border-t border-border bg-onyx">
-        <div className="mx-auto max-w-7xl px-6 lg:px-10 grid md:grid-cols-3 gap-12 lg:gap-16">
-          <div>
-            <p className="mono-label text-gold">— {t("about.hours")}</p>
-            <ul className="mt-6 space-y-2">
-              {RESTAURANT.hours.map((h) => {
-                const parts = [h.lunch, h.dinner].filter(Boolean).join(" · ");
-                return (
-                  <li key={h.day} className="flex justify-between gap-4 border-b border-border py-2">
-                    <span className="text-muted-foreground">{t(`days.${h.day}`)}</span>
-                    <span className="text-foreground">{parts || <span className="text-muted-foreground">{t("closed")}</span>}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          <div>
-            <p className="mono-label text-gold">— {t("about.address")}</p>
-            <p className="mt-6 display-serif text-4xl leading-snug">
-              {RESTAURANT.street}<br />{RESTAURANT.city}
-            </p>
-            <a
-              href={`https://maps.google.com/?q=${encodeURIComponent(RESTAURANT.street + " " + RESTAURANT.city)}`}
-              target="_blank"
-              rel="noreferrer"
-              className="mt-6 inline-block mono-label text-gold hover:underline"
-            >
-              → Google Maps
-            </a>
-          </div>
-          <div>
-            <p className="mono-label text-gold">— {t("about.contact")}</p>
-            <a href={`tel:${RESTAURANT.phoneRaw}`} className="mt-6 block display-serif text-4xl hover:text-gold transition-colors">{RESTAURANT.phone}</a>
-            <a href={`mailto:${RESTAURANT.email}`} className="block text-muted-foreground mt-2 hover:text-gold transition-colors">{RESTAURANT.email}</a>
-            <a href="#reserve" className="btn-luxury mt-6">
-              {t("nav.reserve")}
-            </a>
-          </div>
-        </div>
-      </section>
     </SiteLayout>
   );
 }
