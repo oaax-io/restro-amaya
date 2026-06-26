@@ -79,7 +79,7 @@ const resources = {
         empty: "Coming soon.",
         intro: "Fresh, honest, uncompromising. Our menu changes with the seasons — what's listed here is on the plate today.",
         tabs: { weekly: "Weekly menu", lunch: "Lunch menu", amayaMesa: "Amaya Mesa", sushiSharing: "Sushi Sharing", wine: "Wine list" },
-        weekly: { title: "Weekly menu", lead: "A new three-course composition every weekday.", twoCourse: "2 courses", threeCourse: "3 courses", starter: "Starter", main: "Main", dessert: "Dessert" },
+        weekly: { title: "Weekly menu", lead: "Weekly changing dishes." },
         lunch: { title: "Lunch menu", lead: "Mon–Fri, 11:30–14:00. Takeaway available." },
         amayaMesa: { title: "Amaya Mesa", lead: "À-la-carte à la Amaya. From 18:00. Reservation recommended." },
         sushiSharing: { title: "Sushi Sharing", lead: "To share or savour — fresh, delicate and artfully prepared." },
