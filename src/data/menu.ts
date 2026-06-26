@@ -12,6 +12,21 @@ export type MenuSection = {
   items: MenuItem[];
 };
 
+export type WineItem = {
+  name: { de: string; en: string };
+  desc?: { de: string; en: string };
+  origin?: { de: string; en: string };
+  glass?: string;
+  bottle: string;
+};
+
+export type WineMenuSection = {
+  id: string;
+  title: { de: string; en: string };
+  subtitle?: { de: string; en: string };
+  items: WineItem[];
+};
+
 export type WeeklyDay = {
   day: "mon" | "tue" | "wed" | "thu" | "fri";
   starter: { de: string; en: string };
@@ -135,9 +150,9 @@ export const LUNCH_MENU: MenuSection[] = [
   },
 ];
 
-export const DINNER_MENU: MenuSection[] = [
+export const AMAYA_MESA: MenuSection[] = [
   {
-    id: "dinner-snacks",
+    id: "mesa-snacks",
     title: { de: "Snacks & Sharing", en: "Snacks & sharing" },
     subtitle: { de: "Zum Teilen — oder nicht.", en: "Made to share — or not." },
     items: [
@@ -167,7 +182,7 @@ export const DINNER_MENU: MenuSection[] = [
     ],
   },
   {
-    id: "dinner-starters",
+    id: "mesa-starters",
     title: { de: "Vorspeisen", en: "Starters" },
     items: [
       {
@@ -190,7 +205,7 @@ export const DINNER_MENU: MenuSection[] = [
     ],
   },
   {
-    id: "dinner-mains",
+    id: "mesa-mains",
     title: { de: "Hauptgänge", en: "Mains" },
     items: [
       {
@@ -224,7 +239,7 @@ export const DINNER_MENU: MenuSection[] = [
     ],
   },
   {
-    id: "dinner-desserts",
+    id: "mesa-desserts",
     title: { de: "Desserts", en: "Desserts" },
     items: [
       {
@@ -243,6 +258,175 @@ export const DINNER_MENU: MenuSection[] = [
         desc: { de: "Auswahl aus der Region, Feigensenf, Nüsse", en: "Regional selection, fig mustard, nuts" },
         price: "19",
         tags: ["v"],
+      },
+    ],
+  },
+];
+
+export const SUSHI_SHARING: MenuSection[] = [
+  {
+    id: "sushi-set-pieces",
+    title: { de: "Sushi & Sashimi", en: "Sushi & sashimi" },
+    subtitle: {
+      de: "Sorgfältig ausgewählter Fisch, Reis nach traditioneller Art.",
+      en: "Carefully selected fish, rice prepared the traditional way.",
+    },
+    items: [
+      {
+        name: { de: "Sashimi Moriawase · 12 Stück", en: "Sashimi moriawase · 12 pieces" },
+        desc: { de: "Thunfisch, Lachs, Gelbschwanz, Jakobsmuschel", en: "Tuna, salmon, yellowtail, scallop" },
+        price: "38",
+        tags: ["signature", "gf"],
+      },
+      {
+        name: { de: "Nigiri Selection · 10 Stück", en: "Nigiri selection · 10 pieces" },
+        desc: { de: "Klassische und saisonale Fischsorten auf Sushi-Reis", en: "Classic and seasonal fish on sushi rice" },
+        price: "34",
+        tags: ["gf"],
+      },
+      {
+        name: { de: "Maki Mix · 16 Stück", en: "Maki mix · 16 pieces" },
+        desc: { de: "Gurke, Avocado, Lachs, Thunfisch-Spicy-Mayo", en: "Cucumber, avocado, salmon, tuna-spicy mayo" },
+        price: "28",
+      },
+    ],
+  },
+  {
+    id: "sushi-sharing",
+    title: { de: "Sharing Platten", en: "Sharing platters" },
+    subtitle: { de: "Ideal für zwei bis vier Personen.", en: "Ideal for two to four people." },
+    items: [
+      {
+        name: { de: "Amaya Sushi Boat · für 2–3 Personen", en: "Amaya sushi boat · for 2–3 people" },
+        desc: { de: "Sashimi, Nigiri, Maki, Sushi-Rollen — die Auswahl des Küchenchefs", en: "Sashimi, nigiri, maki, chef's selection rolls" },
+        price: "78",
+        tags: ["signature"],
+      },
+      {
+        name: { de: "Veggie Sushi Boat · für 2 Personen", en: "Veggie sushi boat · for 2 people" },
+        desc: { de: "Avocado, Gurke, eingelegter Rettich, Tamago, Shiso, Sesam", en: "Avocado, cucumber, pickled radish, tamago, shiso, sesame" },
+        price: "52",
+        tags: ["v"],
+      },
+      {
+        name: { de: "Temaki-Handrollen · 3 Stück", en: "Temaki handrolls · 3 pieces" },
+        desc: { de: "Spicy Thunfisch, Lachs-Avocado, California-Gemüse", en: "Spicy tuna, salmon-avocado, California vegetable" },
+        price: "24",
+      },
+    ],
+  },
+  {
+    id: "sushi-rolls",
+    title: { de: "Signature Rolls", en: "Signature rolls" },
+    items: [
+      {
+        name: { de: "Amaya Dragon Roll", en: "Amaya dragon roll" },
+        desc: { de: "Gegrillter Aal, Avocado, Gurke, Unagi-Sauce, Sesam", en: "Grilled eel, avocado, cucumber, unagi sauce, sesame" },
+        price: "26",
+        tags: ["signature"],
+      },
+      {
+        name: { de: "Tropical Crunch Roll", en: "Tropical crunch roll" },
+        desc: { de: "Tempura-Garnelen, Mango, Avocado, Kokos-Furikake", en: "Tempura prawns, mango, avocado, coconut furikake" },
+        price: "24",
+      },
+      {
+        name: { de: "Wagyu Truffle Roll", en: "Wagyu truffle roll" },
+        desc: { de: "Wagyu, Trüffel-Mayo, schwarzer Knoblauch, Kresse", en: "Wagyu, truffle mayo, black garlic, cress" },
+        price: "32",
+        tags: ["signature"],
+      },
+    ],
+  },
+];
+
+export const WINE_MENU: WineMenuSection[] = [
+  {
+    id: "wine-by-glass",
+    title: { de: "Weine by the Glass", en: "Wines by the glass" },
+    subtitle: {
+      de: "Ausgewählte Weine, die ein Glas verdienen.",
+      en: "Selected wines worth pouring by the glass.",
+    },
+    items: [
+      {
+        name: { de: "Weisswein der Woche", en: "White wine of the week" },
+        desc: { de: "Trocken, fruchtig, immer wechselnd", en: "Dry, fruity, rotating weekly" },
+        origin: { de: "Schweiz / Europa", en: "Switzerland / Europe" },
+        glass: "12",
+        bottle: "48",
+      },
+      {
+        name: { de: "Rotwein der Woche", en: "Red wine of the week" },
+        desc: { de: "Trocken, würzig, immer wechselnd", en: "Dry, spicy, rotating weekly" },
+        origin: { de: "Schweiz / Europa", en: "Switzerland / Europe" },
+        glass: "13",
+        bottle: "52",
+      },
+      {
+        name: { de: "Champagner Glass", en: "Champagne glass" },
+        desc: { de: "Blanc de Blancs, Brut", en: "Blanc de blancs, brut" },
+        origin: { de: "Champagne, FR", en: "Champagne, FR" },
+        glass: "22",
+        bottle: "110",
+      },
+    ],
+  },
+  {
+    id: "wine-white",
+    title: { de: "Weisswein", en: "White wine" },
+    items: [
+      {
+        name: { de: "Sauvignon Blanc, Domaine A", en: "Sauvignon blanc, Domaine A" },
+        origin: { de: "Valais, CH", en: "Valais, CH" },
+        bottle: "58",
+      },
+      {
+        name: { de: "Chardonnay, Burgundy", en: "Chardonnay, Burgundy" },
+        origin: { de: "Bourgogne, FR", en: "Burgundy, FR" },
+        bottle: "72",
+      },
+      {
+        name: { de: "Grüner Veltliner, Ried", en: "Grüner veltliner, Ried" },
+        origin: { de: "Niederösterreich, AT", en: "Lower Austria, AT" },
+        bottle: "64",
+      },
+    ],
+  },
+  {
+    id: "wine-red",
+    title: { de: "Rotwein", en: "Red wine" },
+    items: [
+      {
+        name: { de: "Pinot Noir, Réserve", en: "Pinot noir, réserve" },
+        origin: { de: "Aargau, CH", en: "Aargau, CH" },
+        bottle: "68",
+      },
+      {
+        name: { de: "Barolo, Castiglione", en: "Barolo, Castiglione" },
+        origin: { de: "Piemont, IT", en: "Piedmont, IT" },
+        bottle: "95",
+      },
+      {
+        name: { de: "Cabernet Sauvignon, Napa Valley", en: "Cabernet sauvignon, Napa Valley" },
+        origin: { de: "Kalifornien, USA", en: "California, USA" },
+        bottle: "110",
+      },
+    ],
+  },
+  {
+    id: "wine-rose-bubbles",
+    title: { de: "Rosé & Sekt", en: "Rosé & sparkling" },
+    items: [
+      {
+        name: { de: "Provence Rosé", en: "Provence rosé" },
+        origin: { de: "Provence, FR", en: "Provence, FR" },
+        bottle: "62",
+      },
+      {
+        name: { de: "Prosecco Superiore, DOCG", en: "Prosecco superiore, DOCG" },
+        origin: { de: "Veneto, IT", en: "Veneto, IT" },
+        bottle: "54",
       },
     ],
   },
