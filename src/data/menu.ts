@@ -3,6 +3,8 @@ export type MenuItem = {
   desc: { de: string; en: string };
   price: string;
   tags?: ("v" | "vg" | "gf" | "spicy" | "signature")[];
+  allergens?: string;
+  highlight?: boolean;
 };
 
 export type MenuSection = {
@@ -82,69 +84,206 @@ export const WEEKLY_MENU: {
 
 export const LUNCH_MENU: MenuSection[] = [
   {
-    id: "lunch-bowls",
-    title: { de: "Bowls & Leichtes", en: "Bowls & light" },
-    subtitle: {
-      de: "Schnell, frisch, kraftvoll — zum Mittag perfekt.",
-      en: "Quick, fresh, powerful — perfect for lunch.",
-    },
+    id: "lunch-vorspeisen",
+    title: { de: "Vorspeisen", en: "Appetizer" },
     items: [
       {
-        name: { de: "Jungle Poke Bowl", en: "Jungle poke bowl" },
+        name: { de: "Edamame", en: "Edamame" },
         desc: {
-          de: "Sushi-Reis, marinierter Thunfisch, Edamame, Avocado, Mango, Ponzu",
-          en: "Sushi rice, marinated tuna, edamame, avocado, mango, ponzu",
+          de: "Gedämpfte Sojabohnen mit Meersalz oder mit Knoblauch & Chili",
+          en: "Steamed soybeans lightly seasoned with sea salt or with garlic & chili",
         },
-        price: "24",
+        price: "11.00",
+        allergens: "K",
+        tags: ["vg"],
+      },
+      {
+        name: { de: "Pimientos de Padrón", en: "Pimientos de Padrón" },
+        desc: {
+          de: "Gegrillte, milde Paprikaschoten mit Meersalz",
+          en: "Grilled peppers with sea salt",
+        },
+        price: "13.00",
+        tags: ["vg"],
+      },
+      {
+        name: { de: "Burrata", en: "Burrata" },
+        desc: {
+          de: "Cremige italienische Frischkäse mit Basilikum und Tomaten",
+          en: "Creamy Italian cream cheese with basil and tomatoes",
+        },
+        price: "22.00 / mit Pulpo 29.00",
+        allergens: "L, Z",
+        tags: ["v"],
+      },
+      {
+        name: { de: "Pulled Pork Gyoza", en: "Pulled Pork Gyoza" },
+        desc: {
+          de: "Pulled Pork, Sunomono & Shoyu-Reduktion",
+          en: "Pulled pork, sunomono & shoyu reduction",
+        },
+        price: "18.00",
+        allergens: "A, K",
+      },
+      {
+        name: { de: "Tatar Amaya Style", en: "Tatar Amaya Style" },
+        desc: {
+          de: "Rindstatar im AMAYA Style und Eigelb",
+          en: "Beef tartare in AMAYA style and egg yolk",
+        },
+        price: "100g 28.00 / 140g 36.00",
+        allergens: "H",
         tags: ["signature"],
-      },
-      {
-        name: { de: "Buddha Bowl", en: "Buddha bowl" },
-        desc: {
-          de: "Quinoa, geröstete Süsskartoffel, Kichererbsen, Tahini-Dressing",
-          en: "Quinoa, roasted sweet potato, chickpeas, tahini dressing",
-        },
-        price: "21",
-        tags: ["vg", "gf"],
-      },
-      {
-        name: { de: "Bún Bò Saigon", en: "Bún bò Saigon" },
-        desc: {
-          de: "Reisnudelsalat, Zitronengras-Rind, Kräuter, Erdnuss, Nuoc Cham",
-          en: "Rice noodle salad, lemongrass beef, herbs, peanut, nuoc cham",
-        },
-        price: "23",
+        highlight: true,
       },
     ],
   },
   {
-    id: "lunch-classics",
-    title: { de: "Klassiker", en: "Classics" },
+    id: "lunch-hauptgaenge",
+    title: { de: "Hauptgänge", en: "Main Course" },
     items: [
       {
-        name: { de: "Amaya Burger", en: "Amaya burger" },
+        name: { de: "Dal", en: "Dal" },
         desc: {
-          de: "180g Black-Angus, Cheddar, karamellisierte Zwiebeln, Pommes",
-          en: "180g Black Angus, cheddar, caramelised onions, fries",
+          de: "Linsencurry mit Basmati Reis, Limette und Koriander",
+          en: "Lentil curry with basmati rice, lime and coriander",
         },
-        price: "26",
+        price: "24.00 / mit Chicken 32.00 / Naan +8.00",
+        allergens: "A",
+        tags: ["vg", "spicy"],
+      },
+      {
+        name: { de: "Butter Chicken", en: "Butter Chicken" },
+        desc: { de: "Mit Basmati Reis", en: "With basmati rice" },
+        price: "34.00 / + Naan Brot 8.00",
+        allergens: "U",
+      },
+      {
+        name: { de: "Teriyaki Rindsburger", en: "Teriyaki Beef Burger" },
+        desc: {
+          de: "Gerösteter Ananas, gereifter Käse, japanische Mayo & Aomori-Pommes",
+          en: "Roasted pineapple, aged cheese, Japanese mayo & Aomori fries",
+        },
+        price: "32.00",
+        allergens: "A, U",
+      },
+      {
+        name: { de: "Nikkei Thunfisch Sashimi", en: "Nikkei Tuna Sashimi" },
+        desc: {
+          de: "Zitrusmarinade & pikante Akzente",
+          en: "Citrus marinade & spicy accents",
+        },
+        price: "35.00",
+        allergens: "U",
+      },
+      {
+        name: { de: "Wagyu", en: "Wagyu" },
+        desc: { de: "+1 Beilage", en: "+1 side dish" },
+        price: "150g 79.00",
+        allergens: "F, L",
         tags: ["signature"],
+        highlight: true,
       },
       {
-        name: { de: "Wiener Schnitzel", en: "Wiener Schnitzel" },
-        desc: { de: "Kalb, Bratkartoffeln, Preiselbeeren, Zitrone", en: "Veal, fried potatoes, lingonberry, lemon" },
-        price: "32",
+        name: { de: "Rinds Ribeye", en: "Beef Ribeye" },
+        desc: {
+          de: "Rahmspinat & Ofen-Süsskartoffel",
+          en: "Cream spinach & oven-baked sweet potato",
+        },
+        price: "200g 54.00",
+        allergens: "A, G, L",
+        highlight: true,
       },
       {
-        name: { de: "Spaghetti Vongole", en: "Spaghetti vongole" },
-        desc: { de: "Venusmuscheln, Knoblauch, Weisswein, Peperoncino", en: "Clams, garlic, white wine, peperoncino" },
-        price: "27",
-        tags: ["spicy"],
+        name: { de: "Tenderloin", en: "Tenderloin" },
+        desc: { de: "+1 Beilage", en: "+1 side dish" },
+        price: "180g 65.00",
+        allergens: "L",
+        highlight: true,
+      },
+    ],
+  },
+  {
+    id: "lunch-beilagen",
+    title: { de: "Beilagen", en: "Side Dishes" },
+    items: [
+      {
+        name: { de: "Salad Bowl", en: "Salad Bowl" },
+        desc: { de: "", en: "" },
+        price: "8.00",
+        allergens: "L, M",
+        tags: ["vg"],
       },
       {
-        name: { de: "Caesar Salad", en: "Caesar salad" },
-        desc: { de: "Römersalat, Parmesan, Anchovis-Dressing, Croutons", en: "Romaine, parmesan, anchovy dressing, croutons" },
-        price: "19",
+        name: { de: "Grilled Vegetables", en: "Grilled Vegetables" },
+        desc: { de: "", en: "" },
+        price: "9.00",
+        allergens: "L",
+        tags: ["vg"],
+      },
+      {
+        name: { de: "Linguine al Tartufo", en: "Linguine al Tartufo" },
+        desc: {
+          de: "Als Hauptgang mit Trüffel 58.00",
+          en: "As main with truffle 58.00",
+        },
+        price: "9.00 / mit Trüffel-Öl 12.00",
+        allergens: "A, C, G, L",
+        tags: ["v"],
+      },
+      {
+        name: { de: "Country Fries", en: "Country Fries" },
+        desc: { de: "", en: "" },
+        price: "12.00",
+        tags: ["vg"],
+      },
+      {
+        name: { de: "Fries mit Trüffel-Öl", en: "Fries with Truffle Oil" },
+        desc: { de: "", en: "" },
+        price: "14.00",
+        tags: ["vg"],
+      },
+      {
+        name: { de: "Aomori Fries", en: "Aomori Fries" },
+        desc: { de: "", en: "" },
+        price: "12.00",
+        tags: ["vg"],
+      },
+    ],
+  },
+  {
+    id: "lunch-dessert",
+    title: { de: "Dessert", en: "Dessert" },
+    items: [
+      {
+        name: { de: "Matcha Panna Cotta", en: "Matcha Panna Cotta" },
+        desc: { de: "", en: "" },
+        price: "12.50",
+        allergens: "G, L",
+      },
+      {
+        name: { de: "Japanisches Mochi", en: "Japanese Mochi" },
+        desc: { de: "", en: "" },
+        price: "7.00",
+        allergens: "F",
+      },
+      {
+        name: { de: "Kataifi Strudel & Vanille-Sauce", en: "Kataifi Strudel & Vanilla Sauce" },
+        desc: { de: "", en: "" },
+        price: "12.50",
+        allergens: "A, G, L, H",
+      },
+      {
+        name: { de: "Pistazien Tiramisu", en: "Pistachio Tiramisu" },
+        desc: { de: "", en: "" },
+        price: "13.50",
+        allergens: "A, G, H",
+      },
+      {
+        name: { de: "Lemon Sorbet", en: "Lemon Sorbet" },
+        desc: { de: "", en: "" },
+        price: "13.00",
+        tags: ["vg"],
       },
     ],
   },
