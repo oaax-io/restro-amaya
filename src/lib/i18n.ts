@@ -28,7 +28,7 @@ const resources = {
         empty: "Bald verfügbar.",
         intro: "Frisch, ehrlich, kompromisslos. Unsere Karte wechselt mit den Jahreszeiten — was hier steht, ist heute auf dem Teller.",
         tabs: { weekly: "Wochenmenü", lunch: "Lunch Karte", amayaMesa: "Amaya Mesa", sushiSharing: "Sushi Sharing", wine: "Wein Karte" },
-        weekly: { title: "Wochenmenü", lead: "Jeden Werktag eine neue Komposition aus drei Gängen.", twoCourse: "2 Gänge", threeCourse: "3 Gänge", starter: "Vorspeise", main: "Hauptgang", dessert: "Dessert" },
+        weekly: { title: "Wochenmenü", lead: "Wöchentlich wechselnde Gerichte." },
         lunch: { title: "Lunch Karte", lead: "Mo–Fr, 11:30–14:00. Auch zum Mitnehmen erhältlich." },
         amayaMesa: { title: "Amaya Mesa", lead: "À-la-carte à la Amaya. Ab 18:00. Reservation empfohlen." },
         sushiSharing: { title: "Sushi Sharing", lead: "Zum Teilen oder geniessen — frisch, fein und kunstvoll zubereitet." },
