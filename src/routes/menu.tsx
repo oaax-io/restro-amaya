@@ -18,6 +18,7 @@ import { Download } from "lucide-react";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
 import lunchPdf from "@/assets/lunch-menu-pdf.asset.json";
 import mesaPdf from "@/assets/mesa-menu-pdf.asset.json";
+import sushiPdf from "@/assets/sushi-menu-pdf.asset.json";
 
 type Lang = "de" | "en";
 type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
@@ -108,12 +109,7 @@ function MenuPage() {
             <MesaView lang={lang} />
           )}
           {tab === "sushi-sharing" && (
-            <SectionsView
-              lang={lang}
-              title={t("menu.sushiSharing.title")}
-              lead={t("menu.sushiSharing.lead")}
-              sections={SUSHI_SHARING}
-            />
+            <SushiView lang={lang} />
           )}
           {tab === "wine" && <WineView lang={lang} />}
 
