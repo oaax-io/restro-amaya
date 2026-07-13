@@ -37,7 +37,12 @@ const resources = {
         allergens: "Informationen zu Allergenen und Zutaten erhalten Sie auf Anfrage bei unserem Service.",
         cta: "Tisch reservieren",
       },
-      gallery: { title: "Galerie", kicker: "Eindrücke" },
+      gallery: {
+        title: "Galerie",
+        kicker: "Eindrücke",
+        intro: "Ein visueller Spaziergang durch Amaya — Küche, Räume und Momente, die bleiben.",
+        categories: { all: "Alle", kulinarisches: "Kulinarisches", restaurant: "Restaurant", anlaesse: "Anlässe" },
+      },
       about: { title: "Über uns", kicker: "Kontakt", hours: "Öffnungszeiten", address: "Adresse", contact: "Kontakt" },
       jobs: { title: "Offene Stellen", kicker: "Karriere", apply: "Bewerben", none: "Aktuell sind keine Stellen offen." },
       reserve: {
@@ -88,7 +93,12 @@ const resources = {
         allergens: "Please ask our team for allergen and ingredient information.",
         cta: "Reserve a table",
       },
-      gallery: { title: "Gallery", kicker: "Impressions" },
+      gallery: {
+        title: "Gallery",
+        kicker: "Impressions",
+        intro: "A visual walk through Amaya — kitchen, spaces, and moments that linger.",
+        categories: { all: "All", kulinarisches: "Culinary", restaurant: "Restaurant", anlaesse: "Events" },
+      },
       about: { title: "About us", kicker: "Contact", hours: "Opening hours", address: "Address", contact: "Contact" },
       jobs: { title: "Open positions", kicker: "Careers", apply: "Apply", none: "No open positions at the moment." },
       reserve: {
