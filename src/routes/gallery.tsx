@@ -1,10 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
+import jungleTex from "@/assets/jungle-texture.jpg";
+
+type CatKey = "all" | "kulinarisches" | "restaurant" | "anlaesse";
 
 export const Route = createFileRoute("/gallery")({
   head: () => ({
@@ -21,6 +24,7 @@ function GalleryPage() {
   const lang = i18n.language?.startsWith("en") ? "en" : "de";
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [heroIdx, setHeroIdx] = useState(0);
+  const [cat, setCat] = useState<CatKey>("all");
 
   const q = useQuery({
     queryKey: ["public","gallery"],
@@ -31,8 +35,23 @@ function GalleryPage() {
     },
   });
 
-  const images = q.data ?? [];
-  const highlights = images.slice(0, Math.min(5, images.length));
+  const allImages = (q.data ?? []) as Array<{
+    id: string; image_url: string; sort_order: number;
+    caption_de: string | null; caption_en: string | null;
+    category?: string | null;
+  }>;
+  const images = useMemo(
+    () => cat === "all" ? allImages : allImages.filter((i) => (i.category ?? "restaurant") === cat),
+    [allImages, cat]
+  );
+  const highlights = allImages.slice(0, Math.min(5, allImages.length));
+
+  const tabs: { key: CatKey; label: string }[] = [
+    { key: "all", label: t("gallery.categories.all") },
+    { key: "kulinarisches", label: t("gallery.categories.kulinarisches") },
+    { key: "restaurant", label: t("gallery.categories.restaurant") },
+    { key: "anlaesse", label: t("gallery.categories.anlaesse") },
+  ];
 
   const closeLightbox = useCallback(() => setLightboxIdx(null), []);
   const prev = useCallback(
@@ -63,17 +82,76 @@ function GalleryPage() {
 
   return (
     <SiteLayout>
-      <section className="pt-32 lg:pt-40 pb-24">
-        <div className="mx-auto max-w-6xl px-6 lg:px-10">
+      {/* Hero */}
+      <section className="relative pt-40 pb-20 lg:pb-28 overflow-hidden">
+        <div
+          className="absolute inset-0 opacity-25 pointer-events-none"
+          style={{ backgroundImage: `url(${jungleTex})`, backgroundSize: "cover", backgroundPosition: "center" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background pointer-events-none" />
+        <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("gallery.kicker")}</p>
-          <h1 className="font-display text-6xl lg:text-7xl mt-6 leading-[1.0]">{t("gallery.title")}.</h1>
+          <h1 className="font-display text-6xl lg:text-8xl mt-6 leading-[0.95] uppercase font-bold text-gradient-gold">
+            {t("gallery.title")}.
+          </h1>
+          <p className="mt-8 max-w-2xl text-muted-foreground leading-relaxed text-lg">
+            {t("gallery.intro")}
+          </p>
+        </div>
+      </section>
 
-          {images.length === 0 ? (
-            <p className="mt-16 text-muted-foreground">{t("menu.empty")}</p>
+      {/* Category tabs (sticky) — same pill style as menu */}
+      <div className="sticky top-20 z-30 py-4">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          <div className="sm:hidden">
+            <div className="relative mx-auto max-w-xs rounded-full bg-[#0D2517]/80 backdrop-blur-xl border border-[#E9A580]/30 shadow-lg shadow-black/30">
+              <select
+                value={cat}
+                onChange={(e) => setCat(e.target.value as CatKey)}
+                aria-label="Kategorie auswählen"
+                className="appearance-none w-full bg-transparent text-[#E9A580] font-semibold uppercase tracking-[0.2em] text-sm px-6 py-3 pr-12 focus:outline-none"
+              >
+                {tabs.map((tb) => (
+                  <option key={tb.key} value={tb.key} className="bg-[#0D2517] text-[#F3E7D7]">{tb.label}</option>
+                ))}
+              </select>
+              <svg aria-hidden viewBox="0 0 20 20" className="pointer-events-none absolute right-5 top-1/2 -translate-y-1/2 size-4 text-[#E9A580]" fill="currentColor">
+                <path d="M5.5 7.5L10 12l4.5-4.5z" />
+              </svg>
+            </div>
+          </div>
+          <div className="hidden sm:flex justify-center">
+            <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar rounded-full bg-[#0D2517]/70 backdrop-blur-xl border border-[#E9A580]/20 px-2 py-2 shadow-lg shadow-black/20">
+              {tabs.map((tb) => {
+                const active = cat === tb.key;
+                return (
+                  <button
+                    key={tb.key}
+                    onClick={() => setCat(tb.key)}
+                    className={[
+                      "relative rounded-full px-4 sm:px-6 py-2.5 text-xs sm:text-sm uppercase tracking-[0.2em] whitespace-nowrap transition-all",
+                      active
+                        ? "bg-[#E9A580] text-[#0D2517] font-semibold shadow-md"
+                        : "text-[#F3E7D7]/80 hover:text-[#F3E7D7] hover:bg-[#E9A580]/10",
+                    ].join(" ")}
+                  >
+                    {tb.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <section className="py-16 lg:py-24">
+        <div className="mx-auto max-w-7xl px-6 lg:px-10">
+          {allImages.length === 0 ? (
+            <p className="text-muted-foreground">{t("menu.empty")}</p>
           ) : (
             <>
-            {highlights.length > 0 && (
-              <div className="mt-14 relative overflow-hidden rounded-lg bg-card aspect-[16/9] md:aspect-[21/9]">
+            {highlights.length > 0 && cat === "all" && (
+              <div className="relative overflow-hidden rounded-lg bg-card aspect-[16/9] md:aspect-[21/9]">
                 {highlights.map((img, i) => (
                   <button
                     key={img.id}
@@ -128,7 +206,7 @@ function GalleryPage() {
                 )}
               </div>
             )}
-            <div className="mt-10 grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
+            <div className={`${highlights.length > 0 && cat === "all" ? "mt-10" : ""} grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4`}>
               {images.map((img, idx) => (
                 <button key={img.id} onClick={() => setLightboxIdx(idx)}
                   className="group relative overflow-hidden bg-card aspect-[4/5]">
@@ -137,6 +215,9 @@ function GalleryPage() {
                 </button>
               ))}
             </div>
+            {images.length === 0 && (
+              <p className="mt-12 text-center text-muted-foreground">{t("menu.empty")}</p>
+            )}
             </>
           )}
         </div>
