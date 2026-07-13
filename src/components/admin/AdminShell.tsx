@@ -3,7 +3,8 @@ import { LayoutDashboard, CalendarCheck, Image as ImageIcon, UtensilsCrossed, Cl
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
-const NAV = [
+type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
+const NAV: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/reservations", label: "Reservierungen", icon: CalendarCheck },
   { to: "/admin/gallery", label: "Galerie", icon: ImageIcon },
