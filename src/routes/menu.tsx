@@ -798,6 +798,8 @@ function MesaStep({ label, value }: { label: string; value: string }) {
 
 function SushiView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const SUSHI_SHARING = useSushiMenu();
+  const sushiPdfUrl = usePdfUrl("sushi", sushiPdf.url);
 
   const fusionItems: { qty: string; name: string; desc?: string }[] = lang === "de"
     ? [
