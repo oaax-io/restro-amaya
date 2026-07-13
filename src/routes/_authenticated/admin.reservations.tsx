@@ -8,14 +8,15 @@ export const Route = createFileRoute("/_authenticated/admin/reservations")({
   component: ReservationsAdmin,
 });
 
-type Status = "pending" | "confirmed" | "rejected" | "completed";
+type Status = "pending" | "confirmed" | "declined" | "cancelled" | "completed";
 const STATUS_LABEL: Record<Status, string> = {
-  pending: "Neu", confirmed: "Bestätigt", rejected: "Abgelehnt", completed: "Abgeschlossen",
+  pending: "Neu", confirmed: "Bestätigt", declined: "Abgelehnt", cancelled: "Storniert", completed: "Abgeschlossen",
 };
 const STATUS_COLOR: Record<Status, string> = {
   pending: "bg-amber-100 text-amber-800",
   confirmed: "bg-emerald-100 text-emerald-800",
-  rejected: "bg-red-100 text-red-800",
+  declined: "bg-red-100 text-red-800",
+  cancelled: "bg-slate-100 text-slate-700",
   completed: "bg-slate-100 text-slate-700",
 };
 
@@ -45,7 +46,7 @@ function ReservationsAdmin() {
     <div>
       <PageHeader title="Reservierungen" subtitle="Alle Anfragen bestätigen, ablehnen oder abschließen." />
       <div className="mt-6 flex flex-wrap gap-2">
-        {(["all","pending","confirmed","rejected","completed"] as const).map((s) => (
+        {(["all","pending","confirmed","declined","cancelled","completed"] as const).map((s) => (
           <button key={s} onClick={() => setFilter(s)}
             className={`px-3 py-1.5 text-xs uppercase tracking-wider rounded-full border ${filter===s ? "bg-[#0D2517] text-[#F3E7D7] border-[#0D2517]" : "bg-white border-black/15"}`}>
             {s === "all" ? "Alle" : STATUS_LABEL[s]}
@@ -85,7 +86,7 @@ function ReservationsAdmin() {
                   <td className="p-3">
                     <div className="flex flex-wrap gap-1.5">
                       {r.status !== "confirmed" && <Btn onClick={() => updateStatus(r.id, "confirmed")} className="px-2 py-1 text-xs">Bestätigen</Btn>}
-                      {r.status !== "rejected" && <Btn variant="ghost" onClick={() => updateStatus(r.id, "rejected")} className="px-2 py-1 text-xs">Ablehnen</Btn>}
+                      {r.status !== "declined" && <Btn variant="ghost" onClick={() => updateStatus(r.id, "declined")} className="px-2 py-1 text-xs">Ablehnen</Btn>}
                       {r.status !== "completed" && <Btn variant="ghost" onClick={() => updateStatus(r.id, "completed")} className="px-2 py-1 text-xs">Abgeschlossen</Btn>}
                     </div>
                   </td>
