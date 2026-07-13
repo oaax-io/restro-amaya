@@ -87,28 +87,37 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          menu_type: string
           name_de: string
           name_en: string
           slug: string
           sort_order: number
+          subtitle_de: string | null
+          subtitle_en: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
+          menu_type?: string
           name_de: string
           name_en: string
           slug: string
           sort_order?: number
+          subtitle_de?: string | null
+          subtitle_en?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
+          menu_type?: string
           name_de?: string
           name_en?: string
           slug?: string
           sort_order?: number
+          subtitle_de?: string | null
+          subtitle_en?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -116,47 +125,68 @@ export type Database = {
       menu_items: {
         Row: {
           allergens: string[] | null
+          bottle_price: string | null
           category_id: string
           created_at: string
           description_de: string | null
           description_en: string | null
+          glass_price: string | null
+          highlight: boolean
           id: string
           image_url: string | null
           is_visible: boolean
           name_de: string
           name_en: string
-          price: number
+          origin_de: string | null
+          origin_en: string | null
+          price: number | null
+          price_text: string | null
           sort_order: number
+          tags: string[] | null
           updated_at: string
         }
         Insert: {
           allergens?: string[] | null
+          bottle_price?: string | null
           category_id: string
           created_at?: string
           description_de?: string | null
           description_en?: string | null
+          glass_price?: string | null
+          highlight?: boolean
           id?: string
           image_url?: string | null
           is_visible?: boolean
           name_de: string
           name_en: string
-          price?: number
+          origin_de?: string | null
+          origin_en?: string | null
+          price?: number | null
+          price_text?: string | null
           sort_order?: number
+          tags?: string[] | null
           updated_at?: string
         }
         Update: {
           allergens?: string[] | null
+          bottle_price?: string | null
           category_id?: string
           created_at?: string
           description_de?: string | null
           description_en?: string | null
+          glass_price?: string | null
+          highlight?: boolean
           id?: string
           image_url?: string | null
           is_visible?: boolean
           name_de?: string
           name_en?: string
-          price?: number
+          origin_de?: string | null
+          origin_en?: string | null
+          price?: number | null
+          price_text?: string | null
           sort_order?: number
+          tags?: string[] | null
           updated_at?: string
         }
         Relationships: [
@@ -168,6 +198,45 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      menu_meta: {
+        Row: {
+          date_range_de: string | null
+          date_range_en: string | null
+          menu_type: string
+          pdf_url: string | null
+          suppe_salat_de: string | null
+          suppe_salat_en: string | null
+          suppe_salat_price: string | null
+          title_de: string | null
+          title_en: string | null
+          updated_at: string
+        }
+        Insert: {
+          date_range_de?: string | null
+          date_range_en?: string | null
+          menu_type: string
+          pdf_url?: string | null
+          suppe_salat_de?: string | null
+          suppe_salat_en?: string | null
+          suppe_salat_price?: string | null
+          title_de?: string | null
+          title_en?: string | null
+          updated_at?: string
+        }
+        Update: {
+          date_range_de?: string | null
+          date_range_en?: string | null
+          menu_type?: string
+          pdf_url?: string | null
+          suppe_salat_de?: string | null
+          suppe_salat_en?: string | null
+          suppe_salat_price?: string | null
+          title_de?: string | null
+          title_en?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
       newsletter_subscribers: {
         Row: {

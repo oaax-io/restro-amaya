@@ -3,16 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import {
-  WEEKLY_MENU,
-  LUNCH_MENU,
-  AMAYA_MESA,
-  SUSHI_SHARING,
-  WINE_MENU,
   type MenuItem,
   type MenuSection,
   type WineItem,
   type WineMenuSection,
 } from "@/data/menu";
+import { useWeeklyMenu, useLunchMenu, useMesaMenu, useSushiMenu, useWineMenu, usePdfUrl } from "@/lib/menu-data";
 import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
 import { Download } from "lucide-react";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
@@ -165,6 +161,7 @@ function MenuPage() {
 
 function WeeklyView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const WEEKLY_MENU = useWeeklyMenu();
   return (
     <div>
       <Header title={t("menu.weekly.title")} lead={t("menu.weekly.lead")} />
@@ -314,13 +311,15 @@ function Tag({ tag }: { tag: NonNullable<MenuItem["tags"]>[number] }) {
 
 function WineView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const WINE_MENU = useWineMenu();
+  const winePdfUrl = usePdfUrl("wine", winePdf.url);
   return (
     <div className="relative">
       <Header title={t("menu.wine.title")} lead={t("menu.wine.lead")} />
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={winePdf.url}
+          href={winePdfUrl}
           download="Amaya-Wein-Karte.pdf"
           target="_blank"
           rel="noopener"
@@ -471,6 +470,8 @@ function Header({ title, lead }: { title: string; lead: string }) {
 
 function LunchView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const LUNCH_MENU = useLunchMenu();
+  const lunchPdfUrl = usePdfUrl("lunch", lunchPdf.url);
   return (
     <div className="relative">
       <Header title={t("menu.lunch.title")} lead={t("menu.lunch.lead")} />
@@ -478,7 +479,7 @@ function LunchView({ lang }: { lang: Lang }) {
       {/* Download CTA */}
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={lunchPdf.url}
+          href={lunchPdfUrl}
           download="Amaya-Lunch-Menu.pdf"
           target="_blank"
           rel="noopener"
@@ -628,13 +629,15 @@ function LunchItem({ item, lang }: { item: MenuItem; lang: Lang }) {
 
 function MesaView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const AMAYA_MESA = useMesaMenu();
+  const mesaPdfUrl = usePdfUrl("mesa", mesaPdf.url);
   return (
     <div className="relative">
       <Header title={t("menu.amayaMesa.title")} lead={t("menu.amayaMesa.lead")} />
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={mesaPdf.url}
+          href={mesaPdfUrl}
           download="Amaya-Mesa-Menu.pdf"
           target="_blank"
           rel="noopener"
@@ -795,6 +798,8 @@ function MesaStep({ label, value }: { label: string; value: string }) {
 
 function SushiView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const SUSHI_SHARING = useSushiMenu();
+  const sushiPdfUrl = usePdfUrl("sushi", sushiPdf.url);
 
   const fusionItems: { qty: string; name: string; desc?: string }[] = lang === "de"
     ? [
@@ -824,7 +829,7 @@ function SushiView({ lang }: { lang: Lang }) {
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={sushiPdf.url}
+          href={sushiPdfUrl}
           download="Amaya-Sushi-Menu.pdf"
           target="_blank"
           rel="noopener"
