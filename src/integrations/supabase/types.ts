@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           caption_de: string | null
           caption_en: string | null
+          category: string
           created_at: string
           id: string
           image_url: string
@@ -26,6 +27,7 @@ export type Database = {
         Insert: {
           caption_de?: string | null
           caption_en?: string | null
+          category?: string
           created_at?: string
           id?: string
           image_url: string
@@ -34,6 +36,7 @@ export type Database = {
         Update: {
           caption_de?: string | null
           caption_en?: string | null
+          category?: string
           created_at?: string
           id?: string
           image_url?: string
