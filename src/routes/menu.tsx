@@ -21,6 +21,7 @@ import lunchPdf from "@/assets/lunch-menu-pdf.asset.json";
 import mesaPdf from "@/assets/mesa-menu-pdf.asset.json";
 import sushiPdf from "@/assets/sushi-menu-pdf.asset.json";
 import winePdf from "@/assets/wine-menu-pdf.asset.json";
+import sushiAlaCarteImg from "@/assets/sushi-alacarte.jpg.asset.json";
 
 type Lang = "de" | "en";
 type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
@@ -942,10 +943,22 @@ function SushiView({ lang }: { lang: Lang }) {
             <div className="mx-auto mt-5 h-px w-24 bg-[#E9A580]/60" />
           </div>
 
-          <div className="mt-14 grid gap-14 lg:grid-cols-2 lg:gap-x-20">
-            {SUSHI_SHARING.map((section) => (
-              <LunchSection key={section.id} section={section} lang={lang} />
-            ))}
+          <div className="mt-14 grid gap-12 lg:grid-cols-[1fr_auto] lg:gap-x-16 items-start">
+            <div className="space-y-14 min-w-0">
+              {SUSHI_SHARING.map((section) => (
+                <LunchSection key={section.id} section={section} lang={lang} />
+              ))}
+            </div>
+            <div className="hidden lg:block">
+              <div className="sticky top-24 overflow-hidden rounded-2xl border border-[#E9A580]/40 shadow-xl">
+                <img
+                  src={sushiAlaCarteImg.url}
+                  alt={lang === "de" ? "Sushi à la carte im Amaya" : "Sushi à la carte at Amaya"}
+                  className="block w-[320px] xl:w-[380px] h-auto object-cover"
+                  loading="lazy"
+                />
+              </div>
+            </div>
           </div>
 
           <p className="mt-12 text-center text-[11px] text-[#0D2517]/60 italic">
