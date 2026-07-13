@@ -629,13 +629,15 @@ function LunchItem({ item, lang }: { item: MenuItem; lang: Lang }) {
 
 function MesaView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const AMAYA_MESA = useMesaMenu();
+  const mesaPdfUrl = usePdfUrl("mesa", mesaPdf.url);
   return (
     <div className="relative">
       <Header title={t("menu.amayaMesa.title")} lead={t("menu.amayaMesa.lead")} />
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={mesaPdf.url}
+          href={mesaPdfUrl}
           download="Amaya-Mesa-Menu.pdf"
           target="_blank"
           rel="noopener"
