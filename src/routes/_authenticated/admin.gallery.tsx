@@ -7,6 +7,12 @@ import { Trash2, ArrowUp, ArrowDown, Upload } from "lucide-react";
 
 const SIGN_TTL = 60 * 60 * 24 * 365 * 5; // 5 years
 
+const CATEGORIES: { value: string; label: string }[] = [
+  { value: "kulinarisches", label: "Kulinarisches" },
+  { value: "restaurant", label: "Restaurant" },
+  { value: "anlaesse", label: "Anlässe" },
+];
+
 export const Route = createFileRoute("/_authenticated/admin/gallery")({
   component: GalleryAdmin,
 });
@@ -43,7 +49,8 @@ function GalleryAdmin() {
           image_url: signed.data.signedUrl,
           sort_order: sort,
           caption_de: null, caption_en: null,
-        });
+          category: "restaurant",
+        } as never);
         if (ins.error) throw ins.error;
         sort += 10;
       }
@@ -84,6 +91,12 @@ function GalleryAdmin() {
     qc.invalidateQueries({ queryKey: ["admin","gallery"] });
   }
 
+  async function updateCategory(id: string, category: string) {
+    await supabase.from("gallery_images").update({ category } as never).eq("id", id);
+    qc.invalidateQueries({ queryKey: ["admin","gallery"] });
+    qc.invalidateQueries({ queryKey: ["public","gallery"] });
+  }
+
   return (
     <div>
       <PageHeader title="Galerie" subtitle="Bilder hochladen, sortieren und beschriften."
@@ -104,6 +117,18 @@ function GalleryAdmin() {
               <img src={img.image_url} alt={img.caption_de ?? ""} className="w-full h-full object-cover" />
             </div>
             <div className="mt-3 space-y-2">
+              <div>
+                <Label>Kategorie</Label>
+                <select
+                  defaultValue={(img as { category?: string }).category ?? "restaurant"}
+                  onChange={(e) => updateCategory(img.id, e.target.value)}
+                  className="w-full bg-white border border-black/15 rounded px-3 py-2 text-sm focus:outline-none focus:border-[#0D2517]"
+                >
+                  {CATEGORIES.map((c) => (
+                    <option key={c.value} value={c.value}>{c.label}</option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <Label>Untertitel (DE)</Label>
                 <Input defaultValue={img.caption_de ?? ""} onBlur={(e) => updateCaption(img.id, { caption_de: e.target.value })} />
