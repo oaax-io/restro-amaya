@@ -468,6 +468,8 @@ function Header({ title, lead }: { title: string; lead: string }) {
 
 function LunchView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const LUNCH_MENU = useLunchMenu();
+  const lunchPdfUrl = usePdfUrl("lunch", lunchPdf.url);
   return (
     <div className="relative">
       <Header title={t("menu.lunch.title")} lead={t("menu.lunch.lead")} />
@@ -475,7 +477,7 @@ function LunchView({ lang }: { lang: Lang }) {
       {/* Download CTA */}
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={lunchPdf.url}
+          href={lunchPdfUrl}
           download="Amaya-Lunch-Menu.pdf"
           target="_blank"
           rel="noopener"
