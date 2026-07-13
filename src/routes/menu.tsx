@@ -829,7 +829,7 @@ function SushiView({ lang }: { lang: Lang }) {
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={sushiPdf.url}
+          href={sushiPdfUrl}
           download="Amaya-Sushi-Menu.pdf"
           target="_blank"
           rel="noopener"
