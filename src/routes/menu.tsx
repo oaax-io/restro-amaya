@@ -3,16 +3,12 @@ import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import {
-  WEEKLY_MENU,
-  LUNCH_MENU,
-  AMAYA_MESA,
-  SUSHI_SHARING,
-  WINE_MENU,
   type MenuItem,
   type MenuSection,
   type WineItem,
   type WineMenuSection,
 } from "@/data/menu";
+import { useWeeklyMenu, useLunchMenu, useMesaMenu, useSushiMenu, useWineMenu, usePdfUrl } from "@/lib/menu-data";
 import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
 import { Download } from "lucide-react";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
