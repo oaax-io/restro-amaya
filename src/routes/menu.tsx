@@ -161,6 +161,7 @@ function MenuPage() {
 
 function WeeklyView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const WEEKLY_MENU = useWeeklyMenu();
   return (
     <div>
       <Header title={t("menu.weekly.title")} lead={t("menu.weekly.lead")} />
