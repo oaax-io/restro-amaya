@@ -12,6 +12,21 @@ export function Footer() {
   const lang = i18n.language?.startsWith("en") ? "en" : "de";
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function subscribe(e: React.FormEvent) {
+    e.preventDefault();
+    setErr(null);
+    if (!email) return;
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { error } = await supabase.from("newsletter_subscribers").insert({ email, source: "footer" });
+    if (error && !error.message.toLowerCase().includes("duplicate")) {
+      setErr(error.message);
+      return;
+    }
+    setSubscribed(true);
+    setEmail("");
+  }
 
   return (
     <footer className="relative mt-32 bg-onyx overflow-hidden">
@@ -36,10 +51,7 @@ export function Footer() {
               ? "Events, neue Karten und private Sessions — exklusive News direkt in dein Postfach."
               : "Events, new menus and private sessions — exclusive news straight to your inbox."}
           </p>
-          <form
-            onSubmit={(e) => { e.preventDefault(); if (email) { setSubscribed(true); setEmail(""); } }}
-            className="mt-8 mx-auto max-w-md flex flex-col sm:flex-row gap-3"
-          >
+          <form onSubmit={subscribe} className="mt-8 mx-auto max-w-md flex flex-col sm:flex-row gap-3">
             <input
               type="email"
               required
@@ -61,6 +73,7 @@ export function Footer() {
               {lang === "de" ? "Danke! Willkommen im Amaya-Kreis." : "Thanks! Welcome to the Amaya circle."}
             </p>
           )}
+          {err && <p className="mt-3 text-sm text-red-500">{err}</p>}
         </div>
       </div>
 
