@@ -311,13 +311,15 @@ function Tag({ tag }: { tag: NonNullable<MenuItem["tags"]>[number] }) {
 
 function WineView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
+  const WINE_MENU = useWineMenu();
+  const winePdfUrl = usePdfUrl("wine", winePdf.url);
   return (
     <div className="relative">
       <Header title={t("menu.wine.title")} lead={t("menu.wine.lead")} />
 
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
-          href={winePdf.url}
+          href={winePdfUrl}
           download="Amaya-Wein-Karte.pdf"
           target="_blank"
           rel="noopener"
