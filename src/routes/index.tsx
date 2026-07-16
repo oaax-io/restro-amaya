@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { ReservationCard } from "@/components/site/ReservationCard";
@@ -81,6 +83,18 @@ export const Route = createFileRoute("/")({
 
 function Index() {
   const { t } = useTranslation();
+
+  const { data: showReservation = true } = useQuery({
+    queryKey: ["site_settings", "show_hero_reservation_card"],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("value")
+        .eq("key", "show_hero_reservation_card")
+        .maybeSingle();
+      return data?.value !== false;
+    },
+  });
 
   const concepts = [
     { key: "restaurant", img: restoSlide1.url, images: [restoSlide1.url, restoSlide2.url, restoSlide3.url, restoSlide4.url, restoSlide5.url, restoSlide6.url], label: "01" },
