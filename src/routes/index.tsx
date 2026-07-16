@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { ReservationCard } from "@/components/site/ReservationCard";
@@ -19,6 +20,32 @@ import amayaFourth from "@/assets/amaya-fourth.jpg.asset.json";
 import amayaSeventh from "@/assets/amaya-seventh.jpg.asset.json";
 import amayaEight from "@/assets/amaya-eight.jpg.asset.json";
 import amayaNine from "@/assets/amaya-nine.jpg.asset.json";
+import restoSlide1 from "@/assets/resto-slide-1.jpg.asset.json";
+import restoSlide2 from "@/assets/resto-slide-2.jpg.asset.json";
+import restoSlide3 from "@/assets/resto-slide-3.jpg.asset.json";
+
+function ConceptImages({ images, alt }: { images: readonly string[]; alt: string }) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (images.length < 2) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % images.length), 3500);
+    return () => clearInterval(t);
+  }, [images.length]);
+  return (
+    <>
+      {images.map((src, i) => (
+        <img
+          key={src + i}
+          src={src}
+          alt={alt}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-all duration-[1400ms] group-hover:scale-110"
+          style={{ opacity: i === idx ? 1 : 0 }}
+        />
+      ))}
+    </>
+  );
+}
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,7 +64,7 @@ function Index() {
   const { t } = useTranslation();
 
   const concepts = [
-    { key: "restaurant", img: slideRestaurant, label: "01" },
+    { key: "restaurant", img: slideRestaurant, images: [slideRestaurant, restoSlide1.url, restoSlide2.url, restoSlide3.url], label: "01" },
     { key: "lounge", img: slideLounge, label: "02" },
     { key: "bar", img: slideBar, label: "03" },
     { key: "events", img: slideEvents, label: "04" },
@@ -161,6 +188,7 @@ function Index() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
             {concepts.map((c, i) => {
               const d = t(`hero.slides.${c.key}`, { returnObjects: true }) as { tag: string; title: string; sub: string };
+              const imgs = "images" in c ? (c.images as readonly string[]) : [c.img];
               return (
                 <motion.div
                   key={c.key}
@@ -170,12 +198,7 @@ function Index() {
                   transition={{ duration: 0.7, delay: i * 0.08 }}
                   className={`group relative overflow-hidden aspect-[4/5] lg:aspect-[5/6] ${i % 2 === 1 ? "md:translate-y-12" : ""}`}
                 >
-                  <img
-                    src={c.img}
-                    alt={d.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    loading="lazy"
-                  />
+                  <ConceptImages images={imgs} alt={d.title} />
                   <div className="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/30 to-transparent" />
                   <div className="absolute inset-0 ring-0 ring-gold/0 group-hover:ring-1 group-hover:ring-gold/70 transition-all duration-500" />
                   <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-between">
