@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReservationRouteImport } from './routes/reservation'
 import { Route as MenuRouteImport } from './routes/menu'
+import { Route as LoungeRouteImport } from './routes/lounge'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
@@ -37,6 +38,11 @@ const ReservationRoute = ReservationRouteImport.update({
 const MenuRoute = MenuRouteImport.update({
   id: '/menu',
   path: '/menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoungeRoute = LoungeRouteImport.update({
+  id: '/lounge',
+  path: '/lounge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JobsRoute = JobsRouteImport.update({
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
+  '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -156,6 +163,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
+  '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/admin/applications': typeof AuthenticatedAdminApplicationsRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
+  '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -199,6 +208,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/jobs'
+    | '/lounge'
     | '/menu'
     | '/reservation'
     | '/admin'
@@ -219,6 +229,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/jobs'
+    | '/lounge'
     | '/menu'
     | '/reservation'
     | '/admin/applications'
@@ -239,6 +250,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/jobs'
+    | '/lounge'
     | '/menu'
     | '/reservation'
     | '/_authenticated/admin'
@@ -261,6 +273,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
   JobsRoute: typeof JobsRoute
+  LoungeRoute: typeof LoungeRoute
   MenuRoute: typeof MenuRoute
   ReservationRoute: typeof ReservationRoute
 }
@@ -279,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/menu'
       fullPath: '/menu'
       preLoaderRoute: typeof MenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lounge': {
+      id: '/lounge'
+      path: '/lounge'
+      fullPath: '/lounge'
+      preLoaderRoute: typeof LoungeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jobs': {
@@ -449,6 +469,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
   JobsRoute: JobsRoute,
+  LoungeRoute: LoungeRoute,
   MenuRoute: MenuRoute,
   ReservationRoute: ReservationRoute,
 }
