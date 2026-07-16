@@ -7,13 +7,22 @@ export function GastronoviReservation() {
     const host = hostRef.current;
     if (!host) return;
 
+    const CROP_TOP = 24;
+    const CROP_BOTTOM = 28;
+    const VISIBLE_HEIGHT = 300;
+
     const compactWidget = () => {
       const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
       if (!iframe) return;
       iframe.style.width = "100%";
-      iframe.style.height = "300px";
-      iframe.style.minHeight = "300px";
       iframe.style.display = "block";
+      iframe.style.border = "0";
+      // Make iframe taller than visible area, then shift up to crop
+      // the empty whitespace inside the cross-origin document.
+      iframe.style.height = `${VISIBLE_HEIGHT + CROP_TOP + CROP_BOTTOM}px`;
+      iframe.style.minHeight = `${VISIBLE_HEIGHT + CROP_TOP + CROP_BOTTOM}px`;
+      iframe.style.marginTop = `-${CROP_TOP}px`;
+      iframe.style.marginBottom = `-${CROP_BOTTOM}px`;
     };
 
     const observer = new MutationObserver(compactWidget);
@@ -52,7 +61,8 @@ export function GastronoviReservation() {
         <div
           ref={hostRef}
           id="reservation"
-          className="gastronovi-widget relative overflow-hidden rounded-lg border border-gold/25 bg-bone shadow-[0_18px_48px_-24px_rgba(0,0,0,0.75)] [&_iframe]:!block [&_iframe]:!h-[300px] [&_iframe]:!min-h-[300px] [&_iframe]:!w-full"
+          style={{ height: 300 }}
+          className="gastronovi-widget relative overflow-hidden rounded-lg border border-gold/25 bg-bone shadow-[0_18px_48px_-24px_rgba(0,0,0,0.75)] [&_iframe]:!block [&_iframe]:!w-full [&_iframe]:!border-0"
         />
       </div>
     </section>
