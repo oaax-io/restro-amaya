@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, CalendarCheck, Image as ImageIcon, UtensilsCrossed, Clock, Briefcase, Mail, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, CalendarCheck, Image as ImageIcon, UtensilsCrossed, Clock, Briefcase, Mail, LogOut, Menu, X, PartyPopper } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -7,6 +7,7 @@ type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?
 const NAV: NavItem[] = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/reservations", label: "Reservierungen", icon: CalendarCheck },
+  { to: "/admin/events", label: "Events", icon: PartyPopper },
   { to: "/admin/gallery", label: "Galerie", icon: ImageIcon },
   { to: "/admin/menu", label: "Speisekarte", icon: UtensilsCrossed },
   { to: "/admin/hours", label: "Öffnungszeiten", icon: Clock },
