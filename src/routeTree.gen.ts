@@ -25,6 +25,7 @@ import { Route as AuthenticatedAdminReservationsRouteImport } from './routes/_au
 import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_authenticated/admin.newsletter'
 import { Route as AuthenticatedAdminMenuRouteImport } from './routes/_authenticated/admin.menu'
 import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authenticated/admin.members'
+import { Route as AuthenticatedAdminLoungeRouteImport } from './routes/_authenticated/admin.lounge'
 import { Route as AuthenticatedAdminJobsRouteImport } from './routes/_authenticated/admin.jobs'
 import { Route as AuthenticatedAdminHoursRouteImport } from './routes/_authenticated/admin.hours'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin.gallery'
@@ -113,6 +114,12 @@ const AuthenticatedAdminMembersRoute =
     path: '/members',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminLoungeRoute =
+  AuthenticatedAdminLoungeRouteImport.update({
+    id: '/lounge',
+    path: '/lounge',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminJobsRoute = AuthenticatedAdminJobsRouteImport.update({
   id: '/jobs',
   path: '/jobs',
@@ -158,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
   '/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/admin/lounge': typeof AuthenticatedAdminLoungeRoute
   '/admin/members': typeof AuthenticatedAdminMembersRoute
   '/admin/menu': typeof AuthenticatedAdminMenuRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
@@ -179,6 +187,7 @@ export interface FileRoutesByTo {
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
   '/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/admin/lounge': typeof AuthenticatedAdminLoungeRoute
   '/admin/members': typeof AuthenticatedAdminMembersRoute
   '/admin/menu': typeof AuthenticatedAdminMenuRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
@@ -203,6 +212,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/hours': typeof AuthenticatedAdminHoursRoute
   '/_authenticated/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/_authenticated/admin/lounge': typeof AuthenticatedAdminLoungeRoute
   '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRoute
   '/_authenticated/admin/menu': typeof AuthenticatedAdminMenuRoute
   '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
@@ -227,6 +237,7 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/hours'
     | '/admin/jobs'
+    | '/admin/lounge'
     | '/admin/members'
     | '/admin/menu'
     | '/admin/newsletter'
@@ -248,6 +259,7 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/hours'
     | '/admin/jobs'
+    | '/admin/lounge'
     | '/admin/members'
     | '/admin/menu'
     | '/admin/newsletter'
@@ -271,6 +283,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/hours'
     | '/_authenticated/admin/jobs'
+    | '/_authenticated/admin/lounge'
     | '/_authenticated/admin/members'
     | '/_authenticated/admin/menu'
     | '/_authenticated/admin/newsletter'
@@ -405,6 +418,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMembersRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/lounge': {
+      id: '/_authenticated/admin/lounge'
+      path: '/lounge'
+      fullPath: '/admin/lounge'
+      preLoaderRoute: typeof AuthenticatedAdminLoungeRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/jobs': {
       id: '/_authenticated/admin/jobs'
       path: '/jobs'
@@ -449,6 +469,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminHoursRoute: typeof AuthenticatedAdminHoursRoute
   AuthenticatedAdminJobsRoute: typeof AuthenticatedAdminJobsRoute
+  AuthenticatedAdminLoungeRoute: typeof AuthenticatedAdminLoungeRoute
   AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRoute
   AuthenticatedAdminMenuRoute: typeof AuthenticatedAdminMenuRoute
   AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
@@ -462,6 +483,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
   AuthenticatedAdminHoursRoute: AuthenticatedAdminHoursRoute,
   AuthenticatedAdminJobsRoute: AuthenticatedAdminJobsRoute,
+  AuthenticatedAdminLoungeRoute: AuthenticatedAdminLoungeRoute,
   AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRoute,
   AuthenticatedAdminMenuRoute: AuthenticatedAdminMenuRoute,
   AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
