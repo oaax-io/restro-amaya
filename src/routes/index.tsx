@@ -32,6 +32,10 @@ import eventSlide6 from "@/assets/LuzPalokaj_Photography-07520.jpg.asset.json";
 import restoSlide4 from "@/assets/LUP03221.jpg.asset.json";
 import restoSlide5 from "@/assets/LUP02890.jpg.asset.json";
 import restoSlide6 from "@/assets/LUP02999.jpg.asset.json";
+import loungeSlide1 from "@/assets/LuzPalokaj_Photography--14.jpg.asset.json";
+import loungeSlide2 from "@/assets/LuzPalokaj_Photography--36.jpg.asset.json";
+import loungeSlide3 from "@/assets/LuzPalokaj_Photography--34.jpg.asset.json";
+import loungeSlide4 from "@/assets/LuzPalokaj_Photography--35.jpg.asset.json";
 
 function ConceptImages({ images, alt }: { images: readonly string[]; alt: string }) {
   const [idx, setIdx] = useState(0);
@@ -74,7 +78,7 @@ function Index() {
 
   const concepts = [
     { key: "restaurant", img: restoSlide1.url, images: [restoSlide1.url, restoSlide2.url, restoSlide3.url, restoSlide4.url, restoSlide5.url, restoSlide6.url], label: "01" },
-    { key: "lounge", img: slideLounge, label: "02" },
+    { key: "lounge", img: loungeSlide1.url, images: [loungeSlide1.url, loungeSlide2.url, loungeSlide3.url, loungeSlide4.url], label: "02" },
     { key: "bar", img: slideBar, label: "03" },
     { key: "events", img: eventSlide1.url, images: [eventSlide1.url, eventSlide2.url, eventSlide3.url, eventSlide4.url, eventSlide5.url, eventSlide6.url], label: "04" },
   ] as const;
