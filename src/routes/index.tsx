@@ -165,6 +165,7 @@ function Index() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
             {concepts.map((c, i) => {
               const d = t(`hero.slides.${c.key}`, { returnObjects: true }) as { tag: string; title: string; sub: string };
+              const imgs = "images" in c ? (c.images as readonly string[]) : [c.img];
               return (
                 <motion.div
                   key={c.key}
@@ -174,12 +175,7 @@ function Index() {
                   transition={{ duration: 0.7, delay: i * 0.08 }}
                   className={`group relative overflow-hidden aspect-[4/5] lg:aspect-[5/6] ${i % 2 === 1 ? "md:translate-y-12" : ""}`}
                 >
-                  <img
-                    src={c.img}
-                    alt={d.title}
-                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
-                    loading="lazy"
-                  />
+                  <ConceptImages images={imgs} alt={d.title} />
                   <div className="absolute inset-0 bg-gradient-to-t from-onyx via-onyx/30 to-transparent" />
                   <div className="absolute inset-0 ring-0 ring-gold/0 group-hover:ring-1 group-hover:ring-gold/70 transition-all duration-500" />
                   <div className="absolute inset-0 p-8 lg:p-10 flex flex-col justify-between">
