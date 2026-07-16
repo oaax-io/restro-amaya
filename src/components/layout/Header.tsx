@@ -18,8 +18,8 @@ export function Header() {
   const links = [
     { to: "/", label: t("nav.home") },
     { to: "/menu", label: t("nav.menu") },
-    { to: "/about", label: t("nav.lounge") },
-    { to: "/about", label: t("nav.events") },
+    { to: "/lounge", label: t("nav.lounge") },
+    { to: "/events", label: t("nav.events") },
     { to: "/gallery", label: t("nav.gallery") },
     { to: "/jobs", label: t("nav.jobs") },
   ];

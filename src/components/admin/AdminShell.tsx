@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { LayoutDashboard, CalendarCheck, Image as ImageIcon, UtensilsCrossed, Clock, Briefcase, Mail, LogOut, Menu, X, PartyPopper, Inbox } from "lucide-react";
+import { LayoutDashboard, CalendarCheck, Image as ImageIcon, UtensilsCrossed, Clock, Briefcase, Mail, LogOut, Menu, X, PartyPopper, Inbox, Crown, Cigarette } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -9,6 +9,8 @@ const NAV: NavItem[] = [
   { to: "/admin/reservations", label: "Reservierungen", icon: CalendarCheck },
   { to: "/admin/events", label: "Events", icon: PartyPopper },
   { to: "/admin/gallery", label: "Galerie", icon: ImageIcon },
+  { to: "/admin/lounge", label: "Lounge Bilder", icon: Cigarette },
+  { to: "/admin/members", label: "Members", icon: Crown },
   { to: "/admin/menu", label: "Speisekarte", icon: UtensilsCrossed },
   { to: "/admin/hours", label: "Öffnungszeiten", icon: Clock },
   { to: "/admin/jobs", label: "Jobs", icon: Briefcase },

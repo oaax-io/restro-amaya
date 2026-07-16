@@ -200,6 +200,99 @@ export type Database = {
         }
         Relationships: []
       }
+      lounge_images: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string
+          is_published: boolean
+          sort_order: number
+          title: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url: string
+          is_published?: boolean
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string
+          is_published?: boolean
+          sort_order?: number
+          title?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      lounge_members: {
+        Row: {
+          address: string | null
+          admin_notes: string | null
+          birth_date: string | null
+          city: string | null
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          member_number: string | null
+          membership_type: string
+          message: string | null
+          payment_status: string
+          phone: string | null
+          postal_code: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          address?: string | null
+          admin_notes?: string | null
+          birth_date?: string | null
+          city?: string | null
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          member_number?: string | null
+          membership_type?: string
+          message?: string | null
+          payment_status?: string
+          phone?: string | null
+          postal_code?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          address?: string | null
+          admin_notes?: string | null
+          birth_date?: string | null
+          city?: string | null
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          member_number?: string | null
+          membership_type?: string
+          message?: string | null
+          payment_status?: string
+          phone?: string | null
+          postal_code?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       menu_categories: {
         Row: {
           created_at: string

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ReservationRouteImport } from './routes/reservation'
 import { Route as MenuRouteImport } from './routes/menu'
+import { Route as LoungeRouteImport } from './routes/lounge'
 import { Route as JobsRouteImport } from './routes/jobs'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
@@ -23,6 +24,8 @@ import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedAdminReservationsRouteImport } from './routes/_authenticated/admin.reservations'
 import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_authenticated/admin.newsletter'
 import { Route as AuthenticatedAdminMenuRouteImport } from './routes/_authenticated/admin.menu'
+import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authenticated/admin.members'
+import { Route as AuthenticatedAdminLoungeRouteImport } from './routes/_authenticated/admin.lounge'
 import { Route as AuthenticatedAdminJobsRouteImport } from './routes/_authenticated/admin.jobs'
 import { Route as AuthenticatedAdminHoursRouteImport } from './routes/_authenticated/admin.hours'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin.gallery'
@@ -37,6 +40,11 @@ const ReservationRoute = ReservationRouteImport.update({
 const MenuRoute = MenuRouteImport.update({
   id: '/menu',
   path: '/menu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoungeRoute = LoungeRouteImport.update({
+  id: '/lounge',
+  path: '/lounge',
   getParentRoute: () => rootRouteImport,
 } as any)
 const JobsRoute = JobsRouteImport.update({
@@ -100,6 +108,18 @@ const AuthenticatedAdminMenuRoute = AuthenticatedAdminMenuRouteImport.update({
   path: '/menu',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminMembersRoute =
+  AuthenticatedAdminMembersRouteImport.update({
+    id: '/members',
+    path: '/members',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminLoungeRoute =
+  AuthenticatedAdminLoungeRouteImport.update({
+    id: '/lounge',
+    path: '/lounge',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminJobsRoute = AuthenticatedAdminJobsRouteImport.update({
   id: '/jobs',
   path: '/jobs',
@@ -136,6 +156,7 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
+  '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -144,6 +165,8 @@ export interface FileRoutesByFullPath {
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
   '/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/admin/lounge': typeof AuthenticatedAdminLoungeRoute
+  '/admin/members': typeof AuthenticatedAdminMembersRoute
   '/admin/menu': typeof AuthenticatedAdminMenuRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/reservations': typeof AuthenticatedAdminReservationsRoute
@@ -156,6 +179,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
+  '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/admin/applications': typeof AuthenticatedAdminApplicationsRoute
@@ -163,6 +187,8 @@ export interface FileRoutesByTo {
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
   '/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/admin/lounge': typeof AuthenticatedAdminLoungeRoute
+  '/admin/members': typeof AuthenticatedAdminMembersRoute
   '/admin/menu': typeof AuthenticatedAdminMenuRoute
   '/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/admin/reservations': typeof AuthenticatedAdminReservationsRoute
@@ -177,6 +203,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/jobs': typeof JobsRoute
+  '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
@@ -185,6 +212,8 @@ export interface FileRoutesById {
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/hours': typeof AuthenticatedAdminHoursRoute
   '/_authenticated/admin/jobs': typeof AuthenticatedAdminJobsRoute
+  '/_authenticated/admin/lounge': typeof AuthenticatedAdminLoungeRoute
+  '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRoute
   '/_authenticated/admin/menu': typeof AuthenticatedAdminMenuRoute
   '/_authenticated/admin/newsletter': typeof AuthenticatedAdminNewsletterRoute
   '/_authenticated/admin/reservations': typeof AuthenticatedAdminReservationsRoute
@@ -199,6 +228,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/jobs'
+    | '/lounge'
     | '/menu'
     | '/reservation'
     | '/admin'
@@ -207,6 +237,8 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/hours'
     | '/admin/jobs'
+    | '/admin/lounge'
+    | '/admin/members'
     | '/admin/menu'
     | '/admin/newsletter'
     | '/admin/reservations'
@@ -219,6 +251,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/jobs'
+    | '/lounge'
     | '/menu'
     | '/reservation'
     | '/admin/applications'
@@ -226,6 +259,8 @@ export interface FileRouteTypes {
     | '/admin/gallery'
     | '/admin/hours'
     | '/admin/jobs'
+    | '/admin/lounge'
+    | '/admin/members'
     | '/admin/menu'
     | '/admin/newsletter'
     | '/admin/reservations'
@@ -239,6 +274,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/gallery'
     | '/jobs'
+    | '/lounge'
     | '/menu'
     | '/reservation'
     | '/_authenticated/admin'
@@ -247,6 +283,8 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/hours'
     | '/_authenticated/admin/jobs'
+    | '/_authenticated/admin/lounge'
+    | '/_authenticated/admin/members'
     | '/_authenticated/admin/menu'
     | '/_authenticated/admin/newsletter'
     | '/_authenticated/admin/reservations'
@@ -261,6 +299,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
   JobsRoute: typeof JobsRoute
+  LoungeRoute: typeof LoungeRoute
   MenuRoute: typeof MenuRoute
   ReservationRoute: typeof ReservationRoute
 }
@@ -279,6 +318,13 @@ declare module '@tanstack/react-router' {
       path: '/menu'
       fullPath: '/menu'
       preLoaderRoute: typeof MenuRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/lounge': {
+      id: '/lounge'
+      path: '/lounge'
+      fullPath: '/lounge'
+      preLoaderRoute: typeof LoungeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/jobs': {
@@ -365,6 +411,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminMenuRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/members': {
+      id: '/_authenticated/admin/members'
+      path: '/members'
+      fullPath: '/admin/members'
+      preLoaderRoute: typeof AuthenticatedAdminMembersRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/lounge': {
+      id: '/_authenticated/admin/lounge'
+      path: '/lounge'
+      fullPath: '/admin/lounge'
+      preLoaderRoute: typeof AuthenticatedAdminLoungeRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/jobs': {
       id: '/_authenticated/admin/jobs'
       path: '/jobs'
@@ -409,6 +469,8 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminHoursRoute: typeof AuthenticatedAdminHoursRoute
   AuthenticatedAdminJobsRoute: typeof AuthenticatedAdminJobsRoute
+  AuthenticatedAdminLoungeRoute: typeof AuthenticatedAdminLoungeRoute
+  AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRoute
   AuthenticatedAdminMenuRoute: typeof AuthenticatedAdminMenuRoute
   AuthenticatedAdminNewsletterRoute: typeof AuthenticatedAdminNewsletterRoute
   AuthenticatedAdminReservationsRoute: typeof AuthenticatedAdminReservationsRoute
@@ -421,6 +483,8 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
   AuthenticatedAdminHoursRoute: AuthenticatedAdminHoursRoute,
   AuthenticatedAdminJobsRoute: AuthenticatedAdminJobsRoute,
+  AuthenticatedAdminLoungeRoute: AuthenticatedAdminLoungeRoute,
+  AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRoute,
   AuthenticatedAdminMenuRoute: AuthenticatedAdminMenuRoute,
   AuthenticatedAdminNewsletterRoute: AuthenticatedAdminNewsletterRoute,
   AuthenticatedAdminReservationsRoute: AuthenticatedAdminReservationsRoute,
@@ -449,6 +513,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
   JobsRoute: JobsRoute,
+  LoungeRoute: LoungeRoute,
   MenuRoute: MenuRoute,
   ReservationRoute: ReservationRoute,
 }
