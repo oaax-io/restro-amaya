@@ -207,7 +207,7 @@ function Index() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6">
             {concepts.map((c, i) => {
               const d = t(`hero.slides.${c.key}`, { returnObjects: true }) as { tag: string; title: string; sub: string };
-              const imgs = "images" in c ? (c.images as readonly string[]) : [c.img];
+              const imgs = c.images as readonly string[];
               return (
                 <motion.div
                   key={c.key}
