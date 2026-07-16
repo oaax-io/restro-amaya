@@ -1,85 +1,44 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
 import { useTranslation } from "react-i18next";
-import { Calendar, Clock, MapPin, Users, ArrowRight } from "lucide-react";
+import { Calendar, Clock, MapPin, Users, ArrowRight, Tag } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
+import { supabase } from "@/integrations/supabase/client";
 import jungleTex from "@/assets/jungle-texture.jpg";
-import flyer1 from "@/assets/LUPSTUDIOS-19.jpg.asset.json";
-import flyer2 from "@/assets/LuzPalokaj_Photography--21.jpg.asset.json";
-import flyer3 from "@/assets/LuzPalokaj_Photography-07561.jpg.asset.json";
-import flyer4 from "@/assets/LuzPalokaj_Photography--20.jpg.asset.json";
 
-type EventItem = {
+type EventRow = {
   id: string;
-  flyer: string;
-  kicker: string;
+  flyer_url: string | null;
+  kicker: string | null;
   title: string;
-  date: string;
-  time: string;
-  location: string;
-  capacity: string;
-  description: string;
-  cta: string;
-  ctaHref: string;
+  description: string | null;
+  event_date: string | null;
+  event_time: string | null;
+  end_time: string | null;
+  location: string | null;
+  capacity: string | null;
+  is_paid: boolean;
+  price_text: string | null;
+  cta_label: string | null;
+  cta_href: string | null;
+  is_recurring: boolean;
+  recurrence: string | null;
+  sort_order: number;
 };
 
-const EVENTS: EventItem[] = [
-  {
-    id: "jungle-nights",
-    flyer: flyer1.url,
-    kicker: "DJ Night",
-    title: "Jungle Nights vol. IV",
-    date: "Fr. 15. August 2026",
-    time: "22:00 – 04:00",
-    location: "Amaya Bar · Rothenburg LU",
-    capacity: "Limitiert auf 120 Gäste",
-    description:
-      "Deep House, Afro Beats und tropische Cocktails. Unser Signature-Event verwandelt die Bar in einen pulsierenden Dschungel — mit Live-Percussion und einem Special-Guest-DJ aus Zürich.",
-    cta: "Jetzt teilnehmen",
-    ctaHref: "/reservation",
-  },
-  {
-    id: "cigar-tasting",
-    flyer: flyer2.url,
-    kicker: "Tasting",
-    title: "Cigar & Rum Pairing",
-    date: "Sa. 30. August 2026",
-    time: "19:30 – 23:00",
-    location: "Cigar Lounge",
-    capacity: "Max. 24 Plätze",
-    description:
-      "Ein geführter Abend durch drei Premium-Zigarren aus der Karibik, kombiniert mit gereiften Rums. Inklusive 3-Gang-Menü und Espresso.",
-    cta: "Platz sichern",
-    ctaHref: "/reservation",
-  },
-  {
-    id: "private-birthday",
-    flyer: flyer3.url,
-    kicker: "Private Event",
-    title: "Deine Geburtstagsnacht",
-    date: "Termin nach Wahl",
-    time: "ab 18:00",
-    location: "Ganzer Raum oder Lounge",
-    capacity: "20 – 150 Gäste",
-    description:
-      "Feiere deinen Geburtstag im Dschungel. Wir stellen Menü, DJ und Deko individuell zusammen — vom intimen Dinner bis zur ausgelassenen Party.",
-    cta: "Anfrage senden",
-    ctaHref: "mailto:events@amaya-restaurant.ch?subject=Geburtstags-Anfrage",
-  },
-  {
-    id: "brunch-sundays",
-    flyer: flyer4.url,
-    kicker: "Weekly",
-    title: "Wild Brunch Sundays",
-    date: "Jeden Sonntag",
-    time: "10:00 – 14:00",
-    location: "Restaurant",
-    capacity: "Reservation empfohlen",
-    description:
-      "Ausgedehnter Brunch mit Live-Cooking-Station, tropischen Früchten, Sushi-Bar und Bottomless Prosecco. Perfekt für den langsamen Sonntag.",
-    cta: "Tisch reservieren",
-    ctaHref: "/reservation",
-  },
-];
+function formatDate(row: EventRow): string {
+  if (row.is_recurring) return row.recurrence ?? "";
+  if (!row.event_date) return "";
+  try {
+    return new Date(row.event_date).toLocaleDateString("de-CH", {
+      weekday: "short", day: "2-digit", month: "long", year: "numeric",
+    });
+  } catch { return row.event_date; }
+}
+function formatTime(row: EventRow): string {
+  if (row.event_time && row.end_time) return `${row.event_time} – ${row.end_time}`;
+  return row.event_time ?? "";
+}
 
 export const Route = createFileRoute("/events")({
   head: () => ({
@@ -97,6 +56,19 @@ export const Route = createFileRoute("/events")({
 
 function EventsPage() {
   const { t } = useTranslation();
+  const { data: events = [] } = useQuery({
+    queryKey: ["public", "events"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("events" as never)
+        .select("*")
+        .eq("is_published", true)
+        .order("sort_order", { ascending: true })
+        .order("event_date", { ascending: true });
+      if (error) throw error;
+      return (data ?? []) as unknown as EventRow[];
+    },
+  });
   return (
     <SiteLayout>
       {/* Hero */}
@@ -121,10 +93,17 @@ function EventsPage() {
       {/* Events */}
       <section className="pb-24 lg:pb-32">
         <div className="mx-auto max-w-6xl px-6 lg:px-10 space-y-24 lg:space-y-32">
-          {EVENTS.map((ev, idx) => {
+          {events.length === 0 && (
+            <p className="text-center text-muted-foreground py-12">Aktuell sind keine Events geplant — schau bald wieder vorbei.</p>
+          )}
+          {events.map((ev, idx) => {
             const reverse = idx % 2 === 1;
             const tilt = reverse ? "lg:rotate-2" : "lg:-rotate-2";
-            const isExternal = ev.ctaHref.startsWith("mailto:") || ev.ctaHref.startsWith("http");
+            const ctaHref = ev.cta_href ?? "/reservation";
+            const ctaLabel = ev.cta_label ?? "Jetzt teilnehmen";
+            const isExternal = ctaHref.startsWith("mailto:") || ctaHref.startsWith("http") || ctaHref.startsWith("tel:");
+            const dateStr = formatDate(ev);
+            const timeStr = formatTime(ev);
             return (
               <article
                 key={ev.id}
@@ -151,20 +130,24 @@ function EventsPage() {
                       "hover:rotate-0 hover:-translate-y-2 hover:scale-[1.02]",
                     ].join(" ")}
                   >
-                    <img
-                      src={ev.flyer}
-                      alt={`Flyer ${ev.title}`}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
+                    {ev.flyer_url ? (
+                      <img src={ev.flyer_url} alt={`Flyer ${ev.title}`} className="w-full h-full object-cover" loading="lazy" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-accent/60 font-display text-2xl p-6 text-center">{ev.title}</div>
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
                     <div className="absolute top-4 left-4 flex items-center gap-2">
-                      <span className="rounded-full bg-accent text-[#0D2517] text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1">
-                        {ev.kicker}
+                      {ev.kicker && (
+                        <span className="rounded-full bg-accent text-[#0D2517] text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1">
+                          {ev.kicker}
+                        </span>
+                      )}
+                      <span className={`rounded-full text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1 ${ev.is_paid ? "bg-white/90 text-[#0D2517]" : "bg-emerald-500/90 text-white"}`}>
+                        {ev.is_paid ? (ev.price_text ?? "Ticket") : "Gratis"}
                       </span>
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-white">
-                      <div className="text-[11px] tracking-[0.3em] uppercase text-white/75">{ev.date}</div>
+                      <div className="text-[11px] tracking-[0.3em] uppercase text-white/75">{dateStr}</div>
                       <div className="font-display text-2xl leading-tight mt-1">{ev.title}</div>
                     </div>
                   </div>
@@ -172,36 +155,39 @@ function EventsPage() {
 
                 {/* Description */}
                 <div>
-                  <p className="text-xs tracking-[0.4em] uppercase text-accent">— {ev.kicker}</p>
+                  <p className="text-xs tracking-[0.4em] uppercase text-accent">— {ev.kicker ?? "Event"}</p>
                   <h2 className="font-display text-4xl lg:text-5xl uppercase font-bold mt-4 text-gradient-gold leading-[0.95]">
                     {ev.title}
                   </h2>
-                  <p className="mt-6 text-muted-foreground leading-relaxed text-base lg:text-lg">
-                    {ev.description}
-                  </p>
+                  {ev.description && (
+                    <p className="mt-6 text-muted-foreground leading-relaxed text-base lg:text-lg whitespace-pre-line">
+                      {ev.description}
+                    </p>
+                  )}
 
                   <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    <Meta icon={<Calendar size={16} />} label="Datum" value={ev.date} />
-                    <Meta icon={<Clock size={16} />} label="Zeit" value={ev.time} />
-                    <Meta icon={<MapPin size={16} />} label="Ort" value={ev.location} />
-                    <Meta icon={<Users size={16} />} label="Kapazität" value={ev.capacity} />
+                    {dateStr && <Meta icon={<Calendar size={16} />} label="Datum" value={dateStr} />}
+                    {timeStr && <Meta icon={<Clock size={16} />} label="Zeit" value={timeStr} />}
+                    {ev.location && <Meta icon={<MapPin size={16} />} label="Ort" value={ev.location} />}
+                    {ev.capacity && <Meta icon={<Users size={16} />} label="Kapazität" value={ev.capacity} />}
+                    {ev.is_paid && ev.price_text && <Meta icon={<Tag size={16} />} label="Preis" value={ev.price_text} />}
                   </dl>
 
                   <div className="mt-10">
                     {isExternal ? (
                       <a
-                        href={ev.ctaHref}
+                        href={ctaHref}
                         className="inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-7 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors"
                       >
-                        {ev.cta}
+                        {ctaLabel}
                         <ArrowRight size={16} />
                       </a>
                     ) : (
                       <Link
-                        to={ev.ctaHref}
+                        to={ctaHref}
                         className="inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-7 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors"
                       >
-                        {ev.cta}
+                        {ctaLabel}
                         <ArrowRight size={16} />
                       </Link>
                     )}

@@ -14,6 +14,75 @@ export type Database = {
   }
   public: {
     Tables: {
+      events: {
+        Row: {
+          capacity: string | null
+          created_at: string
+          cta_href: string | null
+          cta_label: string | null
+          description: string | null
+          end_time: string | null
+          event_date: string | null
+          event_time: string | null
+          flyer_url: string | null
+          id: string
+          is_paid: boolean
+          is_published: boolean
+          is_recurring: boolean
+          kicker: string | null
+          location: string | null
+          price_text: string | null
+          recurrence: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: string | null
+          created_at?: string
+          cta_href?: string | null
+          cta_label?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          flyer_url?: string | null
+          id?: string
+          is_paid?: boolean
+          is_published?: boolean
+          is_recurring?: boolean
+          kicker?: string | null
+          location?: string | null
+          price_text?: string | null
+          recurrence?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: string | null
+          created_at?: string
+          cta_href?: string | null
+          cta_label?: string | null
+          description?: string | null
+          end_time?: string | null
+          event_date?: string | null
+          event_time?: string | null
+          flyer_url?: string | null
+          id?: string
+          is_paid?: boolean
+          is_published?: boolean
+          is_recurring?: boolean
+          kicker?: string | null
+          location?: string | null
+          price_text?: string | null
+          recurrence?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       gallery_images: {
         Row: {
           caption_de: string | null
