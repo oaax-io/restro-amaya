@@ -27,6 +27,7 @@ import { Route as AuthenticatedAdminJobsRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminHoursRouteImport } from './routes/_authenticated/admin.hours'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin.gallery'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
+import { Route as AuthenticatedAdminApplicationsRouteImport } from './routes/_authenticated/admin.applications'
 
 const ReservationRoute = ReservationRouteImport.update({
   id: '/reservation',
@@ -121,6 +122,12 @@ const AuthenticatedAdminEventsRoute =
     path: '/events',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const AuthenticatedAdminApplicationsRoute =
+  AuthenticatedAdminApplicationsRouteImport.update({
+    id: '/applications',
+    path: '/applications',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/admin/applications': typeof AuthenticatedAdminApplicationsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/jobs': typeof JobsRoute
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
+  '/admin/applications': typeof AuthenticatedAdminApplicationsRoute
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
@@ -171,6 +180,7 @@ export interface FileRoutesById {
   '/menu': typeof MenuRoute
   '/reservation': typeof ReservationRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
+  '/_authenticated/admin/applications': typeof AuthenticatedAdminApplicationsRoute
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/hours': typeof AuthenticatedAdminHoursRoute
@@ -192,6 +202,7 @@ export interface FileRouteTypes {
     | '/menu'
     | '/reservation'
     | '/admin'
+    | '/admin/applications'
     | '/admin/events'
     | '/admin/gallery'
     | '/admin/hours'
@@ -210,6 +221,7 @@ export interface FileRouteTypes {
     | '/jobs'
     | '/menu'
     | '/reservation'
+    | '/admin/applications'
     | '/admin/events'
     | '/admin/gallery'
     | '/admin/hours'
@@ -230,6 +242,7 @@ export interface FileRouteTypes {
     | '/menu'
     | '/reservation'
     | '/_authenticated/admin'
+    | '/_authenticated/admin/applications'
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/hours'
@@ -380,10 +393,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminEventsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/applications': {
+      id: '/_authenticated/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AuthenticatedAdminApplicationsRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
 
 interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminApplicationsRoute: typeof AuthenticatedAdminApplicationsRoute
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminHoursRoute: typeof AuthenticatedAdminHoursRoute
@@ -395,6 +416,7 @@ interface AuthenticatedAdminRouteChildren {
 }
 
 const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminApplicationsRoute: AuthenticatedAdminApplicationsRoute,
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
   AuthenticatedAdminHoursRoute: AuthenticatedAdminHoursRoute,
