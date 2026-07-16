@@ -155,7 +155,7 @@ function Index() {
         videoSrc={jungleVideo.url}
         audioSrc={jungleAudio.url}
       >
-        <ReservationCard variant="overlay" />
+        {showReservation ? <ReservationCard variant="overlay" /> : null}
       </HeroSlider>
 
       {/* STORY / INTRO */}
