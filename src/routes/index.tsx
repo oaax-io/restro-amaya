@@ -24,6 +24,29 @@ import restoSlide1 from "@/assets/resto-slide-1.jpg.asset.json";
 import restoSlide2 from "@/assets/resto-slide-2.jpg.asset.json";
 import restoSlide3 from "@/assets/resto-slide-3.jpg.asset.json";
 
+function ConceptImages({ images, alt }: { images: readonly string[]; alt: string }) {
+  const [idx, setIdx] = useState(0);
+  useEffect(() => {
+    if (images.length < 2) return;
+    const t = setInterval(() => setIdx((i) => (i + 1) % images.length), 3500);
+    return () => clearInterval(t);
+  }, [images.length]);
+  return (
+    <>
+      {images.map((src, i) => (
+        <img
+          key={src + i}
+          src={src}
+          alt={alt}
+          loading="lazy"
+          className="absolute inset-0 w-full h-full object-cover transition-all duration-[1400ms] group-hover:scale-110"
+          style={{ opacity: i === idx ? 1 : 0 }}
+        />
+      ))}
+    </>
+  );
+}
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
