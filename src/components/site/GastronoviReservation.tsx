@@ -8,7 +8,7 @@ export function GastronoviReservation() {
     if (!host) return;
 
     const CROP_TOP = 24;
-    const CROP_BOTTOM = 28;
+    const CROP_BOTTOM = 120;
     const VISIBLE_HEIGHT = 300;
 
     const compactWidget = () => {
