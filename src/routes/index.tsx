@@ -17,7 +17,7 @@ import amayaFirst from "@/assets/amaya-first.jpg.asset.json";
 import amayaSecond from "@/assets/amaya-second.jpg.asset.json";
 import amayaThird from "@/assets/amaya-third.jpg.asset.json";
 import amayaFourth from "@/assets/amaya-fourth.jpg.asset.json";
-import amayaSeventh from "@/assets/amaya-seventh.jpg.asset.json";
+import heroSlideRestaurant from "@/assets/LUPSTUDIOS-8-2.png.asset.json";
 import amayaEight from "@/assets/amaya-eight.jpg.asset.json";
 import amayaNine from "@/assets/amaya-nine.jpg.asset.json";
 import restoSlide1 from "@/assets/resto-slide-1.jpg.asset.json";
@@ -97,7 +97,7 @@ function Index() {
       subtitle: "Lebendes Blätterdach, warmes Licht, Fischgrät-Parkett — eine grüne Oase mitten in Rothenburg.",
     },
     {
-      image: amayaSeventh.url,
+      image: heroSlideRestaurant.url,
       eyebrow: "01 — Restaurant",
       title: "Wild gewachsene Küche.",
       subtitle: "Modernste Küche unter handgeflochtenen Lampen und dichtem Blätterhimmel — kompromisslos und aromenstark.",
