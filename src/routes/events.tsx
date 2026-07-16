@@ -143,7 +143,7 @@ function EventsPage() {
                         </span>
                       )}
                       <span className={`rounded-full text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1 ${ev.is_paid ? "bg-white/90 text-[#0D2517]" : "bg-emerald-500/90 text-white"}`}>
-                        {ev.is_paid ? (ev.price_text ?? "Ticket") : "Gratis"}
+                        {ev.is_paid ? (ev.price_text ?? "Ticket") : "Freier Eintritt"}
                       </span>
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-white">

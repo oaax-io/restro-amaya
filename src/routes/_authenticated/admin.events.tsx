@@ -232,7 +232,7 @@ function EventCard({ ev, first, last, onUpdate, onRemove, onMove, onUploadFlyer 
               onClick={() => onUpdate({ is_paid: !ev.is_paid })}
               className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs uppercase tracking-widest border transition ${ev.is_paid ? "bg-[#E9A580]/20 border-[#E9A580]/40 text-[#0D2517]" : "bg-black/5 border-black/15 text-black/60"}`}
             >
-              {ev.is_paid ? "Kostenpflichtig" : "Gratis"}
+              {ev.is_paid ? "Kostenpflichtig" : "Freier Eintritt"}
             </button>
             <button
               onClick={() => onUpdate({ is_recurring: !ev.is_recurring })}
