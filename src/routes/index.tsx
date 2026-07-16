@@ -23,6 +23,9 @@ import amayaNine from "@/assets/amaya-nine.jpg.asset.json";
 import restoSlide1 from "@/assets/resto-slide-1.jpg.asset.json";
 import restoSlide2 from "@/assets/resto-slide-2.jpg.asset.json";
 import restoSlide3 from "@/assets/resto-slide-3.jpg.asset.json";
+import restoSlide4 from "@/assets/LUP03221.jpg.asset.json";
+import restoSlide5 from "@/assets/LUP02890.jpg.asset.json";
+import restoSlide6 from "@/assets/LUP02999.jpg.asset.json";
 
 function ConceptImages({ images, alt }: { images: readonly string[]; alt: string }) {
   const [idx, setIdx] = useState(0);
@@ -64,7 +67,7 @@ function Index() {
   const { t } = useTranslation();
 
   const concepts = [
-    { key: "restaurant", img: slideRestaurant, images: [slideRestaurant, restoSlide1.url, restoSlide2.url, restoSlide3.url], label: "01" },
+    { key: "restaurant", img: restoSlide1.url, images: [restoSlide1.url, restoSlide2.url, restoSlide3.url, restoSlide4.url, restoSlide5.url, restoSlide6.url], label: "01" },
     { key: "lounge", img: slideLounge, label: "02" },
     { key: "bar", img: slideBar, label: "03" },
     { key: "events", img: slideEvents, label: "04" },
