@@ -21,7 +21,7 @@ export function SiteHeader() {
   const navLinks = [
     { to: "/", label: t("nav.home"), exact: true },
     { to: "/menu", label: t("nav.menu") },
-    { to: "/about", label: t("nav.lounge") },
+    { to: "/lounge", label: t("nav.lounge") },
     { to: "/events", label: t("nav.events") },
     { to: "/gallery", label: t("nav.gallery") },
     { to: "/jobs", label: t("nav.jobs") },
