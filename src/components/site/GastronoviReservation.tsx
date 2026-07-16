@@ -1,11 +1,13 @@
 import { useEffect, useRef } from "react";
 
 export function GastronoviReservation() {
-  const scriptHostRef = useRef<HTMLDivElement>(null);
+  const hostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const host = scriptHostRef.current;
+    const host = hostRef.current;
     if (!host) return;
+    // Widget script inserts an iframe BEFORE its own <script> tag,
+    // so the script must live inside the styled container.
     const script = document.createElement("script");
     script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
     script.type = "text/javascript";
@@ -17,29 +19,24 @@ export function GastronoviReservation() {
   }, []);
 
   return (
-    <section id="online-reservation" className="relative py-24 lg:py-32 bg-onyx">
-      <div className="absolute inset-0 opacity-[0.06] pointer-events-none"
-        style={{
-          backgroundImage:
-            "radial-gradient(circle at 20% 20%, rgba(212,175,55,0.5), transparent 50%), radial-gradient(circle at 80% 80%, rgba(212,175,55,0.35), transparent 55%)",
-        }}
-      />
-      <div className="relative mx-auto max-w-5xl px-6 lg:px-10">
-        <div className="text-center mb-12">
+    <section id="online-reservation" className="relative bg-background py-14 lg:py-20">
+      {/* Seamless fade from the slider above */}
+      <div className="pointer-events-none absolute inset-x-0 -top-24 h-24 bg-gradient-to-b from-transparent to-background" />
+
+      <div className="relative mx-auto max-w-3xl px-6 lg:px-8">
+        <div className="text-center mb-8">
           <p className="mono-label text-gold">— Online Reservation —</p>
-          <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">
-            Tisch reservieren.
+          <h2 className="display-serif text-4xl lg:text-5xl mt-3 text-gradient-gold">
+            Tisch reservieren
           </h2>
-          <div className="mx-auto mt-6 h-px w-24 hairline-gold" />
-          <p className="mt-6 text-foreground/70 max-w-xl mx-auto">
-            Wähle Datum, Uhrzeit und Personenzahl — wir bestätigen dir deinen Tisch direkt online.
-          </p>
+          <div className="mx-auto mt-4 h-px w-16 hairline-gold" />
         </div>
 
-        <div className="relative rounded-2xl border border-gold/25 bg-bone/95 backdrop-blur-sm shadow-2xl p-4 sm:p-8">
-          <div id="reservation" className="gastronovi-widget" />
-          <div ref={scriptHostRef} id="script" aria-hidden />
-        </div>
+        <div
+          ref={hostRef}
+          id="reservation"
+          className="gastronovi-widget relative overflow-hidden rounded-xl border border-gold/20 bg-bone shadow-[0_20px_60px_-20px_rgba(0,0,0,0.5)]"
+        />
       </div>
     </section>
   );
