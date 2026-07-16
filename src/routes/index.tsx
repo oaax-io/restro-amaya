@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
+import { useEffect, useState } from "react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { ReservationCard } from "@/components/site/ReservationCard";
@@ -19,6 +20,9 @@ import amayaFourth from "@/assets/amaya-fourth.jpg.asset.json";
 import amayaSeventh from "@/assets/amaya-seventh.jpg.asset.json";
 import amayaEight from "@/assets/amaya-eight.jpg.asset.json";
 import amayaNine from "@/assets/amaya-nine.jpg.asset.json";
+import restoSlide1 from "@/assets/resto-slide-1.jpg.asset.json";
+import restoSlide2 from "@/assets/resto-slide-2.jpg.asset.json";
+import restoSlide3 from "@/assets/resto-slide-3.jpg.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -37,7 +41,7 @@ function Index() {
   const { t } = useTranslation();
 
   const concepts = [
-    { key: "restaurant", img: slideRestaurant, label: "01" },
+    { key: "restaurant", img: slideRestaurant, images: [slideRestaurant, restoSlide1.url, restoSlide2.url, restoSlide3.url], label: "01" },
     { key: "lounge", img: slideLounge, label: "02" },
     { key: "bar", img: slideBar, label: "03" },
     { key: "events", img: slideEvents, label: "04" },
