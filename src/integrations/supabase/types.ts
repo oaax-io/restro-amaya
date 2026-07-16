@@ -113,6 +113,54 @@ export type Database = {
         }
         Relationships: []
       }
+      job_applications: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          cv_path: string | null
+          cv_url: string | null
+          email: string
+          first_name: string
+          id: string
+          last_name: string
+          message: string | null
+          phone: string | null
+          position: string
+          status: Database["public"]["Enums"]["application_status"]
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          cv_path?: string | null
+          cv_url?: string | null
+          email: string
+          first_name: string
+          id?: string
+          last_name: string
+          message?: string | null
+          phone?: string | null
+          position: string
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          cv_path?: string | null
+          cv_url?: string | null
+          email?: string
+          first_name?: string
+          id?: string
+          last_name?: string
+          message?: string | null
+          phone?: string | null
+          position?: string
+          status?: Database["public"]["Enums"]["application_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       jobs: {
         Row: {
           body_de: string | null
@@ -475,6 +523,12 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "staff"
+      application_status:
+        | "new"
+        | "reviewing"
+        | "interview"
+        | "accepted"
+        | "rejected"
       reservation_status:
         | "pending"
         | "confirmed"
@@ -609,6 +663,13 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "staff"],
+      application_status: [
+        "new",
+        "reviewing",
+        "interview",
+        "accepted",
+        "rejected",
+      ],
       reservation_status: [
         "pending",
         "confirmed",
