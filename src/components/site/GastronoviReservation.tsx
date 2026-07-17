@@ -13,7 +13,20 @@ export function GastronoviReservation() {
     script.async = true;
     scriptHost.appendChild(script);
 
+    // Gastronovi's script inserts the iframe as previousSibling of the <script> tag.
+    // Since #script is display:none, move any injected iframe into #reservation.
+    const reservation = document.getElementById("reservation");
+    const observer = new MutationObserver(() => {
+      scriptHost.querySelectorAll("iframe").forEach((iframe) => {
+        if (reservation && iframe.parentElement !== reservation) {
+          reservation.appendChild(iframe);
+        }
+      });
+    });
+    observer.observe(scriptHost, { childList: true, subtree: true });
+
     return () => {
+      observer.disconnect();
       scriptHost.innerHTML = "";
       const reservation = document.getElementById("reservation");
       if (reservation) reservation.innerHTML = "";
