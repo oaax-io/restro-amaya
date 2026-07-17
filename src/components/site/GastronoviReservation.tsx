@@ -7,25 +7,52 @@ export function GastronoviReservation() {
     const host = hostRef.current;
     if (!host) return;
 
-    const styleIframe = () => {
+    const applyStyles = () => {
       const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
       if (!iframe) return;
       iframe.style.width = "100%";
       iframe.style.display = "block";
       iframe.style.border = "0";
-      iframe.style.background = "transparent";
-      iframe.style.minHeight = "900px";
+      iframe.style.backgroundColor = "#0d2517";
+      iframe.style.minHeight = "unset";
+      iframe.style.maxHeight = "unset";
       iframe.style.margin = "0";
+      if (!iframe.style.height || iframe.style.height === "0px") {
+        iframe.style.height = "500px";
+      }
     };
 
-    const observer = new MutationObserver(styleIframe);
+    const observer = new MutationObserver(applyStyles);
     observer.observe(host, { childList: true, subtree: true });
 
+    let resizeObserver: ResizeObserver | null = null;
+    const trySameOriginObserve = () => {
+      const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
+      if (!iframe) return;
+      try {
+        const doc = iframe.contentDocument;
+        if (!doc || !doc.body) return;
+        resizeObserver?.disconnect();
+        resizeObserver = new ResizeObserver(() => {
+          const h = doc.documentElement.scrollHeight || doc.body.scrollHeight;
+          if (h > 0) iframe.style.height = `${h}px`;
+        });
+        resizeObserver.observe(doc.body);
+      } catch {
+        // cross-origin — rely on postMessage instead
+      }
+    };
+
     const onMessage = (e: MessageEvent) => {
-      const data = e.data as { height?: number } | undefined;
-      if (data && typeof data.height === "number") {
-        const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
-        if (iframe) iframe.style.height = `${data.height}px`;
+      const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
+      if (!iframe) return;
+      const data = e.data as { height?: number; type?: string } | undefined;
+      if (!data) return;
+      if (typeof data.height === "number") {
+        iframe.style.height = `${data.height}px`;
+      }
+      if (data.type === "resize" && typeof data.height === "number") {
+        iframe.style.height = `${data.height}px`;
       }
     };
     window.addEventListener("message", onMessage);
@@ -37,11 +64,18 @@ export function GastronoviReservation() {
     script.type = "text/javascript";
     script.async = true;
     host.appendChild(script);
-    const timer = window.setTimeout(styleIframe, 1200);
+
+    const t1 = window.setTimeout(applyStyles, 600);
+    const t2 = window.setTimeout(() => {
+      applyStyles();
+      trySameOriginObserve();
+    }, 1500);
 
     return () => {
-      window.clearTimeout(timer);
+      window.clearTimeout(t1);
+      window.clearTimeout(t2);
       observer.disconnect();
+      resizeObserver?.disconnect();
       window.removeEventListener("message", onMessage);
       host.innerHTML = "";
     };
@@ -64,8 +98,8 @@ export function GastronoviReservation() {
         <div
           ref={hostRef}
           id="reservation"
-          style={{ background: "transparent", padding: 0, margin: 0, width: "100%" }}
-          className="gastronovi-widget relative w-full [&_iframe]:!block [&_iframe]:!w-full [&_iframe]:!min-h-[900px] [&_iframe]:!border-0 [&_iframe]:!bg-transparent"
+          style={{ backgroundColor: "#0d2517", padding: 0, margin: 0, width: "100%" }}
+          className="gastronovi-widget relative w-full [&_iframe]:!block [&_iframe]:!w-full [&_iframe]:!border-0"
         />
       </div>
     </section>
