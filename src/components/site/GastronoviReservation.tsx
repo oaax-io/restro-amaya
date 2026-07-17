@@ -1,61 +1,33 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+
+// Visible height in the picker (three tiles) state.
+const COLLAPSED_HEIGHT = 260;
+// Height used once the user opens the reservation flow.
+const EXPANDED_HEIGHT = 900;
 
 export function GastronoviReservation() {
   const hostRef = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    const applyStyles = () => {
+    const applyIframeStyles = () => {
       const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
       if (!iframe) return;
       iframe.style.width = "100%";
       iframe.style.display = "block";
       iframe.style.border = "0";
-      iframe.style.backgroundColor = "#0d2517";
+      iframe.style.margin = "0";
+      // Iframe itself is tall so all internal flows fit; the wrapper crops it.
+      iframe.style.height = `${EXPANDED_HEIGHT}px`;
       iframe.style.minHeight = "unset";
       iframe.style.maxHeight = "unset";
-      iframe.style.margin = "0";
-      if (!iframe.style.height || iframe.style.height === "0px") {
-        iframe.style.height = "500px";
-      }
     };
 
-    const observer = new MutationObserver(applyStyles);
+    const observer = new MutationObserver(applyIframeStyles);
     observer.observe(host, { childList: true, subtree: true });
-
-    let resizeObserver: ResizeObserver | null = null;
-    const trySameOriginObserve = () => {
-      const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
-      if (!iframe) return;
-      try {
-        const doc = iframe.contentDocument;
-        if (!doc || !doc.body) return;
-        resizeObserver?.disconnect();
-        resizeObserver = new ResizeObserver(() => {
-          const h = doc.documentElement.scrollHeight || doc.body.scrollHeight;
-          if (h > 0) iframe.style.height = `${h}px`;
-        });
-        resizeObserver.observe(doc.body);
-      } catch {
-        // cross-origin — rely on postMessage instead
-      }
-    };
-
-    const onMessage = (e: MessageEvent) => {
-      const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
-      if (!iframe) return;
-      const data = e.data as { height?: number; type?: string } | undefined;
-      if (!data) return;
-      if (typeof data.height === "number") {
-        iframe.style.height = `${data.height}px`;
-      }
-      if (data.type === "resize" && typeof data.height === "number") {
-        iframe.style.height = `${data.height}px`;
-      }
-    };
-    window.addEventListener("message", onMessage);
 
     // Widget script inserts an iframe BEFORE its own <script> tag,
     // so the script must live inside the styled container.
@@ -65,18 +37,21 @@ export function GastronoviReservation() {
     script.async = true;
     host.appendChild(script);
 
-    const t1 = window.setTimeout(applyStyles, 600);
-    const t2 = window.setTimeout(() => {
-      applyStyles();
-      trySameOriginObserve();
-    }, 1500);
+    const timer = window.setTimeout(applyIframeStyles, 1000);
+
+    // When the user clicks inside the iframe area, expand the visible window
+    // so any opened form/flow isn't cut off.
+    const onBlur = () => {
+      if (document.activeElement && document.activeElement.tagName === "IFRAME") {
+        setExpanded(true);
+      }
+    };
+    window.addEventListener("blur", onBlur);
 
     return () => {
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      window.clearTimeout(timer);
       observer.disconnect();
-      resizeObserver?.disconnect();
-      window.removeEventListener("message", onMessage);
+      window.removeEventListener("blur", onBlur);
       host.innerHTML = "";
     };
   }, []);
@@ -98,8 +73,11 @@ export function GastronoviReservation() {
         <div
           ref={hostRef}
           id="reservation"
-          style={{ backgroundColor: "#0d2517", padding: 0, margin: 0, width: "100%" }}
-          className="gastronovi-widget relative w-full [&_iframe]:!block [&_iframe]:!w-full [&_iframe]:!border-0"
+          style={{
+            height: expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT,
+            transition: "height 300ms ease",
+          }}
+          className="gastronovi-widget relative w-full overflow-hidden"
         />
       </div>
     </section>
