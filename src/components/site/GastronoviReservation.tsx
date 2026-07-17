@@ -1,52 +1,22 @@
 import { useEffect, useRef } from "react";
 
 export function GastronoviReservation() {
-  const hostRef = useRef<HTMLDivElement>(null);
+  const scriptHostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
+    const scriptHost = scriptHostRef.current;
+    if (!scriptHost) return;
 
-    const styleIframes = () => {
-      host.querySelectorAll("iframe").forEach((iframe) => {
-        const el = iframe as HTMLIFrameElement;
-        el.style.border = "none";
-        el.style.background = "transparent";
-        el.style.backgroundColor = "#0d2517";
-        el.style.display = "block";
-        el.style.width = "100%";
-        el.style.minHeight = "unset";
-      });
-    };
-
-    const observer = new MutationObserver(styleIframes);
-    observer.observe(host, { childList: true, subtree: true });
-
-    const onMessage = (e: MessageEvent) => {
-      const data = e.data as { height?: number } | undefined;
-      if (data && typeof data.height === "number") {
-        host.querySelectorAll("iframe").forEach((iframe) => {
-          (iframe as HTMLIFrameElement).style.height = `${data.height}px`;
-        });
-      }
-    };
-    window.addEventListener("message", onMessage);
-
-    // Widget script inserts the iframe BEFORE its own <script> tag,
-    // so the script must live inside the styled container.
     const script = document.createElement("script");
     script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
     script.type = "text/javascript";
     script.async = true;
-    host.appendChild(script);
-
-    const timer = window.setTimeout(styleIframes, 1000);
+    scriptHost.appendChild(script);
 
     return () => {
-      window.clearTimeout(timer);
-      observer.disconnect();
-      window.removeEventListener("message", onMessage);
-      host.innerHTML = "";
+      scriptHost.innerHTML = "";
+      const reservation = document.getElementById("reservation");
+      if (reservation) reservation.innerHTML = "";
     };
   }, []);
 
@@ -65,11 +35,10 @@ export function GastronoviReservation() {
         </div>
 
         <div
-          ref={hostRef}
           id="reservation"
-          style={{ background: "#0d2517", width: "100%", padding: 0, margin: 0 }}
-          className="gastronovi-widget relative"
+          style={{ background: "transparent", width: "100%", padding: 0, margin: 0 }}
         />
+        <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
     </section>
   );
