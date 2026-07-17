@@ -7,26 +7,28 @@ export function GastronoviReservation() {
     const host = hostRef.current;
     if (!host) return;
 
-    const CROP_TOP = 24;
-    const CROP_BOTTOM = 350;
-    const VISIBLE_HEIGHT = 300;
-
-    const compactWidget = () => {
+    const styleIframe = () => {
       const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
       if (!iframe) return;
       iframe.style.width = "100%";
       iframe.style.display = "block";
       iframe.style.border = "0";
-      // Make iframe taller than visible area, then shift up to crop
-      // the empty whitespace inside the cross-origin document.
-      iframe.style.height = `${VISIBLE_HEIGHT + CROP_TOP + CROP_BOTTOM}px`;
-      iframe.style.minHeight = `${VISIBLE_HEIGHT + CROP_TOP + CROP_BOTTOM}px`;
-      iframe.style.marginTop = `-${CROP_TOP}px`;
-      iframe.style.marginBottom = `-${CROP_BOTTOM}px`;
+      iframe.style.background = "transparent";
+      iframe.style.minHeight = "900px";
+      iframe.style.margin = "0";
     };
 
-    const observer = new MutationObserver(compactWidget);
+    const observer = new MutationObserver(styleIframe);
     observer.observe(host, { childList: true, subtree: true });
+
+    const onMessage = (e: MessageEvent) => {
+      const data = e.data as { height?: number } | undefined;
+      if (data && typeof data.height === "number") {
+        const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
+        if (iframe) iframe.style.height = `${data.height}px`;
+      }
+    };
+    window.addEventListener("message", onMessage);
 
     // Widget script inserts an iframe BEFORE its own <script> tag,
     // so the script must live inside the styled container.
@@ -35,11 +37,12 @@ export function GastronoviReservation() {
     script.type = "text/javascript";
     script.async = true;
     host.appendChild(script);
-    const timer = window.setTimeout(compactWidget, 1200);
+    const timer = window.setTimeout(styleIframe, 1200);
 
     return () => {
       window.clearTimeout(timer);
       observer.disconnect();
+      window.removeEventListener("message", onMessage);
       host.innerHTML = "";
     };
   }, []);
@@ -61,8 +64,8 @@ export function GastronoviReservation() {
         <div
           ref={hostRef}
           id="reservation"
-          style={{ height: 300 }}
-          className="gastronovi-widget relative overflow-hidden rounded-lg border border-gold/25 bg-bone shadow-[0_18px_48px_-24px_rgba(0,0,0,0.75)] [&_iframe]:!block [&_iframe]:!w-full [&_iframe]:!border-0"
+          style={{ background: "transparent", padding: 0, margin: 0, width: "100%" }}
+          className="gastronovi-widget relative w-full [&_iframe]:!block [&_iframe]:!w-full [&_iframe]:!min-h-[900px] [&_iframe]:!border-0 [&_iframe]:!bg-transparent"
         />
       </div>
     </section>
