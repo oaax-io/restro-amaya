@@ -39,12 +39,13 @@ export function GastronoviReservation() {
 
     const timer = window.setTimeout(applyIframeStyles, 1000);
 
-    // When the user clicks inside the iframe area, expand the visible window
-    // so any opened form/flow isn't cut off.
+    // When the user clicks into the iframe, the window blurs — expand then.
     const onBlur = () => {
-      if (document.activeElement && document.activeElement.tagName === "IFRAME") {
-        setExpanded(true);
-      }
+      window.setTimeout(() => {
+        if (document.activeElement && document.activeElement.tagName === "IFRAME") {
+          setExpanded(true);
+        }
+      }, 0);
     };
     window.addEventListener("blur", onBlur);
 
@@ -79,6 +80,16 @@ export function GastronoviReservation() {
           }}
           className="gastronovi-widget relative w-full overflow-hidden"
         />
+
+        <div className="mt-3 flex justify-center">
+          <button
+            type="button"
+            onClick={() => setExpanded((v) => !v)}
+            className="mono-label text-gold/80 hover:text-gold transition-colors text-xs tracking-widest"
+          >
+            {expanded ? "— Ansicht verkleinern —" : "— Vollständiges Formular anzeigen —"}
+          </button>
+        </div>
       </div>
     </section>
   );
