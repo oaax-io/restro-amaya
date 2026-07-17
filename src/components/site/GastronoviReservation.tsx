@@ -1,35 +1,38 @@
-import { useEffect, useRef, useState } from "react";
-
-// Visible height in the picker (three tiles) state.
-const COLLAPSED_HEIGHT = 260;
-// Height used once the user opens the reservation flow.
-const EXPANDED_HEIGHT = 900;
+import { useEffect, useRef } from "react";
 
 export function GastronoviReservation() {
   const hostRef = useRef<HTMLDivElement>(null);
-  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
 
-    const applyIframeStyles = () => {
-      const iframe = host.querySelector("iframe") as HTMLIFrameElement | null;
-      if (!iframe) return;
-      iframe.style.width = "100%";
-      iframe.style.display = "block";
-      iframe.style.border = "0";
-      iframe.style.margin = "0";
-      // Iframe itself is tall so all internal flows fit; the wrapper crops it.
-      iframe.style.height = `${EXPANDED_HEIGHT}px`;
-      iframe.style.minHeight = "unset";
-      iframe.style.maxHeight = "unset";
+    const styleIframes = () => {
+      host.querySelectorAll("iframe").forEach((iframe) => {
+        const el = iframe as HTMLIFrameElement;
+        el.style.border = "none";
+        el.style.background = "transparent";
+        el.style.backgroundColor = "#0d2517";
+        el.style.display = "block";
+        el.style.width = "100%";
+        el.style.minHeight = "unset";
+      });
     };
 
-    const observer = new MutationObserver(applyIframeStyles);
+    const observer = new MutationObserver(styleIframes);
     observer.observe(host, { childList: true, subtree: true });
 
-    // Widget script inserts an iframe BEFORE its own <script> tag,
+    const onMessage = (e: MessageEvent) => {
+      const data = e.data as { height?: number } | undefined;
+      if (data && typeof data.height === "number") {
+        host.querySelectorAll("iframe").forEach((iframe) => {
+          (iframe as HTMLIFrameElement).style.height = `${data.height}px`;
+        });
+      }
+    };
+    window.addEventListener("message", onMessage);
+
+    // Widget script inserts the iframe BEFORE its own <script> tag,
     // so the script must live inside the styled container.
     const script = document.createElement("script");
     script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
@@ -37,22 +40,12 @@ export function GastronoviReservation() {
     script.async = true;
     host.appendChild(script);
 
-    const timer = window.setTimeout(applyIframeStyles, 1000);
-
-    // When the user clicks into the iframe, the window blurs — expand then.
-    const onBlur = () => {
-      window.setTimeout(() => {
-        if (document.activeElement && document.activeElement.tagName === "IFRAME") {
-          setExpanded(true);
-        }
-      }, 0);
-    };
-    window.addEventListener("blur", onBlur);
+    const timer = window.setTimeout(styleIframes, 1000);
 
     return () => {
       window.clearTimeout(timer);
       observer.disconnect();
-      window.removeEventListener("blur", onBlur);
+      window.removeEventListener("message", onMessage);
       host.innerHTML = "";
     };
   }, []);
@@ -74,22 +67,9 @@ export function GastronoviReservation() {
         <div
           ref={hostRef}
           id="reservation"
-          style={{
-            height: expanded ? EXPANDED_HEIGHT : COLLAPSED_HEIGHT,
-            transition: "height 300ms ease",
-          }}
-          className="gastronovi-widget relative w-full overflow-hidden"
+          style={{ background: "#0d2517", width: "100%", padding: 0, margin: 0 }}
+          className="gastronovi-widget relative"
         />
-
-        <div className="mt-3 flex justify-center">
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            className="mono-label text-gold/80 hover:text-gold transition-colors text-xs tracking-widest"
-          >
-            {expanded ? "— Ansicht verkleinern —" : "— Vollständiges Formular anzeigen —"}
-          </button>
-        </div>
       </div>
     </section>
   );
