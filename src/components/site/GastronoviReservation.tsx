@@ -13,6 +13,28 @@ export function GastronoviReservation() {
     script.async = true;
     scriptHost.appendChild(script);
 
+    const reservation = document.getElementById("reservation");
+
+    const observer = new MutationObserver(() => {
+      if (!reservation) return;
+
+      // Move any injected divs (gastronovi wraps iframe in a div)
+      Array.from(scriptHost.children).forEach((child) => {
+        if (child.tagName !== "SCRIPT" && child.parentElement !== reservation) {
+          reservation.appendChild(child);
+        }
+      });
+
+      // Also move any loose iframes
+      scriptHost.querySelectorAll("iframe").forEach((iframe) => {
+        if (iframe.parentElement !== reservation) {
+          reservation.appendChild(iframe);
+        }
+      });
+    });
+
+    observer.observe(scriptHost, { childList: true, subtree: true });
+
     const fixIframeHeight = () => {
       const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement;
       if (!iframe) return;
@@ -49,10 +71,10 @@ export function GastronoviReservation() {
     setTimeout(() => clearInterval(interval), 10000);
 
     return () => {
+      observer.disconnect();
       window.removeEventListener("message", handleMessage);
       clearInterval(interval);
       scriptHost.innerHTML = "";
-      const reservation = document.getElementById("reservation");
       if (reservation) reservation.innerHTML = "";
     };
   }, []);
