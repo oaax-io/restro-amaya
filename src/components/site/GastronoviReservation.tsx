@@ -13,9 +13,26 @@ export function GastronoviReservation() {
     script.async = true;
     scriptHost.appendChild(script);
 
+    const handleMessage = (e: MessageEvent) => {
+      const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement;
+      if (!iframe) return;
+
+      if (e.data && typeof e.data === "object" && e.data.height) {
+        iframe.style.height = e.data.height + "px";
+      }
+
+      if (e.data && typeof e.data === "object" && e.data.type === "resize") {
+        iframe.style.height = e.data.height + "px";
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
     return () => {
+      window.removeEventListener("message", handleMessage);
+      scriptHost.innerHTML = "";
       const reservation = document.getElementById("reservation");
-      if (reservation) reservation.innerHTML = '<div id="script"></div>';
+      if (reservation) reservation.innerHTML = "";
     };
   }, []);
 
