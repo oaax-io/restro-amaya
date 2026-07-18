@@ -19,6 +19,25 @@ export function GastronoviReservation() {
     const fixStyles = () => {
       if (!reservation) return;
 
+      // Move any iframe injected into the hidden script host into #reservation
+      const orphanIframes = scriptHost.querySelectorAll("iframe");
+      orphanIframes.forEach((iframe, idx) => {
+        if (idx === 0 && !reservation.contains(iframe)) {
+          (iframe as HTMLIFrameElement).style.width = "100%";
+          (iframe as HTMLIFrameElement).style.border = "0";
+          (iframe as HTMLIFrameElement).style.background = "#0d2517";
+          reservation.appendChild(iframe);
+        } else if (idx > 0) {
+          (iframe as HTMLIFrameElement).style.display = "none";
+        }
+      });
+
+      // Hide any secondary iframes inside #reservation too
+      const innerIframes = reservation.querySelectorAll("iframe");
+      innerIframes.forEach((iframe, idx) => {
+        if (idx > 0) (iframe as HTMLIFrameElement).style.display = "none";
+      });
+
       // Fix section-full background
       const sectionFull = reservation.querySelector("#section-full") as HTMLElement;
       if (sectionFull) {
