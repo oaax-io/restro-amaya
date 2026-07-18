@@ -19,11 +19,26 @@ export function GastronoviReservation() {
     const observer = new MutationObserver(() => {
       scriptHost.querySelectorAll("iframe").forEach((iframe) => {
         if (reservation && iframe.parentElement !== reservation) {
-          reservation.appendChild(iframe);
+          const src = iframe.getAttribute("src") || "";
+          if (src === "" || src === "about:blank") {
+            iframe.style.display = "none";
+            iframe.style.height = "0";
+            iframe.style.width = "0";
+          } else {
+            reservation.appendChild(iframe);
+          }
         }
       });
     });
     observer.observe(scriptHost, { childList: true, subtree: true });
+
+    // Hide any blank iframes inside reservation.
+    document.querySelectorAll("#reservation iframe").forEach((iframe) => {
+      if (!iframe.src || iframe.src === "about:blank") {
+        iframe.style.display = "none";
+        iframe.style.height = "0";
+      }
+    });
 
     return () => {
       observer.disconnect();
