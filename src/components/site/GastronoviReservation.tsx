@@ -7,16 +7,22 @@ export function GastronoviReservation() {
     const scriptHost = scriptHostRef.current;
     if (!scriptHost) return;
 
-    const reservation = document.getElementById("reservation");
+    const script = document.createElement("script");
+    script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
+    script.type = "text/javascript";
+    script.async = true;
+    scriptHost.appendChild(script);
 
-    const observer = new MutationObserver(() => {
-      scriptHost.querySelectorAll("iframe").forEach((iframe) => {
-        if (reservation && iframe.parentElement !== reservation) {
-          reservation.appendChild(iframe);
+    const fixIframeHeight = () => {
+      const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement;
+      if (!iframe) return;
+      try {
+        const contentHeight = iframe.contentDocument?.body?.scrollHeight;
+        if (contentHeight && contentHeight > 0) {
+          iframe.style.height = contentHeight + "px";
         }
-      });
-    });
-    observer.observe(scriptHost, { childList: true, subtree: true });
+      } catch {}
+    };
 
     const handleMessage = (e: MessageEvent) => {
       const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement;
@@ -25,20 +31,28 @@ export function GastronoviReservation() {
       if (e.data && typeof e.data === "object" && e.data.height) {
         iframe.style.height = e.data.height + "px";
       }
+
+      if (e.data && typeof e.data === "object" && e.data.type === "resize") {
+        iframe.style.height = e.data.height + "px";
+      }
     };
 
     window.addEventListener("message", handleMessage);
 
-    const script = document.createElement("script");
-    script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
-    script.type = "text/javascript";
-    script.async = true;
-    scriptHost.appendChild(script);
+    const interval = setInterval(() => {
+      const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement;
+      if (iframe) {
+        fixIframeHeight();
+      }
+    }, 500);
+
+    setTimeout(() => clearInterval(interval), 10000);
 
     return () => {
-      observer.disconnect();
       window.removeEventListener("message", handleMessage);
+      clearInterval(interval);
       scriptHost.innerHTML = "";
+      const reservation = document.getElementById("reservation");
       if (reservation) reservation.innerHTML = "";
     };
   }, []);
@@ -63,7 +77,6 @@ export function GastronoviReservation() {
         #gastronaviReservationWidget-0 {
           background-color: #0d2517 !important;
           border: none !important;
-          outline: none !important;
           display: block !important;
         }
       `}</style>
