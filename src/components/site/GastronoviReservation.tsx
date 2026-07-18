@@ -78,7 +78,7 @@ export function GastronoviReservation() {
 
         <div
           id="reservation"
-          style={{ backgroundColor: "#0d2517", width: "100%", padding: 0, margin: 0, overflow: "hidden" }}
+          style={{ background: "#0d2517", width: "100%", padding: 0, margin: 0, overflow: "hidden" }}
         />
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
