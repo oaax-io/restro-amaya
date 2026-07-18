@@ -50,11 +50,11 @@ export function GastronoviReservation() {
   }, []);
 
   return (
-    <section id="online-reservation" className="relative bg-background w-full overflow-hidden py-8 lg:py-12">
+    <section id="online-reservation" className="relative w-full bg-[#0d2517] py-8 lg:py-12">
       {/* Seamless fade from the slider above */}
-      <div className="pointer-events-none absolute inset-x-0 -top-24 h-24 bg-gradient-to-b from-transparent to-background" />
+      <div className="pointer-events-none absolute inset-x-0 -top-24 h-24 bg-gradient-to-b from-transparent to-[#0d2517]" />
 
-      <div className="relative w-full px-0">
+      <div className="relative mx-auto w-full max-w-3xl">
         <div className="text-center mb-5">
           <p className="mono-label text-gold">— Online Reservation —</p>
           <h2 className="display-serif text-3xl lg:text-4xl mt-2 text-gradient-gold">
@@ -65,10 +65,15 @@ export function GastronoviReservation() {
 
         <div
           id="reservation"
-          style={{ background: "transparent", width: "100%", padding: 0, margin: 0, overflow: "hidden" }}
+          style={{ backgroundColor: "#0d2517", width: "100%", padding: 0, margin: 0, overflow: "hidden" }}
         />
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
+
+      <style>{`
+        #reservation { background-color: #0d2517; }
+        #reservation iframe { background-color: #0d2517 !important; }
+      `}</style>
     </section>
   );
 }
