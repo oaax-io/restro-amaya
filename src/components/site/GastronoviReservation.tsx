@@ -13,7 +13,43 @@ export function GastronoviReservation() {
     script.async = true;
     scriptHost.appendChild(script);
 
+    const fixIframeHeight = () => {
+      const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement | null;
+      if (!iframe) return;
+      try {
+        const contentHeight = iframe.contentDocument?.body?.scrollHeight;
+        if (contentHeight && contentHeight > 0) {
+          iframe.style.height = contentHeight + "px";
+        }
+      } catch {}
+    };
+
+    const handleMessage = (e: MessageEvent) => {
+      const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement | null;
+      if (!iframe) return;
+      if (e.data && typeof e.data === "object" && (e.data as any).height) {
+        iframe.style.height = (e.data as any).height + "px";
+      }
+      if (e.data && typeof e.data === "object" && (e.data as any).type === "resize") {
+        iframe.style.height = (e.data as any).height + "px";
+      }
+    };
+
+    window.addEventListener("message", handleMessage);
+
+    const interval = setInterval(() => {
+      const iframe = document.getElementById("gastronaviReservationWidget-0");
+      if (iframe) {
+        fixIframeHeight();
+      }
+    }, 500);
+
+    const stopTimeout = setTimeout(() => clearInterval(interval), 10000);
+
     return () => {
+      window.removeEventListener("message", handleMessage);
+      clearInterval(interval);
+      clearTimeout(stopTimeout);
       scriptHost.innerHTML = "";
       const reservation = document.getElementById("reservation");
       if (reservation) reservation.innerHTML = "";
@@ -32,24 +68,16 @@ export function GastronoviReservation() {
           <div className="mx-auto mt-3 h-px w-14 hairline-gold" />
         </div>
 
-        <div id="reservation" style={{ width: "100%", padding: 0, margin: 0 }} />
+        <div id="reservation" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }} />
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
 
       <style>{`
-        #section-full { background-color: #0d2517 !important; }
-        #section-bottom {
+        #gastronaviReservationWidget-0 {
           background-color: #0d2517 !important;
           border: none !important;
-          box-shadow: none !important;
+          display: block !important;
         }
-        #section-bottom * {
-          background-color: #0d2517 !important;
-          border: none !important;
-        }
-        .clearer { display: none !important; }
-        .step_control { background-color: #0d2517 !important; }
-        .step_control * { background-color: #0d2517 !important; }
       `}</style>
     </section>
   );
