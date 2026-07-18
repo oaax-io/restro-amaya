@@ -86,6 +86,11 @@ export function GastronoviReservation() {
       <style>{`
         #reservation { background-color: #0d2517; }
         #reservation iframe { background-color: #0d2517 !important; }
+
+        #reservation .step_control:not(.show-step) { display: none !important; }
+        #reservation > div { background: transparent !important; }
+        #reservation .clearer { display: none !important; }
+        #reservation #section-bottom { display: none !important; }
       `}</style>
     </section>
   );
