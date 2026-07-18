@@ -13,60 +13,53 @@ export function GastronoviReservation() {
     script.async = true;
     scriptHost.appendChild(script);
 
-    // Gastronovi's script inserts the iframe as previousSibling of the <script> tag.
-    // Since #script is display:none, move any injected iframe into #reservation.
+    // Watch #reservation for injected content and fix backgrounds
     const reservation = document.getElementById("reservation");
-    const observer = new MutationObserver(() => {
-      // Move any injected iframe from the hidden script host into #reservation.
-      scriptHost.querySelectorAll("iframe").forEach((iframe) => {
-        if (reservation && iframe.parentElement !== reservation) {
-          const src = iframe.getAttribute("src") || "";
-          if (src === "" || src === "about:blank") {
-            iframe.style.display = "none";
-            iframe.style.height = "0";
-            iframe.style.width = "0";
-          } else {
-            reservation.appendChild(iframe);
-          }
-        }
-      });
 
-      // Hide every iframe after the main reservation iframe (the empty white one below).
-      const allIframes = reservation ? reservation.querySelectorAll("iframe") : [];
-      allIframes.forEach((iframe, index) => {
-        if (index > 0) {
-          iframe.style.display = "none";
-          iframe.style.height = "0";
-          iframe.style.width = "0";
-          iframe.style.position = "absolute";
-          iframe.style.visibility = "hidden";
-        }
-      });
-    });
-    observer.observe(scriptHost, { childList: true, subtree: true });
+    const fixStyles = () => {
+      if (!reservation) return;
 
-    // Hide any blank iframes inside reservation.
-    document.querySelectorAll("#reservation iframe").forEach((el) => {
-      const iframe = el as HTMLIFrameElement;
-      if (!iframe.src || iframe.src === "about:blank") {
-        iframe.style.display = "none";
-        iframe.style.height = "0";
+      // Fix section-full background
+      const sectionFull = reservation.querySelector("#section-full") as HTMLElement;
+      if (sectionFull) {
+        sectionFull.style.background = "#0d2517";
+        sectionFull.style.backgroundColor = "#0d2517";
       }
+      // Hide section-bottom (the white empty area)
+      const sectionBottom = reservation.querySelector("#section-bottom") as HTMLElement;
+      if (sectionBottom) {
+        sectionBottom.style.display = "none";
+        sectionBottom.style.height = "0";
+        sectionBottom.style.overflow = "hidden";
+      }
+      // Hide clearer divs
+      reservation.querySelectorAll(".clearer").forEach((el) => {
+        (el as HTMLElement).style.display = "none";
+      });
+      // Fix all step_control backgrounds
+      reservation.querySelectorAll(".step_control").forEach((el) => {
+        (el as HTMLElement).style.backgroundColor = "#0d2517";
+      });
+    };
+
+    const observer = new MutationObserver(() => {
+      fixStyles();
     });
+    if (reservation) {
+      observer.observe(reservation, { childList: true, subtree: true });
+    }
+    observer.observe(scriptHost, { childList: true, subtree: true });
 
     return () => {
       observer.disconnect();
       scriptHost.innerHTML = "";
-      const reservation = document.getElementById("reservation");
       if (reservation) reservation.innerHTML = "";
     };
   }, []);
 
   return (
     <section id="online-reservation" className="relative w-full bg-[#0d2517] py-8 lg:py-12">
-      {/* Seamless fade from the slider above */}
       <div className="pointer-events-none absolute inset-x-0 -top-24 h-24 bg-gradient-to-b from-transparent to-[#0d2517]" />
-
       <div className="relative mx-auto w-full max-w-3xl">
         <div className="text-center mb-5">
           <p className="mono-label text-gold">— Online Reservation —</p>
@@ -78,19 +71,18 @@ export function GastronoviReservation() {
 
         <div
           id="reservation"
-          style={{ background: "#0d2517", width: "100%", padding: 0, margin: 0, overflow: "hidden" }}
+          style={{ background: "#0d2517", width: "100%", padding: 0, margin: 0 }}
         />
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
 
       <style>{`
-        #reservation { background-color: #0d2517; }
-        #reservation iframe { background-color: #0d2517 !important; }
-
-        #reservation .step_control:not(.show-step) { display: none !important; }
-        #reservation > div { background: transparent !important; }
+        #reservation { background-color: #0d2517 !important; }
+        #reservation * { box-sizing: border-box; }
+        #section-full { background-color: #0d2517 !important; }
+        #section-bottom { display: none !important; height: 0 !important; }
         #reservation .clearer { display: none !important; }
-        #reservation #section-bottom { display: none !important; }
+        #reservation .step_control { background-color: #0d2517 !important; }
       `}</style>
     </section>
   );
