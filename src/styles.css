@@ -268,3 +268,27 @@
   position: absolute !important;
   visibility: hidden !important;
 }
+
+#reservation #section-full {
+  background-color: #0d2517 !important;
+}
+
+#reservation #section-bottom {
+  display: none !important;
+  height: 0 !important;
+  visibility: hidden !important;
+}
+
+#reservation .clearer {
+  display: none !important;
+  height: 0 !important;
+}
+
+#reservation .step_control:not(.show-step) {
+  background-color: #0d2517 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+  overflow: hidden !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
