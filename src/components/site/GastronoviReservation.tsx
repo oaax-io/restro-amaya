@@ -19,11 +19,27 @@ export function GastronoviReservation() {
     const observer = new MutationObserver(() => {
       scriptHost.querySelectorAll("iframe").forEach((iframe) => {
         if (reservation && iframe.parentElement !== reservation) {
-          reservation.appendChild(iframe);
+          const src = iframe.getAttribute("src") || "";
+          if (src === "" || src === "about:blank") {
+            iframe.style.display = "none";
+            iframe.style.height = "0";
+            iframe.style.width = "0";
+          } else {
+            reservation.appendChild(iframe);
+          }
         }
       });
     });
     observer.observe(scriptHost, { childList: true, subtree: true });
+
+    // Hide any blank iframes inside reservation.
+    document.querySelectorAll("#reservation iframe").forEach((el) => {
+      const iframe = el as HTMLIFrameElement;
+      if (!iframe.src || iframe.src === "about:blank") {
+        iframe.style.display = "none";
+        iframe.style.height = "0";
+      }
+    });
 
     return () => {
       observer.disconnect();
@@ -49,7 +65,7 @@ export function GastronoviReservation() {
 
         <div
           id="reservation"
-          style={{ background: "transparent", width: "100%", padding: 0, margin: 0 }}
+          style={{ background: "transparent", width: "100%", padding: 0, margin: 0, overflow: "hidden" }}
         />
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
