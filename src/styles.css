@@ -259,3 +259,12 @@
 .animate-marquee {
   animation: marquee 40s linear infinite;
 }
+
+/* Gastronovi reservation widget: hide any extra empty iframe injected below the main widget */
+#reservation iframe:not(:first-child) {
+  display: none !important;
+  height: 0 !important;
+  width: 0 !important;
+  position: absolute !important;
+  visibility: hidden !important;
+}

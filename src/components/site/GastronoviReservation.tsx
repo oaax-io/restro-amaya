@@ -17,6 +17,7 @@ export function GastronoviReservation() {
     // Since #script is display:none, move any injected iframe into #reservation.
     const reservation = document.getElementById("reservation");
     const observer = new MutationObserver(() => {
+      // Move any injected iframe from the hidden script host into #reservation.
       scriptHost.querySelectorAll("iframe").forEach((iframe) => {
         if (reservation && iframe.parentElement !== reservation) {
           const src = iframe.getAttribute("src") || "";
@@ -27,6 +28,18 @@ export function GastronoviReservation() {
           } else {
             reservation.appendChild(iframe);
           }
+        }
+      });
+
+      // Hide every iframe after the main reservation iframe (the empty white one below).
+      const allIframes = reservation ? reservation.querySelectorAll("iframe") : [];
+      allIframes.forEach((iframe, index) => {
+        if (index > 0) {
+          iframe.style.display = "none";
+          iframe.style.height = "0";
+          iframe.style.width = "0";
+          iframe.style.position = "absolute";
+          iframe.style.visibility = "hidden";
         }
       });
     });
