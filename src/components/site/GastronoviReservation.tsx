@@ -69,8 +69,27 @@ export function GastronoviReservation() {
     }
     observer.observe(scriptHost, { childList: true, subtree: true });
 
+    // Handle iframe resize messages from Gastronovi
+    const onMessage = (e: MessageEvent) => {
+      const data = e.data;
+      if (!data) return;
+      const height =
+        typeof data === "number"
+          ? data
+          : typeof data === "string" && /^\d+$/.test(data)
+          ? parseInt(data, 10)
+          : typeof data === "object" && typeof data.height === "number"
+          ? data.height
+          : null;
+      if (!height || !reservation) return;
+      const iframe = reservation.querySelector("iframe") as HTMLIFrameElement | null;
+      if (iframe) iframe.style.height = `${height}px`;
+    };
+    window.addEventListener("message", onMessage);
+
     return () => {
       observer.disconnect();
+      window.removeEventListener("message", onMessage);
       scriptHost.innerHTML = "";
       if (reservation) reservation.innerHTML = "";
     };
