@@ -50,11 +50,11 @@ export function GastronoviReservation() {
   }, []);
 
   return (
-    <section id="online-reservation" className="relative bg-background py-8 lg:py-12">
+    <section id="online-reservation" className="relative bg-background w-full overflow-hidden py-8 lg:py-12">
       {/* Seamless fade from the slider above */}
       <div className="pointer-events-none absolute inset-x-0 -top-24 h-24 bg-gradient-to-b from-transparent to-background" />
 
-      <div className="relative mx-auto max-w-2xl px-6 lg:px-8">
+      <div className="relative w-full px-0">
         <div className="text-center mb-5">
           <p className="mono-label text-gold">— Online Reservation —</p>
           <h2 className="display-serif text-3xl lg:text-4xl mt-2 text-gradient-gold">
