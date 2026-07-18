@@ -7,11 +7,16 @@ export function GastronoviReservation() {
     const scriptHost = scriptHostRef.current;
     if (!scriptHost) return;
 
-    const script = document.createElement("script");
-    script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
-    script.type = "text/javascript";
-    script.async = true;
-    scriptHost.appendChild(script);
+    const reservation = document.getElementById("reservation");
+
+    const observer = new MutationObserver(() => {
+      scriptHost.querySelectorAll("iframe").forEach((iframe) => {
+        if (reservation && iframe.parentElement !== reservation) {
+          reservation.appendChild(iframe);
+        }
+      });
+    });
+    observer.observe(scriptHost, { childList: true, subtree: true });
 
     const handleMessage = (e: MessageEvent) => {
       const iframe = document.getElementById("gastronaviReservationWidget-0") as HTMLIFrameElement;
@@ -20,18 +25,20 @@ export function GastronoviReservation() {
       if (e.data && typeof e.data === "object" && e.data.height) {
         iframe.style.height = e.data.height + "px";
       }
-
-      if (e.data && typeof e.data === "object" && e.data.type === "resize") {
-        iframe.style.height = e.data.height + "px";
-      }
     };
 
     window.addEventListener("message", handleMessage);
 
+    const script = document.createElement("script");
+    script.src = "https://services.gastronovi.com/restaurants/108779/scripts/reservation";
+    script.type = "text/javascript";
+    script.async = true;
+    scriptHost.appendChild(script);
+
     return () => {
+      observer.disconnect();
       window.removeEventListener("message", handleMessage);
       scriptHost.innerHTML = "";
-      const reservation = document.getElementById("reservation");
       if (reservation) reservation.innerHTML = "";
     };
   }, []);
@@ -48,17 +55,11 @@ export function GastronoviReservation() {
           <div className="mx-auto mt-3 h-px w-14 hairline-gold" />
         </div>
 
-        <div id="reservation" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }}>
-          <div id="script" ref={scriptHostRef} />
-        </div>
+        <div id="reservation" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }} />
+        <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
 
       <style>{`
-        #reservation,
-        #reservation > div {
-          background-color: #0d2517 !important;
-        }
-
         #gastronaviReservationWidget-0 {
           background-color: #0d2517 !important;
           border: none !important;
