@@ -19,6 +19,25 @@ export function GastronoviReservation() {
     const fixStyles = () => {
       if (!reservation) return;
 
+      // Move any iframe injected into the hidden script host into #reservation
+      const orphanIframes = scriptHost.querySelectorAll("iframe");
+      orphanIframes.forEach((iframe, idx) => {
+        if (idx === 0 && !reservation.contains(iframe)) {
+          (iframe as HTMLIFrameElement).style.width = "100%";
+          (iframe as HTMLIFrameElement).style.border = "0";
+          (iframe as HTMLIFrameElement).style.background = "#0d2517";
+          reservation.appendChild(iframe);
+        } else if (idx > 0) {
+          (iframe as HTMLIFrameElement).style.display = "none";
+        }
+      });
+
+      // Hide any secondary iframes inside #reservation too
+      const innerIframes = reservation.querySelectorAll("iframe");
+      innerIframes.forEach((iframe, idx) => {
+        if (idx > 0) (iframe as HTMLIFrameElement).style.display = "none";
+      });
+
       // Fix section-full background
       const sectionFull = reservation.querySelector("#section-full") as HTMLElement;
       if (sectionFull) {
@@ -50,8 +69,27 @@ export function GastronoviReservation() {
     }
     observer.observe(scriptHost, { childList: true, subtree: true });
 
+    // Handle iframe resize messages from Gastronovi
+    const onMessage = (e: MessageEvent) => {
+      const data = e.data;
+      if (!data) return;
+      const height =
+        typeof data === "number"
+          ? data
+          : typeof data === "string" && /^\d+$/.test(data)
+          ? parseInt(data, 10)
+          : typeof data === "object" && typeof data.height === "number"
+          ? data.height
+          : null;
+      if (!height || !reservation) return;
+      const iframe = reservation.querySelector("iframe") as HTMLIFrameElement | null;
+      if (iframe) iframe.style.height = `${height}px`;
+    };
+    window.addEventListener("message", onMessage);
+
     return () => {
       observer.disconnect();
+      window.removeEventListener("message", onMessage);
       scriptHost.innerHTML = "";
       if (reservation) reservation.innerHTML = "";
     };
