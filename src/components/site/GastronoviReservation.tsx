@@ -42,12 +42,11 @@ export function GastronoviReservation() {
           background-color: #0d2517 !important;
         }
 
-        #reservation iframe[id^="gastronaviReservationWidget-"] {
+        #gastronaviReservationWidget-0 {
           background-color: #0d2517 !important;
           border: none !important;
+          outline: none !important;
           display: block !important;
-          max-width: 100% !important;
-          width: 100% !important;
         }
       `}</style>
     </section>
