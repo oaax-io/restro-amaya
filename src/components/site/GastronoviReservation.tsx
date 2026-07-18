@@ -69,6 +69,11 @@ export function GastronoviReservation() {
         />
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
+
+      <style>{`
+        #reservation { background-color: #0d2517; }
+        #reservation iframe { background-color: #0d2517 !important; }
+      `}</style>
     </section>
   );
 }
