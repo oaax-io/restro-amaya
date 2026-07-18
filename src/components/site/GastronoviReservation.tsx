@@ -33,7 +33,8 @@ export function GastronoviReservation() {
     observer.observe(scriptHost, { childList: true, subtree: true });
 
     // Hide any blank iframes inside reservation.
-    document.querySelectorAll("#reservation iframe").forEach((iframe) => {
+    document.querySelectorAll("#reservation iframe").forEach((el) => {
+      const iframe = el as HTMLIFrameElement;
       if (!iframe.src || iframe.src === "about:blank") {
         iframe.style.display = "none";
         iframe.style.height = "0";
