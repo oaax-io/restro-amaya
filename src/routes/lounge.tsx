@@ -168,6 +168,7 @@ function LoungePage() {
               period="pro Jahr"
               highlighted
               icon={Crown}
+              badge="24/7"
               perks={[
                 "Alle Solo-Vorteile",
                 "Bevorzugte Reservierung ohne Wartezeit",
@@ -198,8 +199,8 @@ function LoungePage() {
   );
 }
 
-function TierCard({ tier, price, period, perks, icon: Icon, highlighted }: {
-  tier: string; price: string; period: string; perks: string[]; icon: typeof Users; highlighted?: boolean;
+function TierCard({ tier, price, period, perks, icon: Icon, highlighted, badge }: {
+  tier: string; price: string; period: string; perks: string[]; icon: typeof Users; highlighted?: boolean; badge?: string;
 }) {
   return (
     <div className={[
@@ -213,7 +214,14 @@ function TierCard({ tier, price, period, perks, icon: Icon, highlighted }: {
           Empfohlen
         </span>
       )}
-      <Icon className="text-accent" size={26} />
+      <div className="flex items-start justify-between">
+        <Icon className="text-accent" size={26} />
+        {badge && (
+          <span className="flex items-center justify-center w-14 h-14 rounded-full bg-accent text-[#0D2517] text-[11px] font-bold tracking-wider uppercase shadow-lg shadow-accent/30">
+            {badge}
+          </span>
+        )}
+      </div>
       <h3 className="font-display text-3xl mt-4 text-bone">{tier}</h3>
       <div className="mt-4 flex items-baseline gap-2">
         <span className="font-display text-5xl text-gradient-gold">{price}</span>
