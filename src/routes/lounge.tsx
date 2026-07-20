@@ -8,7 +8,7 @@ import jungleTex from "@/assets/jungle-texture.jpg";
 import loungeSlide1 from "@/assets/LuzPalokaj_Photography--14.jpg.asset.json";
 import loungeSlide2 from "@/assets/LuzPalokaj_Photography--36.jpg.asset.json";
 import loungeSlide3 from "@/assets/LuzPalokaj_Photography--34.jpg.asset.json";
-import loungeSlide4 from "@/assets/LuzPalokaj_Photography--35.jpg.asset.json";
+import memberCard from "@/assets/Amaya_Member.png.asset.json";
 
 type LoungeImage = {
   id: string;
@@ -22,7 +22,7 @@ const FALLBACK_IMAGES: { image_url: string; title: string; description: string }
   { image_url: loungeSlide1.url, title: "Humidor", description: "Sorgfältig temperiert. Kubanisch, Nicaragua, Dominikanisch." },
   { image_url: loungeSlide2.url, title: "Samt & Rauch", description: "Weiche Sessel, gedämpftes Licht, tiefe Aromen." },
   { image_url: loungeSlide3.url, title: "Rare Spirits", description: "Gereifte Rums, single-cask Whiskys, exklusive Cognacs." },
-  { image_url: loungeSlide4.url, title: "Members Only", description: "Ein Refugium, das nur unsere Mitglieder wirklich kennen." },
+  { image_url: memberCard.url, title: "Members Only", description: "Ihr persönlicher Schlüssel zum privaten Amaya Club." },
 ];
 
 export const Route = createFileRoute("/lounge")({
