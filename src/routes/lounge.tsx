@@ -5,6 +5,7 @@ import { SiteLayout } from "@/components/layout/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Cigarette, Check, Crown, Wine, Users, Clock, Send, Loader2 } from "lucide-react";
 import jungleTex from "@/assets/jungle-texture.jpg";
+import { DEFAULT_TIER_SOLO, DEFAULT_TIER_ELITE, type LoungeTier } from "@/lib/loungeTiers";
 import loungeSlide1 from "@/assets/LuzPalokaj_Photography--14.jpg.asset.json";
 import loungeSlide2 from "@/assets/LuzPalokaj_Photography--36.jpg.asset.json";
 import loungeSlide3 from "@/assets/LuzPalokaj_Photography--34.jpg.asset.json";
@@ -50,6 +51,24 @@ function LoungePage() {
       return (data ?? []) as unknown as LoungeImage[];
     },
   });
+
+  const { data: tierSettings } = useQuery({
+    queryKey: ["public", "lounge-tiers"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("key,value")
+        .in("key", ["lounge_tier_solo", "lounge_tier_elite"]);
+      if (error) throw error;
+      const m = new Map((data ?? []).map((s: { key: string; value: unknown }) => [s.key, s.value]));
+      return {
+        solo: (m.get("lounge_tier_solo") as LoungeTier | undefined) ?? DEFAULT_TIER_SOLO,
+        elite: (m.get("lounge_tier_elite") as LoungeTier | undefined) ?? DEFAULT_TIER_ELITE,
+      };
+    },
+  });
+  const tierSolo = tierSettings?.solo ?? DEFAULT_TIER_SOLO;
+  const tierElite = tierSettings?.elite ?? DEFAULT_TIER_ELITE;
 
   const tiles = images.length > 0
     ? images
@@ -151,37 +170,26 @@ function LoungePage() {
 
           <div className="mt-12 grid md:grid-cols-2 gap-6 lg:gap-8">
             <TierCard
-              tier="Solo"
-              price="CHF 1'200"
-              period="pro Jahr"
+              tier={tierSolo.tier}
+              price={tierSolo.price}
+              period={tierSolo.period}
               icon={Users}
-              perks={[
-                "Ganzjähriger Zutritt zur Cigar Lounge",
-                "Persönliches Locker im Humidor",
-                "10% Rabatt auf Zigarren & Spirituosen",
-                "Einladung zu 2 Members Events pro Jahr",
-              ]}
+              badge={tierSolo.badge}
+              perks={tierSolo.perks}
             />
             <TierCard
-              tier="Elite"
-              price="CHF 3'000"
-              period="pro Jahr"
+              tier={tierElite.tier}
+              price={tierElite.price}
+              period={tierElite.period}
               highlighted
               icon={Crown}
-              badge="24/7"
-              perks={[
-                "Alle Solo-Vorteile",
-                "Bevorzugte Reservierung ohne Wartezeit",
-                "20% Rabatt auf Zigarren, Spirits & Menu",
-                "Private Tastings & exklusive Verkostungen",
-                "Begleitperson jederzeit kostenlos",
-                "Persönlicher Concierge-Service",
-              ]}
+              badge={tierElite.badge}
+              perks={tierElite.perks}
             />
           </div>
 
           <div className="mt-16">
-            <MembershipForm />
+            <MembershipForm tierSolo={tierSolo} tierElite={tierElite} />
           </div>
         </div>
       </section>
@@ -239,7 +247,7 @@ function TierCard({ tier, price, period, perks, icon: Icon, highlighted, badge }
   );
 }
 
-function MembershipForm() {
+function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierElite: LoungeTier }) {
   const qc = useQueryClient();
   const [tier, setTier] = useState<"standard" | "premium">("standard");
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -304,7 +312,9 @@ function MembershipForm() {
               tier === t ? "border-accent bg-accent/15 text-bone" : "border-accent/20 text-white/70 hover:border-accent/50",
             ].join(" ")}
           >
-            {t === "standard" ? "Solo · CHF 1'200/J." : "Elite · CHF 3'000/J."}
+            {t === "standard"
+              ? `${tierSolo.tier} · ${tierSolo.price}/J.`
+              : `${tierElite.tier} · ${tierElite.price}/J.`}
           </button>
         ))}
       </div>
