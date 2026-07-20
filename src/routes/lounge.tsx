@@ -8,7 +8,6 @@ import jungleTex from "@/assets/jungle-texture.jpg";
 import loungeSlide1 from "@/assets/LuzPalokaj_Photography--14.jpg.asset.json";
 import loungeSlide2 from "@/assets/LuzPalokaj_Photography--36.jpg.asset.json";
 import loungeSlide3 from "@/assets/LuzPalokaj_Photography--34.jpg.asset.json";
-import loungeSlide4 from "@/assets/LuzPalokaj_Photography--35.jpg.asset.json";
 import memberCard from "@/assets/Amaya_Member.png.asset.json";
 
 type LoungeImage = {
