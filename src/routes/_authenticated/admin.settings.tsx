@@ -177,6 +177,3 @@ function TierEditor({ title, settingKey, initial }: { title: string; settingKey:
     </Card>
   );
 }
-    </div>
-  );
-}
