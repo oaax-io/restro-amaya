@@ -140,7 +140,7 @@ function TierEditor({ title, settingKey, initial }: { title: string; settingKey:
           </button>
         </div>
         <ul className="mt-2 space-y-2">
-          {tier.perks.map((p, i) => (
+          {tier.perks.map((p: string, i: number) => (
             <li key={i} className="flex items-center gap-2">
               <input
                 className={input}
@@ -153,7 +153,7 @@ function TierEditor({ title, settingKey, initial }: { title: string; settingKey:
               />
               <button
                 type="button"
-                onClick={() => setTier({ ...tier, perks: tier.perks.filter((_, idx) => idx !== i) })}
+                onClick={() => setTier({ ...tier, perks: tier.perks.filter((_: string, idx: number) => idx !== i) })}
                 className="p-2 rounded hover:bg-black/5 text-black/60"
                 aria-label="Vorteil entfernen"
               >
