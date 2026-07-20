@@ -101,11 +101,11 @@ function MembersAdmin() {
                   <h3 className="font-display text-2xl text-[#0D2517]">{m.first_name} {m.last_name}</h3>
                   {m.membership_type === "premium" ? (
                     <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-[#E9A580] text-[#0D2517] uppercase tracking-widest">
-                      <Crown size={12} /> Premium
+                      <Crown size={12} /> Elite
                     </span>
                   ) : (
                     <span className="inline-flex items-center gap-1 text-xs px-2 py-1 rounded-full bg-black/10 text-black/70 uppercase tracking-widest">
-                      <Users size={12} /> Standard
+                      <Users size={12} /> Solo
                     </span>
                   )}
                   <span className="text-xs px-2 py-1 rounded-full uppercase tracking-widest" style={{ background: STATUS_META[m.status].bg, color: STATUS_META[m.status].fg }}>
@@ -151,8 +151,8 @@ function MembersAdmin() {
               <Field label="Typ">
                 <select value={m.membership_type} onChange={(e) => patch(m.id, { membership_type: e.target.value })}
                   className="w-full bg-white border border-black/15 rounded px-3 py-2 text-sm">
-                  <option value="standard">Standard</option>
-                  <option value="premium">Premium</option>
+                  <option value="standard">Solo</option>
+                  <option value="premium">Elite</option>
                 </select>
               </Field>
               <Field label="Mitgliedsnr.">

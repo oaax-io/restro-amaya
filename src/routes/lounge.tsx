@@ -151,8 +151,8 @@ function LoungePage() {
 
           <div className="mt-12 grid md:grid-cols-2 gap-6 lg:gap-8">
             <TierCard
-              tier="Standard"
-              price="CHF 480"
+              tier="Solo"
+              price="CHF 1'200"
               period="pro Jahr"
               icon={Users}
               perks={[
@@ -163,13 +163,13 @@ function LoungePage() {
               ]}
             />
             <TierCard
-              tier="Premium"
-              price="CHF 1'200"
+              tier="Elite"
+              price="CHF 3'000"
               period="pro Jahr"
               highlighted
               icon={Crown}
               perks={[
-                "Alle Standard-Vorteile",
+                "Alle Solo-Vorteile",
                 "Bevorzugte Reservierung ohne Wartezeit",
                 "20% Rabatt auf Zigarren, Spirits & Menu",
                 "Private Tastings & exklusive Verkostungen",
@@ -296,7 +296,7 @@ function MembershipForm() {
               tier === t ? "border-accent bg-accent/15 text-bone" : "border-accent/20 text-white/70 hover:border-accent/50",
             ].join(" ")}
           >
-            {t === "standard" ? "Standard · CHF 480/J." : "Premium · CHF 1'200/J."}
+            {t === "standard" ? "Solo · CHF 1'200/J." : "Elite · CHF 3'000/J."}
           </button>
         ))}
       </div>
