@@ -168,6 +168,7 @@ function LoungePage() {
               period="pro Jahr"
               highlighted
               icon={Crown}
+              badge="24/7"
               perks={[
                 "Alle Solo-Vorteile",
                 "Bevorzugte Reservierung ohne Wartezeit",
