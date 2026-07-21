@@ -129,6 +129,10 @@ function WeeklyMenuHome() {
             </span>
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {lang === "de" ? "TA = günstigere Take-Away-Preise" : "TA = cheaper take-away prices"}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
               {lang === "de" ? "Preise inkl. MwSt." : "Prices incl. VAT"}
             </span>
           </div>
