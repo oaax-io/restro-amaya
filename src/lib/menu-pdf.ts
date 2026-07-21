@@ -429,13 +429,17 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   if (panelPattern) {
     doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
   }
-  // Decorative jungle-leaf columns hugging the panel's left & right edges,
-  // stronger tint so they read as botanical borders inside the frame.
-  const leafColW = 18;
-  const leafPattern = await loadJunglePatternDataUrl(leafColW, panelH, jungle, 0.22);
-  if (leafPattern) {
-    doc.addImage(leafPattern, "PNG", panelX, panelTop, leafColW, panelH, undefined, "FAST");
-    doc.addImage(leafPattern, "PNG", panelX + panelW - leafColW, panelTop, leafColW, panelH, undefined, "FAST");
+  // Decorative hanging jungle plants across the top of the panel — same botanical
+  // motif as the site footer / menu-page hero. Preserves the PNG aspect ratio.
+  const hangingPlants = await loadHangingPlantsDataUrl();
+  if (hangingPlants) {
+    const plantsW = panelW;
+    const plantsH = plantsW * (hangingPlants.height / hangingPlants.width);
+    const maxPlantsH = Math.min(38, panelH * 0.32);
+    const finalH = Math.min(plantsH, maxPlantsH);
+    const finalW = finalH * (hangingPlants.width / hangingPlants.height);
+    const px = panelX + (panelW - finalW) / 2;
+    doc.addImage(hangingPlants.dataUrl, "PNG", px, panelTop, finalW, finalH, undefined, "FAST");
   }
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.2);
