@@ -125,7 +125,7 @@ function WeeklyMenuHome() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              {lang === "de" ? "Take Away möglich (TA = günstigere Preise)" : "Take Away available (TA = cheaper prices)"}
+              {lang === "de" ? "Take Away (TA) – dieselbe Qualität, zum besseren Preis." : "Take Away (TA) – same quality, better price."}
             </span>
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
