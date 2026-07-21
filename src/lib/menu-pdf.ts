@@ -359,7 +359,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const [patternDataUrl, logoDataUrl, hangingPlants] = await Promise.all([
     loadJunglePatternDataUrl(pageW, pageH, jungle, 0.08),
     loadLogoDataUrl(),
-    loadHangingPlantsDataUrl(),
+    loadHangingPlantsDataUrl(0.3), // 70% transparent
   ]);
 
   const paintBackground = () => {
