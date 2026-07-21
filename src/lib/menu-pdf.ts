@@ -171,70 +171,199 @@ export function generateWeeklyPdf(data: WeeklyForPdf): Blob {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
-  const green = [13, 37, 23] as const;
-  const cream = [243, 231, 215] as const;
 
-  // Header band
-  doc.setFillColor(green[0], green[1], green[2]);
-  doc.rect(0, 0, pageW, 34, "F");
-  doc.setTextColor(cream[0], cream[1], cream[2]);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  doc.text("AMAYA", pageW / 2, 15, { align: "center" });
+  // Palette — light cream base with deep green + gold accents
+  const cream: [number, number, number] = [248, 243, 232];
+  const creamDeep: [number, number, number] = [240, 232, 214];
+  const green: [number, number, number] = [22, 55, 38];
+  const greenSoft: [number, number, number] = [90, 120, 95];
+  const gold: [number, number, number] = [176, 141, 74];
+
+  // ---- Background ----
+  doc.setFillColor(...cream);
+  doc.rect(0, 0, pageW, pageH, "F");
+
+  // Abstract botanical corner strokes (leaf-like curves) — top-left & bottom-right
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.3);
+  // top-left flourish
+  doc.lines(
+    [[18, -6], [10, -14], [-2, -18], [-14, -14]],
+    -4, 8,
+    [1, 1],
+    "S",
+  );
+  doc.setLineWidth(0.15);
+  doc.circle(6, 6, 1.4, "S");
+  doc.circle(14, 2, 0.8, "S");
+  // bottom-right flourish
+  doc.setLineWidth(0.3);
+  doc.lines(
+    [[-18, 6], [-10, 14], [2, 18], [14, 14]],
+    pageW + 4, pageH - 8,
+    [1, 1],
+    "S",
+  );
+  doc.setLineWidth(0.15);
+  doc.circle(pageW - 6, pageH - 6, 1.4, "S");
+  doc.circle(pageW - 14, pageH - 2, 0.8, "S");
+
+  // Faint side rules
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.1);
+  doc.line(18, 60, 18, pageH - 40);
+  doc.line(pageW - 18, 60, pageW - 18, pageH - 40);
+
+  // ---- Header (centered) ----
+  const cx = pageW / 2;
+
+  doc.setTextColor(...greenSoft);
   doc.setFont("helvetica", "normal");
+  doc.setFontSize(9);
+  doc.text("R E S T A U R A N T  ·  M E S A", cx, 22, { align: "center" });
+
+  doc.setTextColor(...green);
+  doc.setFont("times", "italic");
+  doc.setFontSize(38);
+  doc.text("Amaya", cx, 38, { align: "center" });
+
+  // Ornamental divider — line · diamond · line
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.4);
+  doc.line(cx - 30, 44, cx - 5, 44);
+  doc.line(cx + 5, 44, cx + 30, 44);
+  // diamond
+  doc.setFillColor(...gold);
+  doc.triangle(cx - 2, 44, cx + 2, 44, cx, 41.5, "F");
+  doc.triangle(cx - 2, 44, cx + 2, 44, cx, 46.5, "F");
+
+  doc.setTextColor(...green);
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("WOCHENGERICHTE", pageW / 2, 22, { align: "center" });
+  doc.text("WOCHENGERICHTE", cx, 52, { align: "center", charSpace: 2 });
+
   if (data.dateRange) {
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...greenSoft);
     doc.setFontSize(9);
-    doc.text(data.dateRange, pageW / 2, 28, { align: "center" });
+    doc.text(data.dateRange, cx, 58, { align: "center" });
   }
 
-  let y = 46;
-  doc.setTextColor(green[0], green[1], green[2]);
+  let y = 74;
 
+  // ---- Suppe & Salat (centered pill) ----
   if (data.suppeSalat) {
-    doc.setFont("helvetica", "italic");
+    doc.setFillColor(...creamDeep);
+    const boxW = 130;
+    const boxH = 16;
+    doc.roundedRect(cx - boxW / 2, y - 6, boxW, boxH, 2, 2, "F");
+    doc.setTextColor(...green);
+    doc.setFont("times", "italic");
     doc.setFontSize(11);
-    doc.text(data.suppeSalat, 20, y);
+    doc.text(data.suppeSalat, cx, y - 0.5, { align: "center" });
     if (data.suppeSalatPrice) {
-      doc.text(data.suppeSalatPrice, pageW - 20, y, { align: "right" });
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.setTextColor(...gold);
+      doc.text(data.suppeSalatPrice, cx, y + 5, { align: "center" });
     }
-    y += 4;
-    doc.setDrawColor(green[0], green[1], green[2]);
-    doc.setLineWidth(0.2);
-    doc.line(20, y, pageW - 20, y);
-    y += 8;
+    y += 22;
   }
 
-  for (const it of data.items) {
-    if (y > pageH - 40) { doc.addPage(); y = 20; }
+  // ---- Items (centered) ----
+  const contentW = 140;
+  for (let i = 0; i < data.items.length; i++) {
+    const it = data.items[i];
+
+    // Compute approximate block height for page break
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(10);
+    const descLines = it.description
+      ? doc.splitTextToSize(it.description, contentW)
+      : [];
+    const blockH = 10 + descLines.length * 4.6 + (it.price ? 8 : 4) + 8;
+    if (y + blockH > pageH - 32) {
+      doc.addPage();
+      doc.setFillColor(...cream);
+      doc.rect(0, 0, pageW, pageH, "F");
+      y = 28;
+    }
+
+    // Small gold marker above title
+    doc.setFillColor(...gold);
+    doc.circle(cx, y - 2, 0.7, "F");
+
+    // Title
+    doc.setTextColor(...green);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(13);
-    doc.text((it.name || "").toUpperCase(), 20, y);
-    y += 5;
-    if (it.description) {
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
-      const lines = doc.splitTextToSize(it.description, pageW - 40);
-      doc.text(lines, 20, y);
-      y += lines.length * 4.5;
+    doc.text((it.name || "").toUpperCase(), cx, y + 4, {
+      align: "center",
+      charSpace: 1.2,
+    });
+    y += 9;
+
+    // Description
+    if (descLines.length) {
+      doc.setTextColor(...greenSoft);
+      doc.setFont("times", "italic");
+      doc.setFontSize(10.5);
+      doc.text(descLines, cx, y, { align: "center" });
+      y += descLines.length * 4.8;
     }
+
+    // Price
     if (it.price) {
+      y += 2;
+      doc.setTextColor(...gold);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10);
-      doc.text(it.price, pageW - 20, y, { align: "right" });
+      doc.setFontSize(10.5);
+      doc.text(it.price, cx, y, { align: "center" });
       y += 4;
     }
-    y += 6;
+
+    // Separator (thin gold dot) between items
+    if (i < data.items.length - 1) {
+      y += 5;
+      doc.setFillColor(...gold);
+      doc.circle(cx - 3, y, 0.5, "F");
+      doc.circle(cx, y, 0.7, "F");
+      doc.circle(cx + 3, y, 0.5, "F");
+      y += 8;
+    } else {
+      y += 6;
+    }
   }
 
-  // Footer
-  doc.setFillColor(green[0], green[1], green[2]);
-  doc.rect(0, pageH - 20, pageW, 20, "F");
-  doc.setTextColor(cream[0], cream[1], cream[2]);
-  doc.setFont("helvetica", "normal");
+  // ---- Footer ----
+  const footY = pageH - 22;
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.3);
+  doc.line(cx - 30, footY, cx - 5, footY);
+  doc.line(cx + 5, footY, cx + 30, footY);
+  doc.setFillColor(...gold);
+  doc.triangle(cx - 2, footY, cx + 2, footY, cx, footY - 2.5, "F");
+  doc.triangle(cx - 2, footY, cx + 2, footY, cx, footY + 2.5, "F");
+
+  doc.setTextColor(...green);
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.text("MO - FR 11:30 bis 14:00 Uhr    DI - DO 18:30 bis 23:30 Uhr    FR - SA 18:30 bis 03:00 Uhr    Sonntag geschlossen", pageW / 2, pageH - 8, { align: "center" });
+  doc.text("ÖFFNUNGSZEITEN", cx, footY + 7, { align: "center", charSpace: 1.5 });
+
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...greenSoft);
+  doc.setFontSize(7.5);
+  doc.text(
+    "MO – FR  11:30 – 14:00   ·   DI – DO  18:30 – 23:30   ·   FR – SA  18:30 – 03:00   ·   SO geschlossen",
+    cx,
+    footY + 12,
+    { align: "center" },
+  );
+  doc.setFontSize(7);
+  doc.setTextColor(...gold);
+  doc.text("Take Away möglich  ·  Preise inkl. MwSt.", cx, footY + 16.5, {
+    align: "center",
+  });
 
   return doc.output("blob");
 }
