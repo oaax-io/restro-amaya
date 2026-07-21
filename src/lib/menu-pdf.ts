@@ -202,13 +202,17 @@ async function loadJunglePatternDataUrl(
     canvas.height = canvasH;
     const ctx = canvas.getContext("2d")!;
 
-    // Tile the pattern at a designed size (mm) so the motif reads clearly.
-    const tileMm = 90;
-    const tilePx = Math.round(tileMm * mmToPx);
+    // Preserve the pattern's intrinsic aspect ratio so it isn't stretched.
+    const nw = img.naturalWidth || 400;
+    const nh = img.naturalHeight || 400;
+    const aspect = nw / nh;
+    const tileMm = 85;
+    const tileWpx = Math.round(tileMm * mmToPx);
+    const tileHpx = Math.round(tileWpx / aspect);
     ctx.globalAlpha = opacity;
-    for (let x = 0; x < canvasW; x += tilePx) {
-      for (let y = 0; y < canvasH; y += tilePx) {
-        ctx.drawImage(img, x, y, tilePx, tilePx);
+    for (let x = 0; x < canvasW; x += tileWpx) {
+      for (let y = 0; y < canvasH; y += tileHpx) {
+        ctx.drawImage(img, x, y, tileWpx, tileHpx);
       }
     }
     ctx.globalAlpha = 1;
@@ -227,6 +231,25 @@ async function loadJunglePatternDataUrl(
   }
 }
 
+// Load the Amaya logo as a PNG data URL so we can embed it in jsPDF.
+async function loadLogoDataUrl(): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const pointer = (await import("@/assets/amaya-logo.png.asset.json")).default as { url: string };
+    const res = await fetch(pointer.url);
+    const blob = await res.blob();
+    return await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  } catch (err) {
+    if (typeof console !== "undefined") console.warn("[menu-pdf] logo load failed", err);
+    return null;
+  }
+}
+
 export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
@@ -239,8 +262,11 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const greenSoft: [number, number, number] = [90, 120, 95];
   const gold: [number, number, number] = [176, 141, 74];
 
-  // ---- Background: cream base + Amaya jungle pattern (same as website) ----
-  const patternDataUrl = await loadJunglePatternDataUrl(pageW, pageH, green, 0.12);
+  // ---- Background: cream base + Amaya jungle pattern + logo ----
+  const [patternDataUrl, logoDataUrl] = await Promise.all([
+    loadJunglePatternDataUrl(pageW, pageH, green, 0.1),
+    loadLogoDataUrl(),
+  ]);
 
   const paintBackground = () => {
     doc.setFillColor(...cream);
@@ -248,68 +274,89 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     if (patternDataUrl) {
       doc.addImage(patternDataUrl, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
     }
-    // Faint gold side rules
+    // Outer frame (double-line, like a menu card border)
     doc.setDrawColor(...gold);
-    doc.setLineWidth(0.1);
-    doc.line(18, 60, 18, pageH - 40);
-    doc.line(pageW - 18, 60, pageW - 18, pageH - 40);
+    doc.setLineWidth(0.6);
+    doc.rect(10, 10, pageW - 20, pageH - 20);
+    doc.setLineWidth(0.15);
+    doc.rect(13, 13, pageW - 26, pageH - 26);
   };
   paintBackground();
 
   // ---- Header (centered) ----
   const cx = pageW / 2;
 
-  doc.setTextColor(...greenSoft);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(9);
-  doc.text("R E S T A U R A N T  ·  M E S A", cx, 22, { align: "center" });
-
-  doc.setTextColor(...green);
-  doc.setFont("times", "italic");
-  doc.setFontSize(38);
-  doc.text("Amaya", cx, 38, { align: "center" });
-
-  // Ornamental divider — line · diamond · line
-  doc.setDrawColor(...gold);
-  doc.setLineWidth(0.4);
-  doc.line(cx - 30, 44, cx - 5, 44);
-  doc.line(cx + 5, 44, cx + 30, 44);
-  // diamond
-  doc.setFillColor(...gold);
-  doc.triangle(cx - 2, 44, cx + 2, 44, cx, 41.5, "F");
-  doc.triangle(cx - 2, 44, cx + 2, 44, cx, 46.5, "F");
+  // Original Amaya logo
+  let headerBottom = 24;
+  if (logoDataUrl) {
+    const logoH = 22;
+    const logoW = 18; // logo aspect ~ 4:5
+    doc.addImage(logoDataUrl, "PNG", cx - logoW / 2, headerBottom, logoW, logoH, undefined, "FAST");
+    headerBottom += logoH + 6;
+  } else {
+    headerBottom = 42;
+  }
 
   doc.setTextColor(...green);
   doc.setFont("helvetica", "bold");
+  doc.setFontSize(20);
+  doc.text("AMAYA", cx, headerBottom + 4, { align: "center", charSpace: 6 });
+  headerBottom += 8;
+
+  doc.setTextColor(...greenSoft);
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(8);
+  doc.text("RESTAURANT · MESA · JUNGLE KITCHEN", cx, headerBottom + 3, {
+    align: "center",
+    charSpace: 2.5,
+  });
+  headerBottom += 8;
+
+  // Title box — rectangular frame instead of ornamental symbols
+  const titleBoxW = 90;
+  const titleBoxH = 12;
+  doc.setDrawColor(...gold);
+  doc.setLineWidth(0.4);
+  doc.rect(cx - titleBoxW / 2, headerBottom, titleBoxW, titleBoxH);
+  doc.setTextColor(...green);
+  doc.setFont("helvetica", "bold");
   doc.setFontSize(11);
-  doc.text("WOCHENGERICHTE", cx, 52, { align: "center", charSpace: 2 });
+  doc.text("WOCHENGERICHTE", cx, headerBottom + 7.7, {
+    align: "center",
+    charSpace: 3,
+  });
+  headerBottom += titleBoxH;
 
   if (data.dateRange) {
     doc.setFont("helvetica", "normal");
     doc.setTextColor(...greenSoft);
     doc.setFontSize(9);
-    doc.text(data.dateRange, cx, 58, { align: "center" });
+    doc.text(data.dateRange, cx, headerBottom + 6, { align: "center" });
+    headerBottom += 6;
   }
 
-  let y = 74;
+  let y = headerBottom + 14;
 
   // ---- Suppe & Salat (centered pill) ----
   if (data.suppeSalat) {
     doc.setFillColor(...creamDeep);
-    const boxW = 130;
-    const boxH = 16;
-    doc.roundedRect(cx - boxW / 2, y - 6, boxW, boxH, 2, 2, "F");
+    const boxW = 140;
+    const boxH = 18;
+    doc.rect(cx - boxW / 2, y - 6, boxW, boxH, "F");
+    doc.setDrawColor(...gold);
+    doc.setLineWidth(0.3);
+    doc.rect(cx - boxW / 2, y - 6, boxW, boxH);
     doc.setTextColor(...green);
-    doc.setFont("times", "italic");
+    doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    doc.text(data.suppeSalat, cx, y - 0.5, { align: "center" });
+    doc.text(data.suppeSalat, cx, y - 0.5, { align: "center", charSpace: 0.5 });
     if (data.suppeSalatPrice) {
-      doc.setFont("helvetica", "bold");
+      doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.setTextColor(...gold);
       doc.text(data.suppeSalatPrice, cx, y + 5, { align: "center" });
     }
-    y += 22;
+    y += 26;
   }
 
   // ---- Items (centered) ----
@@ -324,15 +371,11 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
       ? doc.splitTextToSize(it.description, contentW)
       : [];
     const blockH = 10 + descLines.length * 4.6 + (it.price ? 8 : 4) + 8;
-    if (y + blockH > pageH - 32) {
+    if (y + blockH > pageH - 38) {
       doc.addPage();
       paintBackground();
-      y = 28;
+      y = 32;
     }
-
-    // Small gold marker above title
-    doc.setFillColor(...gold);
-    doc.circle(cx, y - 2, 0.7, "F");
 
     // Title
     doc.setTextColor(...green);
@@ -340,22 +383,22 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     doc.setFontSize(13);
     doc.text((it.name || "").toUpperCase(), cx, y + 4, {
       align: "center",
-      charSpace: 1.2,
+      charSpace: 2,
     });
     y += 9;
 
     // Description
     if (descLines.length) {
       doc.setTextColor(...greenSoft);
-      doc.setFont("times", "italic");
-      doc.setFontSize(10.5);
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(10);
       doc.text(descLines, cx, y, { align: "center" });
-      y += descLines.length * 4.8;
+      y += descLines.length * 4.6;
     }
 
     // Price
     if (it.price) {
-      y += 2;
+      y += 3;
       doc.setTextColor(...gold);
       doc.setFont("helvetica", "bold");
       doc.setFontSize(10.5);
@@ -363,13 +406,12 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
       y += 4;
     }
 
-    // Separator (thin gold dot) between items
+    // Separator — thin gold rule between items
     if (i < data.items.length - 1) {
-      y += 5;
-      doc.setFillColor(...gold);
-      doc.circle(cx - 3, y, 0.5, "F");
-      doc.circle(cx, y, 0.7, "F");
-      doc.circle(cx + 3, y, 0.5, "F");
+      y += 6;
+      doc.setDrawColor(...gold);
+      doc.setLineWidth(0.2);
+      doc.line(cx - 25, y, cx + 25, y);
       y += 8;
     } else {
       y += 6;
@@ -377,32 +419,28 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   }
 
   // ---- Footer ----
-  const footY = pageH - 22;
+  const footTop = pageH - 30;
   doc.setDrawColor(...gold);
   doc.setLineWidth(0.3);
-  doc.line(cx - 30, footY, cx - 5, footY);
-  doc.line(cx + 5, footY, cx + 30, footY);
-  doc.setFillColor(...gold);
-  doc.triangle(cx - 2, footY, cx + 2, footY, cx, footY - 2.5, "F");
-  doc.triangle(cx - 2, footY, cx + 2, footY, cx, footY + 2.5, "F");
+  doc.rect(20, footTop, pageW - 40, 18);
 
   doc.setTextColor(...green);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.text("ÖFFNUNGSZEITEN", cx, footY + 7, { align: "center", charSpace: 1.5 });
+  doc.text("ÖFFNUNGSZEITEN", cx, footTop + 5, { align: "center", charSpace: 2 });
 
   doc.setFont("helvetica", "normal");
   doc.setTextColor(...greenSoft);
   doc.setFontSize(7.5);
   doc.text(
-    "MO – FR  11:30 – 14:00   ·   DI – DO  18:30 – 23:30   ·   FR – SA  18:30 – 03:00   ·   SO geschlossen",
+    "MO – FR  11:30 – 14:00     DI – DO  18:30 – 23:30     FR – SA  18:30 – 03:00     SO geschlossen",
     cx,
-    footY + 12,
+    footTop + 10,
     { align: "center" },
   );
   doc.setFontSize(7);
   doc.setTextColor(...gold);
-  doc.text("Take Away möglich  ·  Preise inkl. MwSt.", cx, footY + 16.5, {
+  doc.text("Take Away möglich   ·   Preise inkl. MwSt.", cx, footTop + 15, {
     align: "center",
   });
 
