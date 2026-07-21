@@ -340,28 +340,39 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   }
 
   // Section title — black, framed by thin apricot rules left & right
+  const titleStr = "DIESE WOCHE LUNCH MENU SPECIAL";
+  const titleCS = 2.4;
   doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
-  centerText("WOCHENGERICHTE", y, { charSpace: 3 });
+  centerText(titleStr, y, { charSpace: titleCS });
   // Decorative side rules
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.25);
-  const titleTextW = doc.getTextWidth("WOCHENGERICHTE") + 3 * 13; // charSpace * (len-1)
+  const titleTextW = doc.getTextWidth(titleStr) + titleCS * (titleStr.length - 1);
   const ruleGap = 6;
-  const ruleLen = 22;
+  const ruleLen = 18;
   const rulesY = y - 1.4;
   doc.line(cx - titleTextW / 2 - ruleGap - ruleLen, rulesY, cx - titleTextW / 2 - ruleGap, rulesY);
   doc.line(cx + titleTextW / 2 + ruleGap, rulesY, cx + titleTextW / 2 + ruleGap + ruleLen, rulesY);
   y += 6;
 
-  if (data.dateRange) {
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...jungleSoft);
-    doc.setFontSize(9);
-    centerText(data.dateRange, y + 4);
-    y += 8;
-  }
+  // Current ISO week number, e.g. "KW 42"
+  const isoWeek = (() => {
+    const d = new Date();
+    const target = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+    const day = target.getUTCDay() || 7;
+    target.setUTCDate(target.getUTCDate() + 4 - day);
+    const yearStart = new Date(Date.UTC(target.getUTCFullYear(), 0, 1));
+    return Math.ceil(((target.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+  })();
+  const weekLabel = `KW ${isoWeek}`;
+  const dateLine = data.dateRange ? `${weekLabel}  ·  ${data.dateRange}` : weekLabel;
+  doc.setFont("helvetica", "normal");
+  doc.setTextColor(...jungleSoft);
+  doc.setFontSize(9);
+  centerText(dateLine, y + 4);
+  y += 8;
 
   y += 8;
 
