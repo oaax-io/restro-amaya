@@ -26,44 +26,61 @@ async function extractLines(file: File | Blob): Promise<string[]> {
   for (let p = 1; p <= pdf.numPages; p++) {
     const page = await pdf.getPage(p);
     const tc = await page.getTextContent();
-    // Group items by y-coordinate (transform[5])
-    const rows = new Map<number, { x: number; s: string }[]>();
+    // Group items by y-coordinate with tolerance (pdfjs jitters within a line)
+    type Row = { y: number; parts: { x: number; s: string }[] };
+    const rows: Row[] = [];
+    const TOL = 2.5;
     for (const it of tc.items as any[]) {
-      const y = Math.round(it.transform[5]);
+      const s = String(it.str ?? "");
+      if (!s.trim() && !it.hasEOL) continue;
+      const y = it.transform[5];
       const x = it.transform[4];
-      if (!rows.has(y)) rows.set(y, []);
-      rows.get(y)!.push({ x, s: it.str });
+      let row = rows.find((r) => Math.abs(r.y - y) <= TOL);
+      if (!row) { row = { y, parts: [] }; rows.push(row); }
+      row.parts.push({ x, s });
     }
-    const ys = Array.from(rows.keys()).sort((a, b) => b - a);
-    for (const y of ys) {
-      const line = rows.get(y)!.sort((a, b) => a.x - b.x).map((r) => r.s).join(" ").replace(/\s+/g, " ").trim();
+    rows.sort((a, b) => b.y - a.y);
+    for (const r of rows) {
+      const line = r.parts.sort((a, b) => a.x - b.x).map((p) => p.s).join("").replace(/\s+/g, " ").trim();
       if (line) allLines.push(line);
     }
   }
   return allLines;
 }
 
-const PRICE_RE = /^\s*(?:CHF\s*)?(\d{1,3}[.,]\d{2})(?:\s*[|\/]\s*TA\s*(\d{1,3}[.,]\d{2}))?\s*$/i;
+// Price anywhere in a line (captures optional TA variant)
+const PRICE_ANY_RE = /(?:CHF\s*)?(\d{1,3}[.,]\d{2})(?:\s*[|\/]\s*TA\s*(\d{1,3}[.,]\d{2}))?/i;
+const PRICE_ONLY_RE = /^\s*(?:CHF\s*)?\d{1,3}[.,]\d{2}(?:\s*[|\/]\s*TA\s*\d{1,3}[.,]\d{2})?\s*$/i;
 const HOURS_RE = /\b(uhr|geschlossen|montag|dienstag|mittwoch|donnerstag|freitag|samstag|sonntag|mo\s*-|di\s*-|do\s*-|fr\s*-)\b/i;
 
 function isUpperTitle(s: string): boolean {
-  const letters = s.replace(/[^A-Za-zÄÖÜäöüß]/g, "");
+  // Strip any embedded price first
+  const clean = s.replace(PRICE_ANY_RE, "").trim();
+  const letters = clean.replace(/[^A-Za-zÄÖÜäöüß]/g, "");
   if (letters.length < 3) return false;
-  return letters === letters.toUpperCase();
+  // Consider it a title if uppercase ratio is high
+  const upper = letters.replace(/[^A-ZÄÖÜ]/g, "").length;
+  return upper / letters.length >= 0.8;
 }
 
 export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
   const lines = await extractLines(file);
+  if (typeof console !== "undefined") console.log("[menu-pdf] extracted lines:", lines);
   const out: ParsedWeekly = { items: [] };
 
   // Detect Suppe/Salat
-  for (let i = 0; i < lines.length - 1; i++) {
+  for (let i = 0; i < lines.length; i++) {
     if (/suppe.*salat|salat.*suppe/i.test(lines[i])) {
-      const next = lines[i + 1];
-      const m = next.match(PRICE_RE);
-      if (m) {
-        out.suppe_salat_de = lines[i].trim();
-        out.suppe_salat_price = `CHF ${m[1].replace(",", ".")}`;
+      const own = lines[i].match(PRICE_ANY_RE);
+      if (own) {
+        out.suppe_salat_de = lines[i].replace(PRICE_ANY_RE, "").trim();
+        out.suppe_salat_price = `CHF ${own[1].replace(",", ".")}`;
+      } else if (i + 1 < lines.length) {
+        const m = lines[i + 1].match(PRICE_ANY_RE);
+        if (m) {
+          out.suppe_salat_de = lines[i].trim();
+          out.suppe_salat_price = `CHF ${m[1].replace(",", ".")}`;
+        }
       }
       break;
     }
@@ -82,17 +99,23 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
     descBuf.length = 0;
   };
 
+  const setPriceFromMatch = (m: RegExpMatchArray) => {
+    const p1 = m[1].replace(",", ".");
+    const p2 = m[2]?.replace(",", ".");
+    return p2 ? `${p1} | TA ${p2}` : p1;
+  };
+
   for (const raw of lines) {
     const line = raw.trim();
     if (!line) continue;
     if (HOURS_RE.test(line)) { flush(); break; }
     if (/suppe.*salat|salat.*suppe/i.test(line)) continue;
-    const priceM = line.match(PRICE_RE);
-    if (priceM) {
+
+    // Case: line is only a price
+    if (PRICE_ONLY_RE.test(line)) {
+      const priceM = line.match(PRICE_ANY_RE)!;
       if (cur) {
-        const p1 = priceM[1].replace(",", ".");
-        const p2 = priceM[2]?.replace(",", ".");
-        cur.price_text = p2 ? `${p1} | TA ${p2}` : p1;
+        cur.price_text = setPriceFromMatch(priceM);
         cur.description_de = descBuf.join(" ").trim();
         out.items.push(cur);
         cur = null;
@@ -100,12 +123,33 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
       }
       continue;
     }
+
     if (isUpperTitle(line)) {
       flush();
-      cur = { name_de: line, description_de: "", price_text: "" };
+      // Title may also contain the price on the same line
+      const embedded = line.match(PRICE_ANY_RE);
+      const cleanTitle = line.replace(PRICE_ANY_RE, "").trim();
+      cur = { name_de: cleanTitle, description_de: "", price_text: embedded ? setPriceFromMatch(embedded) : "" };
+      if (embedded) {
+        out.items.push({ ...cur, description_de: "" });
+        cur = null;
+      }
       continue;
     }
-    if (cur) descBuf.push(line);
+
+    if (cur) {
+      // Description line may end with price
+      const embedded = line.match(PRICE_ANY_RE);
+      if (embedded && PRICE_ANY_RE.test(line) && line.replace(PRICE_ANY_RE, "").trim().length < 3) {
+        cur.price_text = setPriceFromMatch(embedded);
+        cur.description_de = descBuf.join(" ").trim();
+        out.items.push(cur);
+        cur = null;
+        descBuf.length = 0;
+      } else {
+        descBuf.push(line);
+      }
+    }
   }
   flush();
 
