@@ -421,9 +421,9 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     descLinesPerItem: string[][];
   };
   const buildPlan = (s: number): Plan => {
-    const titleSize = 13 * s;
+    const titleSize = 15.5 * s;
     const descSize = Math.max(7.5, 10 * s);
-    const priceSize = 10.5 * s;
+    const priceSize = 12.5 * s;
     const titleLead = 8 * s;
     const descLead = 4.6 * s;
     const priceGap = 5 * s;
