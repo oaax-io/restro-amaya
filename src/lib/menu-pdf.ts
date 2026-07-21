@@ -2,6 +2,7 @@
 import { getDocument, GlobalWorkerOptions, version } from "pdfjs-dist";
 import jsPDF from "jspdf";
 import QRCode from "qrcode";
+import { RESTAURANT } from "@/lib/restaurant";
 
 // Use CDN worker matching the installed pdfjs version
 if (typeof window !== "undefined" && !GlobalWorkerOptions.workerSrc) {
