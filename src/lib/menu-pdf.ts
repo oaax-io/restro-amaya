@@ -353,12 +353,8 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     if (hangingPlants) {
       const aspect = hangingPlants.width / hangingPlants.height;
       const drawW = pageW;
-      const drawH = drawW / aspect;
-      const maxH = 60;
-      const finalH = Math.min(drawH, maxH);
-      const finalW = finalH * aspect;
-      const px = (pageW - finalW) / 2;
-      doc.addImage(hangingPlants.dataUrl, "PNG", px, 0, finalW, finalH, undefined, "FAST");
+      const drawH = Math.min(drawW / aspect, 55);
+      doc.addImage(hangingPlants.dataUrl, "PNG", 0, 0, drawW, drawH, undefined, "FAST");
     }
     // Single thin apricot frame, quiet and centered
     doc.setDrawColor(...apricot);
