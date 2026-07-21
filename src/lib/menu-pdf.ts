@@ -70,21 +70,33 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
   if (typeof console !== "undefined") console.log("[menu-pdf] extracted lines:", lines);
   const out: ParsedWeekly = { items: [] };
 
-  // Detect Suppe/Salat
-  for (let i = 0; i < lines.length; i++) {
-    if (/suppe.*salat|salat.*suppe/i.test(lines[i])) {
-      const own = lines[i].match(PRICE_ANY_RE);
-      if (own) {
-        out.suppe_salat_de = lines[i].replace(PRICE_ANY_RE, "").trim();
-        out.suppe_salat_price = `CHF ${own[1].replace(",", ".")}`;
-      } else if (i + 1 < lines.length) {
-        const m = lines[i + 1].match(PRICE_ANY_RE);
+  // Detect Suppe/Salat — accept any title line containing SUPPE and/or SALAT
+  // (e.g. "SUPPE & SALAT", "TAGESSUPPE", "SAISONSALAT", "SUPPE ODER SALAT").
+  const suppeSalatIdx = lines.findIndex((l) => /\b(suppe|salat)\b/i.test(l) && isUpperTitle(l));
+  if (suppeSalatIdx >= 0) {
+    const head = lines[suppeSalatIdx];
+    const own = head.match(PRICE_ANY_RE);
+    if (own) {
+      out.suppe_salat_de = head.replace(PRICE_ANY_RE, "").trim();
+      out.suppe_salat_price = `CHF ${own[1].replace(",", ".")}`;
+    } else {
+      // Look ahead a few lines for the price; collect description in between
+      const descParts: string[] = [];
+      for (let j = suppeSalatIdx + 1; j < Math.min(lines.length, suppeSalatIdx + 6); j++) {
+        const m = lines[j].match(PRICE_ANY_RE);
         if (m) {
-          out.suppe_salat_de = lines[i].trim();
           out.suppe_salat_price = `CHF ${m[1].replace(",", ".")}`;
+          const rest = lines[j].replace(PRICE_ANY_RE, "").trim();
+          if (rest && !isUpperTitle(rest)) descParts.push(rest);
+          break;
         }
+        if (isUpperTitle(lines[j])) break;
+        descParts.push(lines[j]);
       }
-      break;
+      const cleanHead = head.trim();
+      out.suppe_salat_de = descParts.length
+        ? `${cleanHead} — ${descParts.join(" ")}`
+        : cleanHead;
     }
   }
 
@@ -107,11 +119,21 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
     return p2 ? `${p1} | TA ${p2}` : p1;
   };
 
-  for (const raw of lines) {
+  for (let li = 0; li < lines.length; li++) {
+    // Skip the Suppe/Salat block so it isn't also captured as a regular item
+    if (suppeSalatIdx >= 0 && li >= suppeSalatIdx) {
+      // advance past the block: header + up to next title
+      if (li === suppeSalatIdx) {
+        let k = suppeSalatIdx + 1;
+        while (k < lines.length && !isUpperTitle(lines[k])) k++;
+        li = k - 1;
+        continue;
+      }
+    }
+    const raw = lines[li];
     const line = raw.trim();
     if (!line) continue;
     if (HOURS_RE.test(line)) { flush(); break; }
-    if (/suppe.*salat|salat.*suppe/i.test(line)) continue;
 
     // Case: line is only a price
     if (PRICE_ONLY_RE.test(line)) {
@@ -381,66 +403,100 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const boxW = pageW - boxMarginX * 2;
   const footerSafeTop = boxY - 12;
 
-  // ---- Items (centered) ----
+  // ---- Items (centered) — auto-scale to fit on a single page ----
   const contentW = 150;
+  const availableH = footerSafeTop - y;
+
+  type Plan = {
+    scale: number;
+    titleSize: number;
+    descSize: number;
+    priceSize: number;
+    titleLead: number;
+    descLead: number;
+    priceGap: number;
+    sepGap: number;
+    descBottom: number;
+    total: number;
+    descLinesPerItem: string[][];
+  };
+  const buildPlan = (s: number): Plan => {
+    const titleSize = 13 * s;
+    const descSize = Math.max(7.5, 10 * s);
+    const priceSize = 10.5 * s;
+    const titleLead = 8 * s;
+    const descLead = 4.6 * s;
+    const priceGap = 5 * s;
+    const descBottom = 1 * s;
+    const sepGap = 15 * s; // 7 before sep + 8 after
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(descSize);
+    const descLinesPerItem = data.items.map((it) =>
+      it.description ? (doc.splitTextToSize(it.description, contentW) as string[]) : [],
+    );
+    let total = 0;
+    for (let i = 0; i < data.items.length; i++) {
+      const it = data.items[i];
+      const desc = descLinesPerItem[i];
+      total += titleLead;
+      if (desc.length) total += desc.length * descLead + descBottom;
+      if (it.price) total += priceGap + 4 * s;
+      if (i < data.items.length - 1) total += sepGap;
+      else total += 6 * s;
+    }
+    return { scale: s, titleSize, descSize, priceSize, titleLead, descLead, priceGap, sepGap, descBottom, total, descLinesPerItem };
+  };
+
+  let plan = buildPlan(1);
+  let s = 1;
+  while (plan.total > availableH && s > 0.55) {
+    s = Math.max(0.55, s - 0.04);
+    plan = buildPlan(s);
+  }
+
   for (let i = 0; i < data.items.length; i++) {
     const it = data.items[i];
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const descLines = it.description
-      ? doc.splitTextToSize(it.description, contentW)
-      : [];
-    const blockH = 8 + descLines.length * 4.6 + (it.price ? 8 : 0) + 10;
-    if (y + blockH > footerSafeTop) {
-      doc.addPage();
-      paintBackground();
-      y = 30;
-    }
+    const descLines = plan.descLinesPerItem[i];
 
     // Title
     doc.setTextColor(...jungle);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    centerText((it.name || "").toUpperCase(), y + 4, { charSpace: 1.8 });
-    y += 8;
+    doc.setFontSize(plan.titleSize);
+    centerText((it.name || "").toUpperCase(), y + 4 * plan.scale, { charSpace: 1.8 * plan.scale });
+    y += plan.titleLead;
 
     // Description
     if (descLines.length) {
       doc.setTextColor(...jungleSoft);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(plan.descSize);
       for (const ln of descLines) {
-        y += 4.6;
+        y += plan.descLead;
         centerText(ln, y);
       }
-      y += 1;
+      y += plan.descBottom;
     }
 
     // Price
     if (it.price) {
-      y += 5;
+      y += plan.priceGap;
       doc.setTextColor(...apricotDeep);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10.5);
+      doc.setFontSize(plan.priceSize);
       centerText(it.price, y);
+      y += 4 * plan.scale;
     }
 
     // Separator
     if (i < data.items.length - 1) {
-      y += 7;
+      y += 7 * plan.scale;
       doc.setDrawColor(...apricot);
       doc.setLineWidth(0.2);
       doc.line(cx - 25, y, cx + 25, y);
-      y += 8;
+      y += 8 * plan.scale;
     } else {
-      y += 6;
+      y += 6 * plan.scale;
     }
-  }
-
-  if (y > footerSafeTop) {
-    doc.addPage();
-    paintBackground();
   }
 
   // ---- Footer: framed box (like the MESA AMAYA green frame) ----
