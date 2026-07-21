@@ -403,66 +403,100 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const boxW = pageW - boxMarginX * 2;
   const footerSafeTop = boxY - 12;
 
-  // ---- Items (centered) ----
+  // ---- Items (centered) — auto-scale to fit on a single page ----
   const contentW = 150;
+  const availableH = footerSafeTop - y;
+
+  type Plan = {
+    scale: number;
+    titleSize: number;
+    descSize: number;
+    priceSize: number;
+    titleLead: number;
+    descLead: number;
+    priceGap: number;
+    sepGap: number;
+    descBottom: number;
+    total: number;
+    descLinesPerItem: string[][];
+  };
+  const buildPlan = (s: number): Plan => {
+    const titleSize = 13 * s;
+    const descSize = Math.max(7.5, 10 * s);
+    const priceSize = 10.5 * s;
+    const titleLead = 8 * s;
+    const descLead = 4.6 * s;
+    const priceGap = 5 * s;
+    const descBottom = 1 * s;
+    const sepGap = 15 * s; // 7 before sep + 8 after
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(descSize);
+    const descLinesPerItem = data.items.map((it) =>
+      it.description ? (doc.splitTextToSize(it.description, contentW) as string[]) : [],
+    );
+    let total = 0;
+    for (let i = 0; i < data.items.length; i++) {
+      const it = data.items[i];
+      const desc = descLinesPerItem[i];
+      total += titleLead;
+      if (desc.length) total += desc.length * descLead + descBottom;
+      if (it.price) total += priceGap + 4 * s;
+      if (i < data.items.length - 1) total += sepGap;
+      else total += 6 * s;
+    }
+    return { scale: s, titleSize, descSize, priceSize, titleLead, descLead, priceGap, sepGap, descBottom, total, descLinesPerItem };
+  };
+
+  let plan = buildPlan(1);
+  let s = 1;
+  while (plan.total > availableH && s > 0.55) {
+    s = Math.max(0.55, s - 0.04);
+    plan = buildPlan(s);
+  }
+
   for (let i = 0; i < data.items.length; i++) {
     const it = data.items[i];
-
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(10);
-    const descLines = it.description
-      ? doc.splitTextToSize(it.description, contentW)
-      : [];
-    const blockH = 8 + descLines.length * 4.6 + (it.price ? 8 : 0) + 10;
-    if (y + blockH > footerSafeTop) {
-      doc.addPage();
-      paintBackground();
-      y = 30;
-    }
+    const descLines = plan.descLinesPerItem[i];
 
     // Title
     doc.setTextColor(...jungle);
     doc.setFont("helvetica", "bold");
-    doc.setFontSize(13);
-    centerText((it.name || "").toUpperCase(), y + 4, { charSpace: 1.8 });
-    y += 8;
+    doc.setFontSize(plan.titleSize);
+    centerText((it.name || "").toUpperCase(), y + 4 * plan.scale, { charSpace: 1.8 * plan.scale });
+    y += plan.titleLead;
 
     // Description
     if (descLines.length) {
       doc.setTextColor(...jungleSoft);
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(10);
+      doc.setFontSize(plan.descSize);
       for (const ln of descLines) {
-        y += 4.6;
+        y += plan.descLead;
         centerText(ln, y);
       }
-      y += 1;
+      y += plan.descBottom;
     }
 
     // Price
     if (it.price) {
-      y += 5;
+      y += plan.priceGap;
       doc.setTextColor(...apricotDeep);
       doc.setFont("helvetica", "bold");
-      doc.setFontSize(10.5);
+      doc.setFontSize(plan.priceSize);
       centerText(it.price, y);
+      y += 4 * plan.scale;
     }
 
     // Separator
     if (i < data.items.length - 1) {
-      y += 7;
+      y += 7 * plan.scale;
       doc.setDrawColor(...apricot);
       doc.setLineWidth(0.2);
       doc.line(cx - 25, y, cx + 25, y);
-      y += 8;
+      y += 8 * plan.scale;
     } else {
-      y += 6;
+      y += 6 * plan.scale;
     }
-  }
-
-  if (y > footerSafeTop) {
-    doc.addPage();
-    paintBackground();
   }
 
   // ---- Footer: framed box (like the MESA AMAYA green frame) ----
