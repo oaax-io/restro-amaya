@@ -387,9 +387,20 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   if (panelPattern) {
     doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
   }
+  // Decorative jungle-leaf columns hugging the panel's left & right edges,
+  // stronger tint so they read as botanical borders inside the frame.
+  const leafColW = 18;
+  const leafPattern = await loadJunglePatternDataUrl(leafColW, panelH, jungle, 0.22);
+  if (leafPattern) {
+    doc.addImage(leafPattern, "PNG", panelX, panelTop, leafColW, panelH, undefined, "FAST");
+    doc.addImage(leafPattern, "PNG", panelX + panelW - leafColW, panelTop, leafColW, panelH, undefined, "FAST");
+  }
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.2);
   doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
+
+  // Breathing room between the panel's top edge and the Suppe/Salat title
+  y += 6;
 
   // ---- Suppe & Salat (no frame, just typography) ----
   if (data.suppeSalat) {
@@ -412,7 +423,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   }
 
   // ---- Items (centered) — auto-scale to fit on a single page ----
-  const contentW = 150;
+  const contentW = 122;
   const availableH = footerSafeTop - y;
 
   type Plan = {
