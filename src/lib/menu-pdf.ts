@@ -612,7 +612,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.4);
   doc.setTextColor(...apricotDeep);
-  doc.text("Take Away möglich · Preise mit TA = günstigere Take-Away-Preise · Alle Preise inkl. MwSt.", boxX + boxW / 2, boxY + boxH + 8, { align: "center" });
+  doc.text("Take Away möglich (TA = günstigere Preise) · Alle Preise inkl. MwSt.", boxX + boxW / 2, boxY + boxH + 8, { align: "center" });
 
   return doc.output("blob");
 }
