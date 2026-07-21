@@ -375,6 +375,32 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
 
   y += 8;
 
+  // Footer geometry is defined before laying out menu items so the content
+  // never runs underneath the framed footer area.
+  const boxMarginX = 22;
+  const boxH = 58;
+  const boxY = pageH - boxH - 28;
+  const boxX = boxMarginX;
+  const boxW = pageW - boxMarginX * 2;
+  const footerSafeTop = boxY - 12;
+
+  // ---- Readability panel behind Suppe/Salat + menu items ----
+  // Draw first so subsequent text renders on top of the light panel.
+  const panelX = 20;
+  const panelTop = y - 6;
+  const panelBottom = footerSafeTop - 2;
+  const panelW = pageW - panelX * 2;
+  const panelH = panelBottom - panelTop;
+  doc.setFillColor(252, 249, 242); // near-white warm cream
+  doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "F");
+  const panelPattern = await loadJunglePatternDataUrl(panelW, panelH, jungle, 0.05);
+  if (panelPattern) {
+    doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
+  }
+  doc.setDrawColor(...apricot);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
+
   // ---- Suppe & Salat (no frame, just typography) ----
   if (data.suppeSalat) {
     doc.setTextColor(...jungle);
@@ -395,37 +421,9 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     y += 10;
   }
 
-  // Footer geometry is defined before laying out menu items so the content
-  // never runs underneath the framed footer area.
-  const boxMarginX = 22;
-  const boxH = 58;
-  const boxY = pageH - boxH - 28;
-  const boxX = boxMarginX;
-  const boxW = pageW - boxMarginX * 2;
-  const footerSafeTop = boxY - 12;
-
   // ---- Items (centered) — auto-scale to fit on a single page ----
   const contentW = 150;
   const availableH = footerSafeTop - y;
-
-  // ---- Readability panel behind menu items ----
-  // Draw a light warm-cream panel with a very subtle green jungle pattern
-  // overlay so the menu text stays legible against the page background.
-  const panelX = 20;
-  const panelTop = y - 4;
-  const panelBottom = footerSafeTop - 2;
-  const panelW = pageW - panelX * 2;
-  const panelH = panelBottom - panelTop;
-  doc.setFillColor(252, 249, 242); // near-white warm cream
-  doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "F");
-  const panelPattern = await loadJunglePatternDataUrl(panelW, panelH, jungle, 0.05);
-  if (panelPattern) {
-    doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
-  }
-  // Hairline apricot border around the panel to tie it to the frame
-  doc.setDrawColor(...apricot);
-  doc.setLineWidth(0.2);
-  doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
 
   type Plan = {
     scale: number;
