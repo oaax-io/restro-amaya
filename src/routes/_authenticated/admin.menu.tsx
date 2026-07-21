@@ -5,6 +5,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field } from "@/components/admin/ui";
 import { Trash2, Plus, Upload, Download, ExternalLink, Wand2, FileDown } from "lucide-react";
 import { parseWeeklyPdf, generateWeeklyPdf, type ParsedWeekly } from "@/lib/menu-pdf";
+import { toast } from "sonner";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 
 export const Route = createFileRoute("/_authenticated/admin/menu")({
   component: MenuAdmin,
@@ -174,6 +176,19 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
   const [parsing, setParsing] = useState(false);
   const [generating, setGenerating] = useState(false);
   const qc = useQueryClient();
+  const [confirmState, setConfirmState] = useState<{
+    open: boolean; title: string; message: string; confirmLabel?: string; variant?: "primary" | "danger"; resolver?: (v: boolean) => void;
+  }>({ open: false, title: "", message: "" });
+
+  function askConfirm(opts: { title: string; message: string; confirmLabel?: string; variant?: "primary" | "danger" }): Promise<boolean> {
+    return new Promise((resolve) => {
+      setConfirmState({ open: true, title: opts.title, message: opts.message, confirmLabel: opts.confirmLabel, variant: opts.variant, resolver: resolve });
+    });
+  }
+  function closeConfirm(result: boolean) {
+    confirmState.resolver?.(result);
+    setConfirmState((s) => ({ ...s, open: false, resolver: undefined }));
+  }
 
   async function upsert(patch: any) {
     await supabase.from("menu_meta").upsert({ menu_type: type, ...patch }, { onConflict: "menu_type" });
@@ -187,15 +202,21 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
       const { error } = await supabase.storage.from("menu-pdfs").upload(path, file, { upsert: true, contentType: file.type || "application/pdf" });
       if (error) throw error;
       await upsert({ pdf_url: path });
-      if (type === "weekly" && confirm("PDF hochgeladen. Jetzt automatisch auslesen und Wocheneinträge übernehmen? Bestehende Wocheneinträge werden ersetzt.")) {
-        await importFromPdfFile(file);
+      if (type === "weekly") {
+        const ok = await askConfirm({
+          title: "PDF auslesen?",
+          message: "PDF hochgeladen. Jetzt automatisch auslesen und Wocheneinträge übernehmen? Bestehende Wocheneinträge werden ersetzt.",
+          confirmLabel: "Auslesen",
+        });
+        if (ok) await importFromPdfFile(file);
       }
-    } catch (err: any) { alert("Upload-Fehler: " + err.message); }
+    } catch (err: any) { toast.error("Upload-Fehler: " + err.message); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
   }
   async function removePdf() {
     if (!meta?.pdf_url) return;
-    if (!confirm("PDF entfernen?")) return;
+    const ok = await askConfirm({ title: "PDF entfernen?", message: "Das aktuell verknüpfte PDF wird entfernt.", confirmLabel: "Entfernen", variant: "danger" });
+    if (!ok) return;
     if (!meta.pdf_url.startsWith("http")) await supabase.storage.from("menu-pdfs").remove([meta.pdf_url]);
     await upsert({ pdf_url: null });
   }
@@ -226,17 +247,22 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
     setParsing(true);
     try {
       const parsed = await parseWeeklyPdf(file);
-      if (!parsed.items.length) { alert("Konnte keine Einträge aus dem PDF erkennen."); return; }
+      if (!parsed.items.length) { toast.error("Konnte keine Einträge aus dem PDF erkennen. Prüfe die Konsole für Details."); return; }
       await applyParsed(parsed);
     } catch (err: any) {
-      alert("Fehler beim Auslesen: " + (err?.message ?? err));
+      toast.error("Fehler beim Auslesen: " + (err?.message ?? err));
     } finally { setParsing(false); }
   }
 
   async function importFromStoredPdf() {
     const blob = await getPdfBlob();
-    if (!blob) { alert("Kein PDF gefunden."); return; }
-    if (!confirm("Wocheneinträge aus dem hochgeladenen PDF übernehmen? Bestehende Einträge werden ersetzt.")) return;
+    if (!blob) { toast.error("Kein PDF gefunden."); return; }
+    const ok = await askConfirm({
+      title: "Aus PDF übernehmen?",
+      message: "Wocheneinträge aus dem hochgeladenen PDF übernehmen? Bestehende Einträge werden ersetzt.",
+      confirmLabel: "Übernehmen",
+    });
+    if (!ok) return;
     await importFromPdfFile(blob);
   }
 
@@ -275,7 +301,7 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
     if (Object.keys(patch).length) await upsert(patch);
     qc.invalidateQueries({ queryKey: ["admin","menu"] });
     qc.invalidateQueries({ queryKey: ["menu"] });
-    alert(`Fertig – ${parsed.items.length} Einträge übernommen.`);
+    toast.success(`Fertig – ${parsed.items.length} Einträge übernommen.`);
   }
 
   async function generatePdf() {
@@ -299,13 +325,27 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
       a.href = url; a.download = `Wochengerichte_${new Date().toISOString().slice(0,10)}.pdf`;
       a.click(); URL.revokeObjectURL(url);
     } catch (err: any) {
-      alert("Fehler beim Erzeugen: " + (err?.message ?? err));
+      toast.error("Fehler beim Erzeugen: " + (err?.message ?? err));
     } finally { setGenerating(false); }
   }
 
   return (
     <Card>
       <h2 className="font-display text-xl mb-4">Karten-Einstellungen</h2>
+      <Dialog open={confirmState.open} onOpenChange={(v) => { if (!v) closeConfirm(false); }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{confirmState.title}</DialogTitle>
+            <DialogDescription>{confirmState.message}</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2">
+            <Btn variant="ghost" onClick={() => closeConfirm(false)}>Abbrechen</Btn>
+            <Btn variant={confirmState.variant === "danger" ? "danger" : "primary"} onClick={() => closeConfirm(true)}>
+              {confirmState.confirmLabel ?? "Bestätigen"}
+            </Btn>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <p className="text-xs uppercase tracking-[0.25em] text-black/60 mb-2">PDF-Karte</p>
