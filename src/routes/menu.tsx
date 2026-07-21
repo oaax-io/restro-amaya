@@ -25,16 +25,16 @@ type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
 export const Route = createFileRoute("/menu")({
   head: () => ({
     meta: [
-      { title: "Speisekarte — Wochen-, Lunch-, Amaya Mesa, Asian Fusion & Wein | Amaya Restaurant" },
+      { title: "Speisekarte — Wochen-, Lunch-, Mesa Amaya, Asian Fusion & Wein | Amaya Restaurant" },
       {
         name: "description",
         content:
-          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Amaya Mesa, Asian Fusion und Wein Karte in Rothenburg LU.",
+          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Mesa Amaya, Asian Fusion und Wein Karte in Rothenburg LU.",
       },
       { property: "og:title", content: "Speisekarte — Amaya Restaurant" },
       {
         property: "og:description",
-        content: "Wochenmenü, Lunch, Amaya Mesa, Asian Fusion und Wein Karte — Küche zwischen Dschungel und Stadt.",
+        content: "Wochenmenü, Lunch, Mesa Amaya, Asian Fusion und Wein Karte — Küche zwischen Dschungel und Stadt.",
       },
     ],
   }),
@@ -625,7 +625,7 @@ function LunchItem({ item, lang }: { item: MenuItem; lang: Lang }) {
   );
 }
 
-/* ---------- Amaya Mesa — editorial print-style + sharing concept ---------- */
+/* ---------- Mesa Amaya — editorial print-style + sharing concept ---------- */
 
 function MesaView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();

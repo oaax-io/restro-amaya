@@ -12,7 +12,7 @@ export const Route = createFileRoute("/_authenticated/admin/menu")({
 const TYPES = [
   { key: "weekly", label: "Wochenmenü" },
   { key: "lunch", label: "Lunch" },
-  { key: "mesa", label: "Amaya Mesa" },
+  { key: "mesa", label: "Mesa Amaya" },
   { key: "sushi", label: "Asian Fusion / Sushi" },
   { key: "wine", label: "Weinkarte" },
 ] as const;
