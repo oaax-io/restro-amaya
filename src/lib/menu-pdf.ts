@@ -274,6 +274,37 @@ async function loadLogoDataUrl(): Promise<string | null> {
   }
 }
 
+// Load the hanging jungle plants PNG (same asset used on the site footer / menu hero)
+// as a data URL so jsPDF can embed it. Returns the intrinsic width/height too so
+// we can preserve the aspect ratio when placing the image.
+async function loadHangingPlantsDataUrl(): Promise<
+  { dataUrl: string; width: number; height: number } | null
+> {
+  if (typeof window === "undefined") return null;
+  try {
+    const pointer = (await import("@/assets/footer-plants-hanging.png.asset.json"))
+      .default as { url: string };
+    const res = await fetch(pointer.url);
+    const blob = await res.blob();
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    const size = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve({ w: im.naturalWidth || 1600, h: im.naturalHeight || 600 });
+      im.onerror = reject;
+      im.src = dataUrl;
+    });
+    return { dataUrl, width: size.w, height: size.h };
+  } catch (err) {
+    if (typeof console !== "undefined") console.warn("[menu-pdf] hanging plants load failed", err);
+    return null;
+  }
+}
+
 export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
@@ -398,20 +429,25 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   if (panelPattern) {
     doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
   }
-  // Decorative jungle-leaf columns hugging the panel's left & right edges,
-  // stronger tint so they read as botanical borders inside the frame.
-  const leafColW = 18;
-  const leafPattern = await loadJunglePatternDataUrl(leafColW, panelH, jungle, 0.22);
-  if (leafPattern) {
-    doc.addImage(leafPattern, "PNG", panelX, panelTop, leafColW, panelH, undefined, "FAST");
-    doc.addImage(leafPattern, "PNG", panelX + panelW - leafColW, panelTop, leafColW, panelH, undefined, "FAST");
+  // Decorative hanging jungle plants across the top of the panel — same botanical
+  // motif as the site footer / menu-page hero. Preserves the PNG aspect ratio.
+  const hangingPlants = await loadHangingPlantsDataUrl();
+  let hangingPlantsH = 0;
+  if (hangingPlants) {
+    const aspect = hangingPlants.width / hangingPlants.height;
+    const finalW = panelW;
+    const finalH = Math.min(22, finalW / aspect);
+    const drawW = finalH * aspect;
+    const px = panelX + (panelW - drawW) / 2;
+    doc.addImage(hangingPlants.dataUrl, "PNG", px, panelTop - 2, drawW, finalH, undefined, "FAST");
+    hangingPlantsH = finalH;
   }
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.2);
   doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
 
   // Breathing room between the panel's top edge and the Suppe/Salat title
-  y += 6;
+  y += Math.max(6, hangingPlantsH - 4);
 
   // ---- Suppe & Salat (no frame, just typography) ----
   if (data.suppeSalat) {
