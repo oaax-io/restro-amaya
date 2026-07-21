@@ -1,6 +1,7 @@
 // Weekly menu PDF parser + generator
 import { getDocument, GlobalWorkerOptions, version } from "pdfjs-dist";
 import jsPDF from "jspdf";
+import QRCode from "qrcode";
 
 // Use CDN worker matching the installed pdfjs version
 if (typeof window !== "undefined" && !GlobalWorkerOptions.workerSrc) {
@@ -235,7 +236,7 @@ async function loadJunglePatternDataUrl(
 async function loadLogoDataUrl(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   try {
-    const pointer = (await import("@/assets/amaya-logo.png.asset.json")).default as { url: string };
+    const pointer = (await import("@/assets/amaya-logo-green.png.asset.json")).default as { url: string };
     const res = await fetch(pointer.url);
     const blob = await res.blob();
     return await new Promise<string>((resolve, reject) => {
@@ -291,25 +292,23 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     if (patternDataUrl) {
       doc.addImage(patternDataUrl, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
     }
-    // Outer frame (double-line, like a menu card border)
+    // Single thin apricot frame, quiet and centered
     doc.setDrawColor(...apricot);
-    doc.setLineWidth(0.6);
-    doc.rect(10, 10, pageW - 20, pageH - 20);
-    doc.setLineWidth(0.15);
-    doc.rect(13, 13, pageW - 26, pageH - 26);
+    doc.setLineWidth(0.3);
+    doc.rect(12, 12, pageW - 24, pageH - 24);
   };
   paintBackground();
 
   // ---- Header (centered) ----
   const cx = pageW / 2;
 
-  // Original Amaya logo
-  let y = 22;
+  // Amaya monogram (dark green, transparent)
+  let y = 20;
   if (logoDataUrl) {
-    const logoH = 24;
-    const logoW = 20;
+    const logoH = 22;
+    const logoW = 18;
     doc.addImage(logoDataUrl, "PNG", cx - logoW / 2, y, logoW, logoH, undefined, "FAST");
-    y += logoH + 8;
+    y += logoH + 6;
   } else {
     y = 42;
   }
@@ -324,19 +323,23 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   doc.setFont("helvetica", "normal");
   doc.setFontSize(8);
   centerText("RESTAURANT · MESA · JUNGLE KITCHEN", y, { charSpace: 2 });
-  y += 10;
+  y += 12;
 
-  // Title box — rectangular frame
-  const titleBoxW = 96;
-  const titleBoxH = 13;
-  doc.setDrawColor(...apricot);
-  doc.setLineWidth(0.5);
-  doc.rect(cx - titleBoxW / 2, y, titleBoxW, titleBoxH);
+  // Section title — quiet, framed by thin apricot rules left & right
   doc.setTextColor(...jungle);
   doc.setFont("helvetica", "bold");
-  doc.setFontSize(11);
-  centerText("WOCHENGERICHTE", y + titleBoxH / 2 + 1.4, { charSpace: 2.5 });
-  y += titleBoxH + 4;
+  doc.setFontSize(12);
+  centerText("WOCHENGERICHTE", y, { charSpace: 3 });
+  // Decorative side rules
+  doc.setDrawColor(...apricot);
+  doc.setLineWidth(0.25);
+  const titleTextW = doc.getTextWidth("WOCHENGERICHTE") + 3 * 13; // charSpace * (len-1)
+  const ruleGap = 6;
+  const ruleLen = 22;
+  const rulesY = y - 1.4;
+  doc.line(cx - titleTextW / 2 - ruleGap - ruleLen, rulesY, cx - titleTextW / 2 - ruleGap, rulesY);
+  doc.line(cx + titleTextW / 2 + ruleGap, rulesY, cx + titleTextW / 2 + ruleGap + ruleLen, rulesY);
+  y += 6;
 
   if (data.dateRange) {
     doc.setFont("helvetica", "normal");
@@ -348,26 +351,24 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
 
   y += 8;
 
-  // ---- Suppe & Salat ----
+  // ---- Suppe & Salat (no frame, just typography) ----
   if (data.suppeSalat) {
-    const boxW = 150;
-    const boxH = 20;
-    doc.setFillColor(...creamDeep);
-    doc.rect(cx - boxW / 2, y, boxW, boxH, "F");
-    doc.setDrawColor(...apricot);
-    doc.setLineWidth(0.3);
-    doc.rect(cx - boxW / 2, y, boxW, boxH);
     doc.setTextColor(...jungle);
     doc.setFont("helvetica", "bold");
     doc.setFontSize(11);
-    centerText(data.suppeSalat, y + 8);
+    centerText(data.suppeSalat, y, { charSpace: 0.8 });
     if (data.suppeSalatPrice) {
       doc.setFont("helvetica", "normal");
-      doc.setFontSize(9);
+      doc.setFontSize(9.5);
       doc.setTextColor(...apricotDeep);
-      centerText(data.suppeSalatPrice, y + 15);
+      centerText(data.suppeSalatPrice, y + 5);
     }
-    y += boxH + 10;
+    y += 10;
+    // Divider
+    doc.setDrawColor(...apricot);
+    doc.setLineWidth(0.2);
+    doc.line(cx - 25, y, cx + 25, y);
+    y += 10;
   }
 
   // ---- Items (centered) ----
@@ -427,27 +428,40 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     }
   }
 
-  // ---- Footer ----
-  const footTop = pageH - 30;
+  // ---- Footer with QR code linking to the online menu ----
+  const footTop = pageH - 42;
+
+  // Thin apricot divider above footer
   doc.setDrawColor(...apricot);
-  doc.setLineWidth(0.3);
-  doc.rect(20, footTop, pageW - 40, 20);
+  doc.setLineWidth(0.2);
+  doc.line(cx - 40, footTop - 2, cx + 40, footTop - 2);
 
-  doc.setTextColor(...jungle);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(8);
-  centerText("ÖFFNUNGSZEITEN", footTop + 5.5, { charSpace: 1.8 });
+  // QR code centered
+  const qrSize = 24;
+  const menuUrl = "https://amaya.oaase.com/menu";
+  try {
+    const qrDataUrl = await QRCode.toDataURL(menuUrl, {
+      margin: 0,
+      width: 512,
+      color: {
+        dark: "#0D2517",
+        light: "#00000000", // transparent
+      },
+      errorCorrectionLevel: "M",
+    });
+    doc.addImage(qrDataUrl, "PNG", cx - qrSize / 2, footTop, qrSize, qrSize, undefined, "FAST");
+  } catch (err) {
+    if (typeof console !== "undefined") console.warn("[menu-pdf] QR failed", err);
+  }
 
-  doc.setFont("helvetica", "normal");
   doc.setTextColor(...jungleSoft);
-  doc.setFontSize(7.5);
-  centerText(
-    "MO – FR  11:30 – 14:00     DI – DO  18:30 – 23:30     FR – SA  18:30 – 03:00     SO geschlossen",
-    footTop + 11,
-  );
+  doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
+  centerText("SPEISEKARTE ONLINE", footTop + qrSize + 4, { charSpace: 1.5 });
+
+  doc.setFontSize(6.5);
   doc.setTextColor(...apricotDeep);
-  centerText("Take Away möglich   ·   Preise inkl. MwSt.", footTop + 16.5);
+  centerText("Take Away möglich   ·   Preise inkl. MwSt.", footTop + qrSize + 8.5);
 
   return doc.output("blob");
 }
