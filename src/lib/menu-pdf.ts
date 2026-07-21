@@ -259,7 +259,7 @@ async function loadJunglePatternDataUrl(
 async function loadLogoDataUrl(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   try {
-    const pointer = (await import("@/assets/amaya-logo-green.png.asset.json")).default as { url: string };
+    const pointer = (await import("@/assets/amaya-logo-apricot.png.asset.json")).default as { url: string };
     const res = await fetch(pointer.url);
     const blob = await res.blob();
     return await new Promise<string>((resolve, reject) => {
@@ -326,31 +326,21 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   // ---- Header (centered) ----
   const cx = pageW / 2;
 
-  // Amaya monogram (dark green, transparent)
-  let y = 20;
+  // Full Amaya logo (transparent) — includes monogram, "AMAYA" and
+  // "RESTAURANT & BAR" wordmark, so no additional text is drawn here.
+  let y = 18;
   if (logoDataUrl) {
-    const logoH = 22;
-    const logoW = 18;
+    // Logo intrinsic ratio ≈ 4:3 (wider than tall because of the wordmark).
+    const logoW = 56;
+    const logoH = 44;
     doc.addImage(logoDataUrl, "PNG", cx - logoW / 2, y, logoW, logoH, undefined, "FAST");
-    y += logoH + 6;
+    y += logoH + 8;
   } else {
-    y = 42;
+    y = 62;
   }
 
-  doc.setTextColor(...jungle);
-  doc.setFont("helvetica", "bold");
-  doc.setFontSize(22);
-  centerText("AMAYA", y, { charSpace: 5 });
-  y += 8;
-
-  doc.setTextColor(...jungleSoft);
-  doc.setFont("helvetica", "normal");
-  doc.setFontSize(8);
-  centerText("RESTAURANT · MESA · JUNGLE KITCHEN", y, { charSpace: 2 });
-  y += 12;
-
-  // Section title — quiet, framed by thin apricot rules left & right
-  doc.setTextColor(...jungle);
+  // Section title — black, framed by thin apricot rules left & right
+  doc.setTextColor(0, 0, 0);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(12);
   centerText("WOCHENGERICHTE", y, { charSpace: 3 });
