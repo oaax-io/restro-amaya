@@ -432,10 +432,10 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   // ---- Footer: framed box (like the MESA AMAYA green frame) ----
   // Inset well away from the page edge, jungle-green rounded frame,
   // opening hours on the left, QR on the right, one thick apricot
-  // divider between them.
-  const boxMarginX = 22;
-  const boxH = 44;
-  const boxY = pageH - boxH - 20;
+  // divider between them. All labels live inside the frame.
+  const boxMarginX = 24;
+  const boxH = 54;
+  const boxY = pageH - boxH - 22;
   const boxX = boxMarginX;
   const boxW = pageW - boxMarginX * 2;
 
@@ -446,7 +446,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
 
   // Left column: opening hours
   const padX = 8;
-  const padY = 7;
+  const padY = 8;
   const hoursLeft = boxX + padX;
   let hoursY = boxY + padY;
 
@@ -481,16 +481,19 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     hoursY += 4.2;
   }
 
-  // Thick apricot divider between hours and QR
-  const qrSize = 26;
+  // QR column: keep QR + label well inside the frame
+  const qrSize = 24;
+  const qrTopPad = 10;
   const qrX = boxX + boxW - padX - qrSize;
-  const qrY = boxY + (boxH - qrSize) / 2 - 1.5;
+  const qrY = boxY + qrTopPad;
   const dividerX = qrX - 8;
+
+  // Thick apricot divider between hours and QR
   doc.setDrawColor(...apricot);
   doc.setLineWidth(1.4);
   doc.line(dividerX, boxY + 6, dividerX, boxY + boxH - 6);
 
-  // Right column: QR + label
+  // QR image
   const menuUrl = "https://amaya.oaase.com/menu";
   try {
     const qrDataUrl = await QRCode.toDataURL(menuUrl, {
@@ -504,6 +507,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     if (typeof console !== "undefined") console.warn("[menu-pdf] QR failed", err);
   }
 
+  // QR label inside the frame
   doc.setTextColor(...jungle);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(7);
@@ -512,11 +516,11 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const qrLabelW = doc.getTextWidth(qrLabel) + qrLabelCs * (qrLabel.length - 1);
   doc.text(qrLabel, qrX + qrSize / 2 - qrLabelW / 2, qrY + qrSize + 4, { charSpace: qrLabelCs });
 
-  // Small note below the frame
+  // Take Away note inside the frame, centered at the bottom
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
   doc.setTextColor(...apricotDeep);
-  centerText("Take Away möglich   ·   Preise inkl. MwSt.", boxY + boxH + 8);
+  centerText("Take Away möglich   ·   Preise inkl. MwSt.", boxY + boxH - 6);
 
   return doc.output("blob");
 }
