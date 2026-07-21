@@ -429,73 +429,94 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     }
   }
 
-  // ---- Footer with opening hours (left) and QR code (right) ----
-  const footTop = pageH - 42;
+  // ---- Footer: framed box (like the MESA AMAYA green frame) ----
+  // Inset well away from the page edge, jungle-green rounded frame,
+  // opening hours on the left, QR on the right, one thick apricot
+  // divider between them.
+  const boxMarginX = 22;
+  const boxH = 44;
+  const boxY = pageH - boxH - 20;
+  const boxX = boxMarginX;
+  const boxW = pageW - boxMarginX * 2;
 
-  // Thin apricot divider above footer
-  doc.setDrawColor(...apricot);
-  doc.setLineWidth(0.2);
-  doc.line(12, footTop - 2, pageW - 12, footTop - 2);
+  // Frame
+  doc.setDrawColor(...jungle);
+  doc.setLineWidth(0.6);
+  doc.roundedRect(boxX, boxY, boxW, boxH, 2.5, 2.5, "S");
 
-  // Opening hours on the left
-  const hoursLeft = 14;
-  let hoursY = footTop + 4;
+  // Left column: opening hours
+  const padX = 8;
+  const padY = 7;
+  const hoursLeft = boxX + padX;
+  let hoursY = boxY + padY;
 
   doc.setTextColor(...jungle);
   doc.setFont("helvetica", "bold");
   doc.setFontSize(8);
-  doc.text("ÖFFNUNGSZEITEN", hoursLeft, hoursY, { charSpace: 1.2 });
+  doc.text("ÖFFNUNGSZEITEN", hoursLeft, hoursY, { charSpace: 1.4 });
   hoursY += 5.5;
 
   const dayLabels: Record<string, string> = {
     mon: "MO", tue: "DI", wed: "MI", thu: "DO", fri: "FR", sat: "SA", sun: "SO",
   };
   const formatTime = (lunch: string | null, dinner: string | null) => {
-    if (lunch && dinner) return `${lunch} / ${dinner}`;
+    if (lunch && dinner) return `${lunch}  ·  ${dinner}`;
     if (lunch) return lunch;
     if (dinner) return dinner;
     return "geschlossen";
   };
 
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.5);
+  doc.setFontSize(7.8);
   doc.setTextColor(...jungleSoft);
   for (const h of RESTAURANT.hours) {
     const label = dayLabels[h.day] ?? h.day.toUpperCase();
     const time = formatTime(h.lunch, h.dinner);
-    doc.text(`${label}`, hoursLeft, hoursY);
-    doc.text(time, hoursLeft + 12, hoursY);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...jungle);
+    doc.text(label, hoursLeft, hoursY);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...jungleSoft);
+    doc.text(time, hoursLeft + 10, hoursY);
     hoursY += 4.2;
   }
 
-  // QR code on the right
-  const qrSize = 24;
-  const qrRight = pageW - 14 - qrSize;
+  // Thick apricot divider between hours and QR
+  const qrSize = 26;
+  const qrX = boxX + boxW - padX - qrSize;
+  const qrY = boxY + (boxH - qrSize) / 2 - 1.5;
+  const dividerX = qrX - 8;
+  doc.setDrawColor(...apricot);
+  doc.setLineWidth(1.4);
+  doc.line(dividerX, boxY + 6, dividerX, boxY + boxH - 6);
+
+  // Right column: QR + label
   const menuUrl = "https://amaya.oaase.com/menu";
   try {
     const qrDataUrl = await QRCode.toDataURL(menuUrl, {
       margin: 0,
       width: 512,
-      color: {
-        dark: "#0D2517",
-        light: "#00000000", // transparent
-      },
+      color: { dark: "#0D2517", light: "#00000000" },
       errorCorrectionLevel: "M",
     });
-    doc.addImage(qrDataUrl, "PNG", qrRight, footTop, qrSize, qrSize, undefined, "FAST");
+    doc.addImage(qrDataUrl, "PNG", qrX, qrY, qrSize, qrSize, undefined, "FAST");
   } catch (err) {
     if (typeof console !== "undefined") console.warn("[menu-pdf] QR failed", err);
   }
 
-  doc.setTextColor(...jungleSoft);
+  doc.setTextColor(...jungle);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(7);
+  const qrLabel = "SPEISEKARTE ONLINE";
+  const qrLabelCs = 1.4;
+  const qrLabelW = doc.getTextWidth(qrLabel) + qrLabelCs * (qrLabel.length - 1);
+  doc.text(qrLabel, qrX + qrSize / 2 - qrLabelW / 2, qrY + qrSize + 4, { charSpace: qrLabelCs });
+
+  // Small note below the frame
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
-  const qrLabelX = qrRight + qrSize / 2 - doc.getTextWidth("SPEISEKARTE ONLINE") / 2;
-  doc.text("SPEISEKARTE ONLINE", qrLabelX, footTop + qrSize + 4, { charSpace: 1.5 });
-
-  doc.setFontSize(6.5);
   doc.setTextColor(...apricotDeep);
-  centerText("Take Away möglich   ·   Preise inkl. MwSt.", footTop + qrSize + 8.5);
+  centerText("Take Away möglich   ·   Preise inkl. MwSt.", boxY + boxH + 8);
 
   return doc.output("blob");
 }
