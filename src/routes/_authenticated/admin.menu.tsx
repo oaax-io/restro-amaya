@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState, useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field } from "@/components/admin/ui";
 import { Trash2, Plus, Upload, Download, ExternalLink, Wand2, FileDown } from "lucide-react";
@@ -180,6 +180,14 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
     open: boolean; title: string; message: string; confirmLabel?: string; variant?: "primary" | "danger"; resolver?: (v: boolean) => void;
   }>({ open: false, title: "", message: "" });
 
+  useEffect(() => {
+    setDateDe(meta?.date_range_de ?? "");
+    setDateEn(meta?.date_range_en ?? "");
+    setSuppeDe(meta?.suppe_salat_de ?? "");
+    setSuppeEn(meta?.suppe_salat_en ?? "");
+    setSuppePrice(meta?.suppe_salat_price ?? "");
+  }, [meta?.menu_type, meta?.updated_at]);
+
   function askConfirm(opts: { title: string; message: string; confirmLabel?: string; variant?: "primary" | "danger" }): Promise<boolean> {
     return new Promise((resolve) => {
       setConfirmState({ open: true, title: opts.title, message: opts.message, confirmLabel: opts.confirmLabel, variant: opts.variant, resolver: resolve });
@@ -191,8 +199,27 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
   }
 
   async function upsert(patch: any) {
-    await supabase.from("menu_meta").upsert({ menu_type: type, ...patch }, { onConflict: "menu_type" });
+    const { error } = await supabase.from("menu_meta").upsert({ menu_type: type, ...patch }, { onConflict: "menu_type" });
+    if (error) {
+      toast.error("Speichern fehlgeschlagen: " + error.message);
+      throw error;
+    }
     onSaved();
+  }
+
+  async function saveWeeklyMeta() {
+    try {
+      await upsert({
+        date_range_de: dateDe || null,
+        date_range_en: dateEn || null,
+        suppe_salat_de: suppeDe || null,
+        suppe_salat_en: suppeEn || null,
+        suppe_salat_price: suppePrice || null,
+      });
+      toast.success("Wochenmenü-Einstellungen gespeichert.");
+    } catch {
+      // upsert already shows the error toast
+    }
   }
   async function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0]; if (!file) return;
@@ -379,11 +406,14 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
 
         {type === "weekly" && (
           <>
-            <Field label="Datum-Bereich DE"><Input value={dateDe} onChange={(e) => setDateDe(e.target.value)} onBlur={() => upsert({ date_range_de: dateDe })} placeholder="22/06 - 26/06" /></Field>
-            <Field label="Datum-Bereich EN"><Input value={dateEn} onChange={(e) => setDateEn(e.target.value)} onBlur={() => upsert({ date_range_en: dateEn })} /></Field>
-            <Field label="Suppe/Salat DE"><Input value={suppeDe} onChange={(e) => setSuppeDe(e.target.value)} onBlur={() => upsert({ suppe_salat_de: suppeDe })} /></Field>
-            <Field label="Suppe/Salat EN"><Input value={suppeEn} onChange={(e) => setSuppeEn(e.target.value)} onBlur={() => upsert({ suppe_salat_en: suppeEn })} /></Field>
-            <Field label="Suppe/Salat Preis"><Input value={suppePrice} onChange={(e) => setSuppePrice(e.target.value)} onBlur={() => upsert({ suppe_salat_price: suppePrice })} placeholder="CHF 3.50" /></Field>
+            <Field label="Datum-Bereich DE"><Input value={dateDe} onChange={(e) => setDateDe(e.target.value)} onBlur={(e) => upsert({ date_range_de: e.currentTarget.value || null })} placeholder="22/06 - 26/06" /></Field>
+            <Field label="Datum-Bereich EN"><Input value={dateEn} onChange={(e) => setDateEn(e.target.value)} onBlur={(e) => upsert({ date_range_en: e.currentTarget.value || null })} /></Field>
+            <Field label="Suppe/Salat DE"><Input value={suppeDe} onChange={(e) => setSuppeDe(e.target.value)} onBlur={(e) => upsert({ suppe_salat_de: e.currentTarget.value || null })} /></Field>
+            <Field label="Suppe/Salat EN"><Input value={suppeEn} onChange={(e) => setSuppeEn(e.target.value)} onBlur={(e) => upsert({ suppe_salat_en: e.currentTarget.value || null })} /></Field>
+            <Field label="Suppe/Salat Preis"><Input value={suppePrice} onChange={(e) => setSuppePrice(e.target.value)} onBlur={(e) => upsert({ suppe_salat_price: e.currentTarget.value || null })} placeholder="CHF 3.50" /></Field>
+            <div className="sm:col-span-2 flex justify-end">
+              <Btn onClick={saveWeeklyMeta}>Wochenmenü-Einstellungen speichern</Btn>
+            </div>
           </>
         )}
       </div>
