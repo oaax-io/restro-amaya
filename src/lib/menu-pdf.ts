@@ -167,7 +167,67 @@ export type WeeklyForPdf = {
   items: { name: string; description?: string; price?: string }[];
 };
 
-export function generateWeeklyPdf(data: WeeklyForPdf): Blob {
+// Load the jungle pattern SVG and rasterize it to a tiled, tinted PNG data URL
+// sized to cover an A4 page at the target DPI. Runs in the browser only.
+async function loadJunglePatternDataUrl(
+  pageWmm: number,
+  pageHmm: number,
+  tint: [number, number, number],
+  opacity: number,
+): Promise<string | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    // Import the asset pointer lazily so this file stays SSR-safe.
+    const pointer = (await import("@/assets/jungle-pattern.svg.asset.json")).default as { url: string };
+    const res = await fetch(pointer.url);
+    const svgText = await res.text();
+    const blob = new Blob([svgText], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const img: HTMLImageElement = await new Promise((resolve, reject) => {
+      const im = new Image();
+      im.crossOrigin = "anonymous";
+      im.onload = () => resolve(im);
+      im.onerror = reject;
+      im.src = url;
+    });
+
+    // 150 DPI target
+    const dpi = 150;
+    const mmToPx = dpi / 25.4;
+    const canvasW = Math.round(pageWmm * mmToPx);
+    const canvasH = Math.round(pageHmm * mmToPx);
+
+    const canvas = document.createElement("canvas");
+    canvas.width = canvasW;
+    canvas.height = canvasH;
+    const ctx = canvas.getContext("2d")!;
+
+    // Tile the pattern at a designed size (mm) so the motif reads clearly.
+    const tileMm = 90;
+    const tilePx = Math.round(tileMm * mmToPx);
+    ctx.globalAlpha = opacity;
+    for (let x = 0; x < canvasW; x += tilePx) {
+      for (let y = 0; y < canvasH; y += tilePx) {
+        ctx.drawImage(img, x, y, tilePx, tilePx);
+      }
+    }
+    ctx.globalAlpha = 1;
+    URL.revokeObjectURL(url);
+
+    // Tint: colorize the drawn pattern toward the requested color.
+    ctx.globalCompositeOperation = "source-in";
+    ctx.fillStyle = `rgb(${tint[0]}, ${tint[1]}, ${tint[2]})`;
+    ctx.fillRect(0, 0, canvasW, canvasH);
+    ctx.globalCompositeOperation = "source-over";
+
+    return canvas.toDataURL("image/png");
+  } catch (err) {
+    if (typeof console !== "undefined") console.warn("[menu-pdf] pattern load failed", err);
+    return null;
+  }
+}
+
+export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
   const pageH = doc.internal.pageSize.getHeight();
@@ -179,40 +239,22 @@ export function generateWeeklyPdf(data: WeeklyForPdf): Blob {
   const greenSoft: [number, number, number] = [90, 120, 95];
   const gold: [number, number, number] = [176, 141, 74];
 
-  // ---- Background ----
-  doc.setFillColor(...cream);
-  doc.rect(0, 0, pageW, pageH, "F");
+  // ---- Background: cream base + Amaya jungle pattern (same as website) ----
+  const patternDataUrl = await loadJunglePatternDataUrl(pageW, pageH, green, 0.12);
 
-  // Abstract botanical corner strokes (leaf-like curves) — top-left & bottom-right
-  doc.setDrawColor(...gold);
-  doc.setLineWidth(0.3);
-  // top-left flourish
-  doc.lines(
-    [[18, -6], [10, -14], [-2, -18], [-14, -14]],
-    -4, 8,
-    [1, 1],
-    "S",
-  );
-  doc.setLineWidth(0.15);
-  doc.circle(6, 6, 1.4, "S");
-  doc.circle(14, 2, 0.8, "S");
-  // bottom-right flourish
-  doc.setLineWidth(0.3);
-  doc.lines(
-    [[-18, 6], [-10, 14], [2, 18], [14, 14]],
-    pageW + 4, pageH - 8,
-    [1, 1],
-    "S",
-  );
-  doc.setLineWidth(0.15);
-  doc.circle(pageW - 6, pageH - 6, 1.4, "S");
-  doc.circle(pageW - 14, pageH - 2, 0.8, "S");
-
-  // Faint side rules
-  doc.setDrawColor(...gold);
-  doc.setLineWidth(0.1);
-  doc.line(18, 60, 18, pageH - 40);
-  doc.line(pageW - 18, 60, pageW - 18, pageH - 40);
+  const paintBackground = () => {
+    doc.setFillColor(...cream);
+    doc.rect(0, 0, pageW, pageH, "F");
+    if (patternDataUrl) {
+      doc.addImage(patternDataUrl, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
+    }
+    // Faint gold side rules
+    doc.setDrawColor(...gold);
+    doc.setLineWidth(0.1);
+    doc.line(18, 60, 18, pageH - 40);
+    doc.line(pageW - 18, 60, pageW - 18, pageH - 40);
+  };
+  paintBackground();
 
   // ---- Header (centered) ----
   const cx = pageW / 2;
@@ -284,8 +326,7 @@ export function generateWeeklyPdf(data: WeeklyForPdf): Blob {
     const blockH = 10 + descLines.length * 4.6 + (it.price ? 8 : 4) + 8;
     if (y + blockH > pageH - 32) {
       doc.addPage();
-      doc.setFillColor(...cream);
-      doc.rect(0, 0, pageW, pageH, "F");
+      paintBackground();
       y = 28;
     }
 
