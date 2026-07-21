@@ -119,7 +119,6 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
     return p2 ? `${p1} | TA ${p2}` : p1;
   };
 
-  const skipUntil = suppeSalatIdx >= 0 ? suppeSalatIdx : -1;
   for (let li = 0; li < lines.length; li++) {
     // Skip the Suppe/Salat block so it isn't also captured as a regular item
     if (suppeSalatIdx >= 0 && li >= suppeSalatIdx) {
