@@ -432,21 +432,22 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   // Decorative hanging jungle plants across the top of the panel — same botanical
   // motif as the site footer / menu-page hero. Preserves the PNG aspect ratio.
   const hangingPlants = await loadHangingPlantsDataUrl();
+  let hangingPlantsH = 0;
   if (hangingPlants) {
-    const plantsW = panelW;
-    const plantsH = plantsW * (hangingPlants.height / hangingPlants.width);
-    const maxPlantsH = Math.min(38, panelH * 0.32);
-    const finalH = Math.min(plantsH, maxPlantsH);
-    const finalW = finalH * (hangingPlants.width / hangingPlants.height);
-    const px = panelX + (panelW - finalW) / 2;
-    doc.addImage(hangingPlants.dataUrl, "PNG", px, panelTop, finalW, finalH, undefined, "FAST");
+    const aspect = hangingPlants.width / hangingPlants.height;
+    const finalW = panelW;
+    const finalH = Math.min(22, finalW / aspect);
+    const drawW = finalH * aspect;
+    const px = panelX + (panelW - drawW) / 2;
+    doc.addImage(hangingPlants.dataUrl, "PNG", px, panelTop - 2, drawW, finalH, undefined, "FAST");
+    hangingPlantsH = finalH;
   }
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.2);
   doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
 
   // Breathing room between the panel's top edge and the Suppe/Salat title
-  y += 6;
+  y += Math.max(6, hangingPlantsH - 4);
 
   // ---- Suppe & Salat (no frame, just typography) ----
   if (data.suppeSalat) {
