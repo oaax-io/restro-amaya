@@ -275,18 +275,19 @@ async function loadLogoDataUrl(): Promise<string | null> {
 }
 
 // Load the hanging jungle plants PNG (same asset used on the site footer / menu hero)
-// as a data URL so jsPDF can embed it. Returns the intrinsic width/height too so
+// as a data URL so jsPDF can embed it. Applies the requested opacity via a canvas
+// (jsPDF addImage does not support alpha). Returns intrinsic width/height too so
 // we can preserve the aspect ratio when placing the image.
-async function loadHangingPlantsDataUrl(): Promise<
-  { dataUrl: string; width: number; height: number } | null
-> {
+async function loadHangingPlantsDataUrl(
+  opacity: number = 1,
+): Promise<{ dataUrl: string; width: number; height: number } | null> {
   if (typeof window === "undefined") return null;
   try {
     const pointer = (await import("@/assets/footer-plants-hanging.png.asset.json"))
       .default as { url: string };
     const res = await fetch(pointer.url);
     const blob = await res.blob();
-    const dataUrl = await new Promise<string>((resolve, reject) => {
+    const base64 = await new Promise<string>((resolve, reject) => {
       const reader = new FileReader();
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = reject;
@@ -296,9 +297,28 @@ async function loadHangingPlantsDataUrl(): Promise<
       const im = new Image();
       im.onload = () => resolve({ w: im.naturalWidth || 1600, h: im.naturalHeight || 600 });
       im.onerror = reject;
-      im.src = dataUrl;
+      im.src = base64;
     });
-    return { dataUrl, width: size.w, height: size.h };
+
+    if (opacity >= 1) {
+      return { dataUrl: base64, width: size.w, height: size.h };
+    }
+
+    const canvas = document.createElement("canvas");
+    canvas.width = size.w;
+    canvas.height = size.h;
+    const ctx = canvas.getContext("2d")!;
+    ctx.clearRect(0, 0, size.w, size.h);
+    ctx.globalAlpha = opacity;
+    const img = await new Promise<HTMLImageElement>((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve(im);
+      im.onerror = reject;
+      im.src = base64;
+    });
+    ctx.drawImage(img, 0, 0, size.w, size.h);
+
+    return { dataUrl: canvas.toDataURL("image/png"), width: size.w, height: size.h };
   } catch (err) {
     if (typeof console !== "undefined") console.warn("[menu-pdf] hanging plants load failed", err);
     return null;
@@ -339,7 +359,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const [patternDataUrl, logoDataUrl, hangingPlants] = await Promise.all([
     loadJunglePatternDataUrl(pageW, pageH, jungle, 0.08),
     loadLogoDataUrl(),
-    loadHangingPlantsDataUrl(),
+    loadHangingPlantsDataUrl(0.3), // 70% transparent
   ]);
 
   const paintBackground = () => {
