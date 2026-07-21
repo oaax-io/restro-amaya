@@ -423,7 +423,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   }
 
   // ---- Items (centered) — auto-scale to fit on a single page ----
-  const contentW = 150;
+  const contentW = 122;
   const availableH = footerSafeTop - y;
 
   type Plan = {
