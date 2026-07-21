@@ -259,7 +259,7 @@ async function loadJunglePatternDataUrl(
 async function loadLogoDataUrl(): Promise<string | null> {
   if (typeof window === "undefined") return null;
   try {
-    const pointer = (await import("@/assets/amaya-logo-green.png.asset.json")).default as { url: string };
+    const pointer = (await import("@/assets/amaya-logo-apricot.png.asset.json")).default as { url: string };
     const res = await fetch(pointer.url);
     const blob = await res.blob();
     return await new Promise<string>((resolve, reject) => {
