@@ -336,9 +336,10 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   };
 
   // ---- Background: cream base + Amaya jungle pattern + logo ----
-  const [patternDataUrl, logoDataUrl] = await Promise.all([
+  const [patternDataUrl, logoDataUrl, hangingPlants] = await Promise.all([
     loadJunglePatternDataUrl(pageW, pageH, jungle, 0.08),
     loadLogoDataUrl(),
+    loadHangingPlantsDataUrl(),
   ]);
 
   const paintBackground = () => {
@@ -346,6 +347,18 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     doc.rect(0, 0, pageW, pageH, "F");
     if (patternDataUrl) {
       doc.addImage(patternDataUrl, "PNG", 0, 0, pageW, pageH, undefined, "FAST");
+    }
+    // Hanging jungle plants across the very top of the page — behind the logo,
+    // full page width, preserving aspect ratio.
+    if (hangingPlants) {
+      const aspect = hangingPlants.width / hangingPlants.height;
+      const drawW = pageW;
+      const drawH = drawW / aspect;
+      const maxH = 60;
+      const finalH = Math.min(drawH, maxH);
+      const finalW = finalH * aspect;
+      const px = (pageW - finalW) / 2;
+      doc.addImage(hangingPlants.dataUrl, "PNG", px, 0, finalW, finalH, undefined, "FAST");
     }
     // Single thin apricot frame, quiet and centered
     doc.setDrawColor(...apricot);
@@ -429,25 +442,12 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   if (panelPattern) {
     doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
   }
-  // Decorative hanging jungle plants across the top of the panel — same botanical
-  // motif as the site footer / menu-page hero. Preserves the PNG aspect ratio.
-  const hangingPlants = await loadHangingPlantsDataUrl();
-  let hangingPlantsH = 0;
-  if (hangingPlants) {
-    const aspect = hangingPlants.width / hangingPlants.height;
-    const finalW = panelW;
-    const finalH = Math.min(22, finalW / aspect);
-    const drawW = finalH * aspect;
-    const px = panelX + (panelW - drawW) / 2;
-    doc.addImage(hangingPlants.dataUrl, "PNG", px, panelTop - 2, drawW, finalH, undefined, "FAST");
-    hangingPlantsH = finalH;
-  }
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.2);
   doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
 
   // Breathing room between the panel's top edge and the Suppe/Salat title
-  y += Math.max(6, hangingPlantsH - 4);
+  y += 6;
 
   // ---- Suppe & Salat (no frame, just typography) ----
   if (data.suppeSalat) {
