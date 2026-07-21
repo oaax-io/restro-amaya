@@ -284,6 +284,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const creamDeep: [number, number, number] = [240, 232, 214];
   const jungle: [number, number, number] = [13, 37, 23];      // #0D2517
   const jungleSoft: [number, number, number] = [70, 96, 78];
+  const descInk: [number, number, number] = [46, 66, 52];     // darker, higher-contrast on the light panel
   const apricot: [number, number, number] = [233, 165, 128];  // #E9A580
   const apricotDeep: [number, number, number] = [211, 138, 101]; // #D38A65
 
@@ -407,6 +408,25 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const contentW = 150;
   const availableH = footerSafeTop - y;
 
+  // ---- Readability panel behind menu items ----
+  // Draw a light warm-cream panel with a very subtle green jungle pattern
+  // overlay so the menu text stays legible against the page background.
+  const panelX = 20;
+  const panelTop = y - 4;
+  const panelBottom = footerSafeTop - 2;
+  const panelW = pageW - panelX * 2;
+  const panelH = panelBottom - panelTop;
+  doc.setFillColor(252, 249, 242); // near-white warm cream
+  doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "F");
+  const panelPattern = await loadJunglePatternDataUrl(panelW, panelH, jungle, 0.05);
+  if (panelPattern) {
+    doc.addImage(panelPattern, "PNG", panelX, panelTop, panelW, panelH, undefined, "FAST");
+  }
+  // Hairline apricot border around the panel to tie it to the frame
+  doc.setDrawColor(...apricot);
+  doc.setLineWidth(0.2);
+  doc.roundedRect(panelX, panelTop, panelW, panelH, 4, 4, "S");
+
   type Plan = {
     scale: number;
     titleSize: number;
@@ -467,7 +487,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
 
     // Description
     if (descLines.length) {
-      doc.setTextColor(...jungleSoft);
+      doc.setTextColor(...descInk);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(plan.descSize);
       for (const ln of descLines) {
