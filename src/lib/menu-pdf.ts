@@ -274,6 +274,37 @@ async function loadLogoDataUrl(): Promise<string | null> {
   }
 }
 
+// Load the hanging jungle plants PNG (same asset used on the site footer / menu hero)
+// as a data URL so jsPDF can embed it. Returns the intrinsic width/height too so
+// we can preserve the aspect ratio when placing the image.
+async function loadHangingPlantsDataUrl(): Promise<
+  { dataUrl: string; width: number; height: number } | null
+> {
+  if (typeof window === "undefined") return null;
+  try {
+    const pointer = (await import("@/assets/footer-plants-hanging.png.asset.json"))
+      .default as { url: string };
+    const res = await fetch(pointer.url);
+    const blob = await res.blob();
+    const dataUrl = await new Promise<string>((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+    const size = await new Promise<{ w: number; h: number }>((resolve, reject) => {
+      const im = new Image();
+      im.onload = () => resolve({ w: im.naturalWidth || 1600, h: im.naturalHeight || 600 });
+      im.onerror = reject;
+      im.src = dataUrl;
+    });
+    return { dataUrl, width: size.w, height: size.h };
+  } catch (err) {
+    if (typeof console !== "undefined") console.warn("[menu-pdf] hanging plants load failed", err);
+    return null;
+  }
+}
+
 export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const doc = new jsPDF({ unit: "mm", format: "a4" });
   const pageW = doc.internal.pageSize.getWidth();
