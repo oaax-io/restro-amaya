@@ -3,11 +3,13 @@ import { useTranslation } from "react-i18next";
 import { motion } from "motion/react";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { Download } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { ReservationCard } from "@/components/site/ReservationCard";
 import { GastronoviReservation } from "@/components/site/GastronoviReservation";
+import { useWeeklyMenu, usePdfUrl } from "@/lib/menu-data";
 
 import jungleTex from "@/assets/jungle-texture.jpg";
 import slideRestaurant from "@/assets/slide-restaurant.jpg";
@@ -66,6 +68,73 @@ function ConceptImages({ images, alt }: { images: readonly string[]; alt: string
         />
       ))}
     </>
+  );
+}
+
+function WeeklyMenuHome() {
+  const { i18n, t } = useTranslation();
+  const lang = i18n.language?.startsWith("en") ? "en" : "de";
+  const WEEKLY_MENU = useWeeklyMenu();
+  const weeklyPdfUrl = usePdfUrl("weekly", "");
+
+  return (
+    <section className="py-20 lg:py-28 bg-gradient-to-b from-background via-[#0d2517]/40 to-background">
+      <div className="mx-auto max-w-7xl px-6 lg:px-10">
+        <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
+          <div>
+            <p className="mono-label text-gold">— Wochenmenü —</p>
+            <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">{t("menu.weekly.title")}</h2>
+          </div>
+          <a
+            href={weeklyPdfUrl || "#"}
+            download="Amaya-Wochenmenue.pdf"
+            target="_blank"
+            rel="noopener"
+            className={`inline-flex items-center gap-2 rounded-full bg-gold text-gold-foreground hover:opacity-90 transition px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] ${!weeklyPdfUrl ? "pointer-events-none opacity-50" : ""}`}
+          >
+            <Download className="size-4" />
+            {lang === "de" ? "Wochenkarte als PDF" : "Weekly menu as PDF"}
+          </a>
+        </div>
+
+        <div className="max-w-4xl mx-auto">
+          <div className="text-center mb-10">
+            <p className="text-xs tracking-[0.4em] uppercase text-gold mb-4">{WEEKLY_MENU.dateRange[lang]}</p>
+            <h3 className="font-display text-3xl md:text-4xl uppercase tracking-wide font-bold text-gradient-gold">
+              {WEEKLY_MENU.title[lang]}
+            </h3>
+          </div>
+
+          <div className="flex items-center justify-between border-b border-gold/30 pb-4 mb-8">
+            <span className="font-display text-xl md:text-2xl uppercase tracking-wide">{WEEKLY_MENU.suppeSalat[lang]}</span>
+            <span className="font-display text-xl md:text-2xl text-gold">{WEEKLY_MENU.suppeSalat.price}</span>
+          </div>
+
+          <div className="space-y-6">
+            {WEEKLY_MENU.items.map((item, i) => (
+              <div key={i} className="flex flex-col md:flex-row md:items-start md:justify-between gap-2 md:gap-8 border-b border-gold/20 pb-6">
+                <div className="flex-1">
+                  <h4 className="font-display text-lg md:text-xl uppercase tracking-wide font-semibold">{item.name[lang]}</h4>
+                  <p className="mt-1 text-sm text-muted-foreground leading-relaxed">{item.desc[lang]}</p>
+                </div>
+                <span className="font-display text-lg md:text-xl text-gold whitespace-nowrap">{item.price}</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+            <span className="inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {lang === "de" ? "Take Away möglich" : "Take Away available"}
+            </span>
+            <span className="inline-flex items-center gap-2">
+              <span className="w-1.5 h-1.5 rounded-full bg-gold" />
+              {lang === "de" ? "Preise inkl. MwSt." : "Prices incl. VAT"}
+            </span>
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -252,6 +321,8 @@ function Index() {
           </div>
         </div>
       </section>
+
+      <WeeklyMenuHome />
 
     </SiteLayout>
   );

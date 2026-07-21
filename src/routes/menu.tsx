@@ -162,9 +162,26 @@ function MenuPage() {
 function WeeklyView({ lang }: { lang: Lang }) {
   const { t } = useTranslation();
   const WEEKLY_MENU = useWeeklyMenu();
+  const weeklyPdfUrl = usePdfUrl("weekly", "");
   return (
     <div>
       <Header title={t("menu.weekly.title")} lead={t("menu.weekly.lead")} />
+
+      <div className="mt-8 flex flex-wrap items-center gap-4">
+        <a
+          href={weeklyPdfUrl || "#"}
+          download="Amaya-Wochenmenue.pdf"
+          target="_blank"
+          rel="noopener"
+          className={`inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] ${!weeklyPdfUrl ? "pointer-events-none opacity-50" : ""}`}
+        >
+          <Download className="size-4" />
+          {lang === "de" ? "Wochenkarte als PDF" : "Weekly menu as PDF"}
+        </a>
+        <span className="text-xs uppercase tracking-[0.25em] text-muted-foreground">
+          Mo – Fr · 11:30 – 14:00
+        </span>
+      </div>
 
       <div className="mt-12 max-w-4xl mx-auto">
         {/* Date range + title */}
@@ -207,6 +224,18 @@ function WeeklyView({ lang }: { lang: Lang }) {
               </span>
             </div>
           ))}
+        </div>
+
+        {/* Notes */}
+        <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
+          <span className="inline-flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+            {lang === "de" ? "Take Away möglich" : "Take Away available"}
+          </span>
+          <span className="inline-flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
+            {lang === "de" ? "Preise inkl. MwSt." : "Prices incl. VAT"}
+          </span>
         </div>
       </div>
     </div>
