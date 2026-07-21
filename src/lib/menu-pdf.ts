@@ -499,7 +499,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   // Thick apricot divider between hours and QR
   doc.setDrawColor(...apricot);
   doc.setLineWidth(1.4);
-  doc.line(dividerX, boxY + 10, dividerX, boxY + boxH - 14);
+  doc.line(dividerX, boxY + 10, dividerX, boxY + boxH - 20);
 
   // QR image
   const menuUrl = "https://amaya.oaase.com/menu";
@@ -524,9 +524,9 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
 
   // Take Away note inside the frame, centered at the bottom
   doc.setFont("helvetica", "normal");
-  doc.setFontSize(7.2);
+  doc.setFontSize(7.4);
   doc.setTextColor(...apricotDeep);
-  doc.text("Take Away möglich   ·   Preise inkl. MwSt.", boxX + boxW / 2, boxY + boxH - 7, { align: "center" });
+  doc.text("Take Away möglich   ·   Preise inkl. MwSt.", boxX + boxW / 2, boxY + boxH - 12, { align: "center" });
 
   return doc.output("blob");
 }
