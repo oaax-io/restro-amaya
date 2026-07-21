@@ -312,7 +312,7 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
       const { data: items } = ids.length
         ? await supabase.from("menu_items").select("*").in("category_id", ids).order("sort_order")
         : { data: [] as any[] };
-      const blob = generateWeeklyPdf({
+      const blob = await generateWeeklyPdf({
         dateRange: dateDe || dateEn || undefined,
         suppeSalat: suppeDe || undefined,
         suppeSalatPrice: suppePrice || undefined,
