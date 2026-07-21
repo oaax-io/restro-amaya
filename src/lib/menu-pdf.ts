@@ -70,21 +70,33 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
   if (typeof console !== "undefined") console.log("[menu-pdf] extracted lines:", lines);
   const out: ParsedWeekly = { items: [] };
 
-  // Detect Suppe/Salat
-  for (let i = 0; i < lines.length; i++) {
-    if (/suppe.*salat|salat.*suppe/i.test(lines[i])) {
-      const own = lines[i].match(PRICE_ANY_RE);
-      if (own) {
-        out.suppe_salat_de = lines[i].replace(PRICE_ANY_RE, "").trim();
-        out.suppe_salat_price = `CHF ${own[1].replace(",", ".")}`;
-      } else if (i + 1 < lines.length) {
-        const m = lines[i + 1].match(PRICE_ANY_RE);
+  // Detect Suppe/Salat — accept any title line containing SUPPE and/or SALAT
+  // (e.g. "SUPPE & SALAT", "TAGESSUPPE", "SAISONSALAT", "SUPPE ODER SALAT").
+  const suppeSalatIdx = lines.findIndex((l) => /\b(suppe|salat)\b/i.test(l) && isUpperTitle(l));
+  if (suppeSalatIdx >= 0) {
+    const head = lines[suppeSalatIdx];
+    const own = head.match(PRICE_ANY_RE);
+    if (own) {
+      out.suppe_salat_de = head.replace(PRICE_ANY_RE, "").trim();
+      out.suppe_salat_price = `CHF ${own[1].replace(",", ".")}`;
+    } else {
+      // Look ahead a few lines for the price; collect description in between
+      const descParts: string[] = [];
+      for (let j = suppeSalatIdx + 1; j < Math.min(lines.length, suppeSalatIdx + 6); j++) {
+        const m = lines[j].match(PRICE_ANY_RE);
         if (m) {
-          out.suppe_salat_de = lines[i].trim();
           out.suppe_salat_price = `CHF ${m[1].replace(",", ".")}`;
+          const rest = lines[j].replace(PRICE_ANY_RE, "").trim();
+          if (rest && !isUpperTitle(rest)) descParts.push(rest);
+          break;
         }
+        if (isUpperTitle(lines[j])) break;
+        descParts.push(lines[j]);
       }
-      break;
+      const cleanHead = head.trim();
+      out.suppe_salat_de = descParts.length
+        ? `${cleanHead} — ${descParts.join(" ")}`
+        : cleanHead;
     }
   }
 
@@ -107,11 +119,22 @@ export async function parseWeeklyPdf(file: File | Blob): Promise<ParsedWeekly> {
     return p2 ? `${p1} | TA ${p2}` : p1;
   };
 
-  for (const raw of lines) {
+  const skipUntil = suppeSalatIdx >= 0 ? suppeSalatIdx : -1;
+  for (let li = 0; li < lines.length; li++) {
+    // Skip the Suppe/Salat block so it isn't also captured as a regular item
+    if (suppeSalatIdx >= 0 && li >= suppeSalatIdx) {
+      // advance past the block: header + up to next title
+      if (li === suppeSalatIdx) {
+        let k = suppeSalatIdx + 1;
+        while (k < lines.length && !isUpperTitle(lines[k])) k++;
+        li = k - 1;
+        continue;
+      }
+    }
+    const raw = lines[li];
     const line = raw.trim();
     if (!line) continue;
     if (HOURS_RE.test(line)) { flush(); break; }
-    if (/suppe.*salat|salat.*suppe/i.test(line)) continue;
 
     // Case: line is only a price
     if (PRICE_ONLY_RE.test(line)) {
