@@ -230,11 +230,7 @@ function WeeklyView({ lang }: { lang: Lang }) {
         <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
           <span className="inline-flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            {lang === "de" ? "Take Away möglich" : "Take Away available"}
-          </span>
-          <span className="inline-flex items-center gap-2">
-            <span className="w-1.5 h-1.5 rounded-full bg-accent" />
-            {lang === "de" ? "TA = günstigere Take-Away-Preise" : "TA = cheaper take-away prices"}
+            {lang === "de" ? "Take Away möglich (TA = günstigere Preise)" : "Take Away available (TA = cheaper prices)"}
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="w-1.5 h-1.5 rounded-full bg-accent" />
