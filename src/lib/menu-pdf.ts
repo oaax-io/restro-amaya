@@ -428,16 +428,48 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
     }
   }
 
-  // ---- Footer with QR code linking to the online menu ----
+  // ---- Footer with opening hours (left) and QR code (right) ----
   const footTop = pageH - 42;
 
   // Thin apricot divider above footer
   doc.setDrawColor(...apricot);
   doc.setLineWidth(0.2);
-  doc.line(cx - 40, footTop - 2, cx + 40, footTop - 2);
+  doc.line(12, footTop - 2, pageW - 12, footTop - 2);
 
-  // QR code centered
+  // Opening hours on the left
+  const hoursLeft = 14;
+  let hoursY = footTop + 4;
+
+  doc.setTextColor(...jungle);
+  doc.setFont("helvetica", "bold");
+  doc.setFontSize(8);
+  doc.text("ÖFFNUNGSZEITEN", hoursLeft, hoursY, { charSpace: 1.2 });
+  hoursY += 5.5;
+
+  const dayLabels: Record<string, string> = {
+    mon: "MO", tue: "DI", wed: "MI", thu: "DO", fri: "FR", sat: "SA", sun: "SO",
+  };
+  const formatTime = (lunch: string | null, dinner: string | null) => {
+    if (lunch && dinner) return `${lunch} / ${dinner}`;
+    if (lunch) return lunch;
+    if (dinner) return dinner;
+    return "geschlossen";
+  };
+
+  doc.setFont("helvetica", "normal");
+  doc.setFontSize(7.5);
+  doc.setTextColor(...jungleSoft);
+  for (const h of RESTAURANT.hours) {
+    const label = dayLabels[h.day] ?? h.day.toUpperCase();
+    const time = formatTime(h.lunch, h.dinner);
+    doc.text(`${label}`, hoursLeft, hoursY);
+    doc.text(time, hoursLeft + 12, hoursY);
+    hoursY += 4.2;
+  }
+
+  // QR code on the right
   const qrSize = 24;
+  const qrRight = pageW - 14 - qrSize;
   const menuUrl = "https://amaya.oaase.com/menu";
   try {
     const qrDataUrl = await QRCode.toDataURL(menuUrl, {
@@ -449,7 +481,7 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
       },
       errorCorrectionLevel: "M",
     });
-    doc.addImage(qrDataUrl, "PNG", cx - qrSize / 2, footTop, qrSize, qrSize, undefined, "FAST");
+    doc.addImage(qrDataUrl, "PNG", qrRight, footTop, qrSize, qrSize, undefined, "FAST");
   } catch (err) {
     if (typeof console !== "undefined") console.warn("[menu-pdf] QR failed", err);
   }
@@ -457,7 +489,8 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   doc.setTextColor(...jungleSoft);
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7);
-  centerText("SPEISEKARTE ONLINE", footTop + qrSize + 4, { charSpace: 1.5 });
+  const qrLabelX = qrRight + qrSize / 2 - doc.getTextWidth("SPEISEKARTE ONLINE") / 2;
+  doc.text("SPEISEKARTE ONLINE", qrLabelX, footTop + qrSize + 4, { charSpace: 1.5 });
 
   doc.setFontSize(6.5);
   doc.setTextColor(...apricotDeep);
