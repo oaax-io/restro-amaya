@@ -3,7 +3,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useRef } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field } from "@/components/admin/ui";
-import { Trash2, Plus, Upload, Download, ExternalLink } from "lucide-react";
+import { Trash2, Plus, Upload, Download, ExternalLink, Wand2, FileDown } from "lucide-react";
+import { parseWeeklyPdf, generateWeeklyPdf, type ParsedWeekly } from "@/lib/menu-pdf";
 
 export const Route = createFileRoute("/_authenticated/admin/menu")({
   component: MenuAdmin,
@@ -170,6 +171,9 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
   const [suppeDe, setSuppeDe] = useState(meta?.suppe_salat_de ?? "");
   const [suppeEn, setSuppeEn] = useState(meta?.suppe_salat_en ?? "");
   const [suppePrice, setSuppePrice] = useState(meta?.suppe_salat_price ?? "");
+  const [parsing, setParsing] = useState(false);
+  const [generating, setGenerating] = useState(false);
+  const qc = useQueryClient();
 
   async function upsert(patch: any) {
     await supabase.from("menu_meta").upsert({ menu_type: type, ...patch }, { onConflict: "menu_type" });
@@ -183,6 +187,9 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
       const { error } = await supabase.storage.from("menu-pdfs").upload(path, file, { upsert: true, contentType: file.type || "application/pdf" });
       if (error) throw error;
       await upsert({ pdf_url: path });
+      if (type === "weekly" && confirm("PDF hochgeladen. Jetzt automatisch auslesen und Wocheneinträge übernehmen? Bestehende Wocheneinträge werden ersetzt.")) {
+        await importFromPdfFile(file);
+      }
     } catch (err: any) { alert("Upload-Fehler: " + err.message); }
     finally { setUploading(false); if (fileRef.current) fileRef.current.value = ""; }
   }
@@ -201,6 +208,99 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
     if (meta.pdf_url.startsWith("http")) { window.open(meta.pdf_url, "_blank"); return; }
     const { data } = await supabase.storage.from("menu-pdfs").createSignedUrl(meta.pdf_url, 300);
     if (data?.signedUrl) window.open(data.signedUrl, "_blank");
+  }
+
+  async function getPdfBlob(): Promise<Blob | null> {
+    if (!meta?.pdf_url) return null;
+    let url = meta.pdf_url;
+    if (!url.startsWith("http")) {
+      const { data } = await supabase.storage.from("menu-pdfs").createSignedUrl(meta.pdf_url, 300);
+      if (!data?.signedUrl) return null;
+      url = data.signedUrl;
+    }
+    const r = await fetch(url); if (!r.ok) return null;
+    return await r.blob();
+  }
+
+  async function importFromPdfFile(file: File | Blob) {
+    setParsing(true);
+    try {
+      const parsed = await parseWeeklyPdf(file);
+      if (!parsed.items.length) { alert("Konnte keine Einträge aus dem PDF erkennen."); return; }
+      await applyParsed(parsed);
+    } catch (err: any) {
+      alert("Fehler beim Auslesen: " + (err?.message ?? err));
+    } finally { setParsing(false); }
+  }
+
+  async function importFromStoredPdf() {
+    const blob = await getPdfBlob();
+    if (!blob) { alert("Kein PDF gefunden."); return; }
+    if (!confirm("Wocheneinträge aus dem hochgeladenen PDF übernehmen? Bestehende Einträge werden ersetzt.")) return;
+    await importFromPdfFile(blob);
+  }
+
+  async function applyParsed(parsed: ParsedWeekly) {
+    // Get or create a weekly category
+    let { data: cats } = await supabase.from("menu_categories").select("*").eq("menu_type", "weekly").order("sort_order");
+    let cat = cats?.[0];
+    if (!cat) {
+      const ins = await supabase.from("menu_categories").insert({
+        menu_type: "weekly", slug: "wochengerichte", name_de: "Wochengerichte", name_en: "Weekly Dishes", sort_order: 10,
+      }).select().single();
+      if (ins.error) throw ins.error;
+      cat = ins.data;
+    }
+    // Delete existing items in this category
+    await supabase.from("menu_items").delete().eq("category_id", cat.id);
+    // Insert parsed
+    const rows = parsed.items.map((it, idx) => ({
+      category_id: cat!.id,
+      name_de: it.name_de,
+      name_en: it.name_de,
+      description_de: it.description_de,
+      description_en: it.description_de,
+      price_text: it.price_text,
+      is_visible: true,
+      sort_order: (idx + 1) * 10,
+    }));
+    if (rows.length) {
+      const { error } = await supabase.from("menu_items").insert(rows);
+      if (error) throw error;
+    }
+    // Update meta suppe/salat if detected
+    const patch: any = {};
+    if (parsed.suppe_salat_de) { patch.suppe_salat_de = parsed.suppe_salat_de; setSuppeDe(parsed.suppe_salat_de); }
+    if (parsed.suppe_salat_price) { patch.suppe_salat_price = parsed.suppe_salat_price; setSuppePrice(parsed.suppe_salat_price); }
+    if (Object.keys(patch).length) await upsert(patch);
+    qc.invalidateQueries({ queryKey: ["admin","menu"] });
+    qc.invalidateQueries({ queryKey: ["menu"] });
+    alert(`Fertig – ${parsed.items.length} Einträge übernommen.`);
+  }
+
+  async function generatePdf() {
+    setGenerating(true);
+    try {
+      const { data: cats } = await supabase.from("menu_categories").select("*").eq("menu_type", "weekly").order("sort_order");
+      const ids = (cats ?? []).map((c: any) => c.id);
+      const { data: items } = ids.length
+        ? await supabase.from("menu_items").select("*").in("category_id", ids).order("sort_order")
+        : { data: [] as any[] };
+      const blob = generateWeeklyPdf({
+        dateRange: dateDe || dateEn || undefined,
+        suppeSalat: suppeDe || undefined,
+        suppeSalatPrice: suppePrice || undefined,
+        items: (items ?? []).filter((i: any) => i.is_visible !== false).map((i: any) => ({
+          name: i.name_de, description: i.description_de ?? "", price: i.price_text ?? "",
+        })),
+      });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url; a.download = `Wochengerichte_${new Date().toISOString().slice(0,10)}.pdf`;
+      a.click(); URL.revokeObjectURL(url);
+    } catch (err: any) {
+      alert("Fehler beim Erzeugen: " + (err?.message ?? err));
+    } finally { setGenerating(false); }
   }
 
   return (
@@ -223,6 +323,18 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
           )}
           <input ref={fileRef} type="file" accept="application/pdf" hidden onChange={handleFile} />
           <p className="mt-2 text-xs text-black/50">Wird auf der Website unter „Karte als PDF" verlinkt.</p>
+          {type === "weekly" && (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {meta?.pdf_url && (
+                <Btn variant="ghost" onClick={importFromStoredPdf} disabled={parsing}>
+                  <span className="inline-flex items-center gap-2"><Wand2 size={14} />{parsing ? "Lese aus…" : "Aus PDF übernehmen"}</span>
+                </Btn>
+              )}
+              <Btn variant="ghost" onClick={generatePdf} disabled={generating}>
+                <span className="inline-flex items-center gap-2"><FileDown size={14} />{generating ? "Erzeuge…" : "PDF aus Einträgen erzeugen"}</span>
+              </Btn>
+            </div>
+          )}
         </div>
 
         {type === "weekly" && (
