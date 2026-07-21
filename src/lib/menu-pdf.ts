@@ -397,8 +397,8 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   // Footer geometry is defined before laying out menu items so the content
   // never runs underneath the framed footer area.
   const boxMarginX = 22;
-  const boxH = 72;
-  const boxY = pageH - boxH - 18;
+  const boxH = 58;
+  const boxY = pageH - boxH - 28;
   const boxX = boxMarginX;
   const boxW = pageW - boxMarginX * 2;
   const footerSafeTop = boxY - 12;
@@ -578,11 +578,11 @@ export async function generateWeeklyPdf(data: WeeklyForPdf): Promise<Blob> {
   const qrLabel = "SPEISEKARTE ONLINE";
   doc.text(qrLabel, rightCenterX, qrY + qrSize + 6, { align: "center" });
 
-  // Take Away note inside the frame, centered at the bottom
+  // Take Away note outside the footer frame, centered underneath it.
   doc.setFont("helvetica", "normal");
   doc.setFontSize(7.4);
   doc.setTextColor(...apricotDeep);
-  doc.text("Take Away möglich   ·   Preise inkl. MwSt.", boxX + boxW / 2, boxY + boxH - 8, { align: "center" });
+  doc.text("Take Away möglich   ·   Preise inkl. MwSt.", boxX + boxW / 2, boxY + boxH + 8, { align: "center" });
 
   return doc.output("blob");
 }
