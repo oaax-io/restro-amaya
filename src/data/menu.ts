@@ -22,6 +22,19 @@ export type WineItem = {
   bottle: string;
 };
 
+export type BarMenuSection = {
+  id: string;
+  title: { de: string; en: string };
+  items: BarItem[];
+};
+
+export type BarItem = {
+  name: { de: string; en: string };
+  desc: { de: string; en: string };
+  price: string;
+  type?: "cocktail" | "mocktail";
+};
+
 export type WineMenuSection = {
   id: string;
   title: { de: string; en: string };
