@@ -45,7 +45,7 @@ const resources = {
         categories: { all: "Alle", kulinarisches: "Kulinarisches", restaurant: "Restaurant", anlaesse: "Anlässe" },
       },
       about: { title: "Über uns", kicker: "Kontakt", hours: "Öffnungszeiten", address: "Adresse", contact: "Kontakt" },
-      jobs: { title: "Offene Stellen", kicker: "Karriere", apply: "Bewerben", none: "Aktuell sind keine Stellen offen." },
+      jobsMeta: { title: "Offene Stellen", none: "Aktuell sind keine Stellen offen." },
       reserve: {
         title: "Reservieren",
         kicker: "Ein Tisch für Sie",
@@ -214,7 +214,7 @@ const resources = {
         categories: { all: "All", kulinarisches: "Culinary", restaurant: "Restaurant", anlaesse: "Events" },
       },
       about: { title: "About us", kicker: "Contact", hours: "Opening hours", address: "Address", contact: "Contact" },
-      jobs: { title: "Open positions", kicker: "Careers", apply: "Apply", none: "No open positions at the moment." },
+      jobsMeta: { title: "Open positions", none: "No open positions at the moment." },
       reserve: {
         title: "Reservation",
         kicker: "A table for you",
