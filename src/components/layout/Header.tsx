@@ -76,9 +76,9 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
-            <a href="#reserve" onClick={() => setOpen(false)} className="btn-luxury mt-2">
+            <Link to="/reservation" onClick={() => setOpen(false)} className="btn-luxury mt-2">
               {t("nav.reserve")}
-            </a>
+            </Link>
           </div>
         </div>
       )}
