@@ -29,7 +29,15 @@ function ImpressumPage() {
       <LegalSection title="Kontakt">
         <p className="not-prose">
           E-Mail: info@amaya-restaurant.ch
-          <br />Website: www.amaya-restaurant.ch
+          <br />Website:{" "}
+          <a
+            href="https://www.amaya-restaurant.ch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+          >
+            www.amaya-restaurant.ch
+          </a>
         </p>
       </LegalSection>
 
@@ -39,8 +47,22 @@ function ImpressumPage() {
           <br />Kanonenstrasse 4
           <br />6003 Luzern
           <br />
-          <br />Website: https://oaase.ch
-          <br />E-Mail: info@oaase.ch
+          <br />Website:{" "}
+          <a
+            href="https://oaase.ch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+          >
+            oaase.ch
+          </a>
+          <br />E-Mail:{" "}
+          <a
+            href="mailto:info@oaase.ch"
+            className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+          >
+            info@oaase.ch
+          </a>
         </p>
       </LegalSection>
 
