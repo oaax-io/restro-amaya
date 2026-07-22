@@ -1,9 +1,19 @@
 import { useEffect, useRef } from "react";
 
+const RESERVATION_URL = "https://services.gastronovi.com/restaurants/108779/reservation";
+const TAKEAWAY_URL = "https://services.gastronovi.com/restaurants/108779/takeaway";
+const VOUCHER_URL = "https://services.gastronovi.com/restaurants/108779/voucher";
+
+function isMobileViewport() {
+  if (typeof window === "undefined") return false;
+  return window.matchMedia("(max-width: 767px)").matches;
+}
+
 export function GastronoviReservation() {
   const scriptHostRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (isMobileViewport()) return;
     const scriptHost = scriptHostRef.current;
     if (!scriptHost) return;
 
@@ -91,8 +101,39 @@ export function GastronoviReservation() {
           <div className="mx-auto mt-3 h-px w-14 hairline-gold" />
         </div>
 
-        <div id="reservation" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }} />
-        <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
+        {/* Desktop / Tablet: eingebettetes Widget */}
+        <div className="hidden md:block">
+          <div id="reservation" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }} />
+          <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
+        </div>
+
+        {/* Mobile: Direktlinks, damit keine Third-Party-Cookie-Probleme entstehen
+            und Aktionen im gleichen Tab öffnen */}
+        <div className="md:hidden px-4">
+          <p className="text-center text-white/70 text-sm mb-5 leading-relaxed">
+            Reservieren, Abholung bestellen oder Gutschein kaufen — direkt online.
+          </p>
+          <div className="flex flex-col gap-3">
+            <a
+              href={RESERVATION_URL}
+              className="block w-full text-center rounded-full border border-gold/60 bg-gold/10 px-6 py-4 text-gold font-medium tracking-wide uppercase text-sm hover:bg-gold/20 transition"
+            >
+              Tisch reservieren
+            </a>
+            <a
+              href={TAKEAWAY_URL}
+              className="block w-full text-center rounded-full border border-white/20 px-6 py-4 text-white/90 font-medium tracking-wide uppercase text-sm hover:bg-white/5 transition"
+            >
+              Take Away bestellen
+            </a>
+            <a
+              href={VOUCHER_URL}
+              className="block w-full text-center rounded-full border border-white/20 px-6 py-4 text-white/90 font-medium tracking-wide uppercase text-sm hover:bg-white/5 transition"
+            >
+              Gutschein kaufen
+            </a>
+          </div>
+        </div>
       </div>
 
       <style>{`
