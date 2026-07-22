@@ -123,13 +123,13 @@ export function SiteHeader() {
                       {l.label}
                     </Link>
                   ))}
-                  <a
-                    href="#reserve"
+                  <Link
+                    to="/reservation"
                     onClick={() => setOpen(false)}
                     className="mt-2 inline-flex items-center justify-center rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-widest text-gold-foreground hover:opacity-90 transition shadow-lg"
                   >
                     {t("nav.reserve")}
-                  </a>
+                  </Link>
                 </nav>
                 <div className="mt-auto flex items-center gap-3 pt-6 border-t border-gold/10">
                   <LanguageSwitcher />
