@@ -26,6 +26,11 @@ function GalleryPage() {
   const [heroIdx, setHeroIdx] = useState(0);
   const [cat, setCat] = useState<CatKey>("all");
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [cat]);
+
   const q = useQuery({
     queryKey: ["public","gallery"],
     queryFn: async () => {
