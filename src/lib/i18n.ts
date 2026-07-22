@@ -46,6 +46,30 @@ const resources = {
       },
       about: { title: "Über uns", kicker: "Kontakt", hours: "Öffnungszeiten", address: "Adresse", contact: "Kontakt" },
       jobsMeta: { title: "Offene Stellen", none: "Aktuell sind keine Stellen offen." },
+      home: {
+        concepts: {
+          kicker: "Konzepte",
+          titleA: "Vier Räume.",
+          titleB: "Eine Nacht.",
+          lead: "Von Dinner zu Drinks, von Lounge zu Dancefloor — bei uns geht der Abend nahtlos weiter.",
+        },
+        stats: { concepts: "Konzepte", seats: "Sitzplätze", open: "Geöffnet bis" },
+        weekly: {
+          kicker: "Wochenmenü",
+          pdf: "Wochenkarte als PDF",
+          takeaway: "Take Away (TA) – dieselbe Qualität, zum besseren Preis.",
+          vat: "Preise inkl. MwSt.",
+        },
+        heroExtras: {
+          welcome: { eyebrow: "00 — Welcome to Amaya", title: "Mitten im Dschungel.", sub: "Lebendes Blätterdach, warmes Licht, Fischgrät-Parkett — eine grüne Oase mitten in Rothenburg." },
+          restaurant: { eyebrow: "01 — Restaurant", title: "Wild gewachsene Küche.", sub: "Modernste Küche unter handgeflochtenen Lampen und dichtem Blätterhimmel — kompromisslos und aromenstark." },
+          lounge: { eyebrow: "02 — Cigar Lounge", title: "Rauch & Samt.", sub: "Gedämpftes Licht, samtige Sessel und gereifte Spirituosen — ein Refugium für Kenner." },
+          bar: { eyebrow: "03 — Bar", title: "Liquid Jungle.", sub: "Signature Cocktails vor lebender Pflanzenwand — handcrafted hinter der Amaya-Bar." },
+          signature: { eyebrow: "04 — Signature Drinks", title: "Botanische Alchemie.", sub: "Hand-gravierte Eiswürfel, Rosmarinrauch und seltene Spirits — jedes Glas ein kleines Ritual." },
+          garden: { eyebrow: "05 — Bar Garden", title: "Grüner Aperitivo.", sub: "Frisch gepresst, botanisch infundiert, serviert vor dichtem Blätterwerk." },
+          events: { eyebrow: "06 — Events & Nights", title: "Nächte ohne Regeln.", sub: "Private Events, DJ-Nights, Geburtstage — wir verwandeln den Raum in deine Bühne." },
+        },
+      },
       reserve: {
         title: "Reservieren",
         kicker: "Ein Tisch für Sie",
@@ -215,6 +239,30 @@ const resources = {
       },
       about: { title: "About us", kicker: "Contact", hours: "Opening hours", address: "Address", contact: "Contact" },
       jobsMeta: { title: "Open positions", none: "No open positions at the moment." },
+      home: {
+        concepts: {
+          kicker: "Concepts",
+          titleA: "Four rooms.",
+          titleB: "One night.",
+          lead: "From dinner to drinks, from lounge to dancefloor — the evening flows seamlessly.",
+        },
+        stats: { concepts: "Concepts", seats: "Seats", open: "Open until" },
+        weekly: {
+          kicker: "Weekly menu",
+          pdf: "Weekly menu as PDF",
+          takeaway: "Take Away (TA) – same quality, better price.",
+          vat: "Prices incl. VAT",
+        },
+        heroExtras: {
+          welcome: { eyebrow: "00 — Welcome to Amaya", title: "In the heart of the jungle.", sub: "A living canopy, warm light, herringbone parquet — a green oasis in the middle of Rothenburg." },
+          restaurant: { eyebrow: "01 — Restaurant", title: "Wildly grown cuisine.", sub: "Modern cooking beneath hand-woven lamps and a dense canopy — uncompromising and full of flavour." },
+          lounge: { eyebrow: "02 — Cigar Lounge", title: "Smoke & velvet.", sub: "Dimmed light, velvet armchairs and aged spirits — a refuge for connoisseurs." },
+          bar: { eyebrow: "03 — Bar", title: "Liquid Jungle.", sub: "Signature cocktails against a living plant wall — handcrafted behind the Amaya bar." },
+          signature: { eyebrow: "04 — Signature Drinks", title: "Botanical alchemy.", sub: "Hand-cut ice, rosemary smoke and rare spirits — every glass a small ritual." },
+          garden: { eyebrow: "05 — Bar Garden", title: "Green aperitivo.", sub: "Freshly pressed, botanically infused, served in front of dense foliage." },
+          events: { eyebrow: "06 — Events & Nights", title: "Nights without rules.", sub: "Private events, DJ nights, birthdays — we turn the room into your stage." },
+        },
+      },
       reserve: {
         title: "Reservation",
         kicker: "A table for you",

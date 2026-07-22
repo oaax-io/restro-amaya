@@ -82,7 +82,7 @@ function WeeklyMenuHome() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
           <div>
-            <p className="mono-label text-gold">— Wochenmenü —</p>
+            <p className="mono-label text-gold">— {t("home.weekly.kicker")} —</p>
             <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">{t("menu.weekly.title")}</h2>
           </div>
           <a
@@ -93,7 +93,7 @@ function WeeklyMenuHome() {
             className={`inline-flex items-center gap-2 rounded-full bg-gold text-gold-foreground hover:opacity-90 transition px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] ${!weeklyPdfUrl ? "pointer-events-none opacity-50" : ""}`}
           >
             <Download className="size-4" />
-            {lang === "de" ? "Wochenkarte als PDF" : "Weekly menu as PDF"}
+            {t("home.weekly.pdf")}
           </a>
         </div>
 
@@ -125,11 +125,11 @@ function WeeklyMenuHome() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              {lang === "de" ? "Take Away (TA) – dieselbe Qualität, zum besseren Preis." : "Take Away (TA) – same quality, better price."}
+              {t("home.weekly.takeaway")}
             </span>
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              {lang === "de" ? "Preise inkl. MwSt." : "Prices incl. VAT"}
+              {t("home.weekly.vat")}
             </span>
           </div>
         </div>
@@ -173,50 +173,21 @@ function Index() {
     { key: "events", img: eventSlide1.url, images: [eventSlide1.url, eventSlide2.url, eventSlide3.url, eventSlide4.url, eventSlide5.url, eventSlide6.url], label: "04" },
   ] as const;
 
-  const heroSlides = [
-    {
-      image: amayaNine.url,
-      eyebrow: "00 — Welcome to Amaya",
-      title: "Mitten im Dschungel.",
-      subtitle: "Lebendes Blätterdach, warmes Licht, Fischgrät-Parkett — eine grüne Oase mitten in Rothenburg.",
-    },
-    {
-      image: heroSlideRestaurant.url,
-      eyebrow: "01 — Restaurant",
-      title: "Wild gewachsene Küche.",
-      subtitle: "Modernste Küche unter handgeflochtenen Lampen und dichtem Blätterhimmel — kompromisslos und aromenstark.",
-    },
-    {
-      image: amayaThird.url,
-      eyebrow: "02 — Cigar Lounge",
-      title: "Rauch & Samt.",
-      subtitle: "Gedämpftes Licht, samtige Sessel und gereifte Spirituosen — ein Refugium für Kenner.",
-    },
-    {
-      image: amayaEight.url,
-      eyebrow: "03 — Bar",
-      title: "Liquid Jungle.",
-      subtitle: "Signature Cocktails vor lebender Pflanzenwand — handcrafted hinter der Amaya-Bar.",
-    },
-    {
-      image: amayaFirst.url,
-      eyebrow: "04 — Signature Drinks",
-      title: "Botanische Alchemie.",
-      subtitle: "Hand-gravierte Eiswürfel, Rosmarinrauch und seltene Spirits — jedes Glas ein kleines Ritual.",
-    },
-    {
-      image: amayaSecond.url,
-      eyebrow: "05 — Bar Garden",
-      title: "Grüner Aperitivo.",
-      subtitle: "Frisch gepresst, botanisch infundiert, serviert vor dichtem Blätterwerk.",
-    },
-    {
-      image: amayaFourth.url,
-      eyebrow: "06 — Events & Nights",
-      title: "Nächte ohne Regeln.",
-      subtitle: "Private Events, DJ-Nights, Geburtstage — wir verwandeln den Raum in deine Bühne.",
-    },
-  ];
+  const heroKeys = [
+    { image: amayaNine.url, key: "welcome" },
+    { image: heroSlideRestaurant.url, key: "restaurant" },
+    { image: amayaThird.url, key: "lounge" },
+    { image: amayaEight.url, key: "bar" },
+    { image: amayaFirst.url, key: "signature" },
+    { image: amayaSecond.url, key: "garden" },
+    { image: amayaFourth.url, key: "events" },
+  ] as const;
+  const heroSlides = heroKeys.map((h) => ({
+    image: h.image,
+    eyebrow: t(`home.heroExtras.${h.key}.eyebrow`),
+    title: t(`home.heroExtras.${h.key}.title`),
+    subtitle: t(`home.heroExtras.${h.key}.sub`),
+  }));
 
   return (
     <SiteLayout>
@@ -263,9 +234,9 @@ function Index() {
             </p>
             <div className="mt-10 grid grid-cols-3 gap-6">
               {[
-                { n: "04", l: "Konzepte" },
-                { n: "120", l: "Sitzplätze" },
-                { n: "03:00", l: "Open until" },
+                { n: "04", l: t("home.stats.concepts") },
+                { n: "120", l: t("home.stats.seats") },
+                { n: "03:00", l: t("home.stats.open") },
               ].map((s) => (
                 <div key={s.l} className="border-l border-gold/40 pl-4">
                   <p className="display-serif text-4xl lg:text-5xl text-gradient-gold">{s.n}</p>
@@ -282,11 +253,11 @@ function Index() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="flex flex-wrap items-end justify-between gap-6 mb-14">
             <div>
-              <p className="mono-label text-gold">— Konzepte —</p>
-              <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">Vier Räume.<br/>Eine Nacht.</h2>
+              <p className="mono-label text-gold">— {t("home.concepts.kicker")} —</p>
+              <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">{t("home.concepts.titleA")}<br/>{t("home.concepts.titleB")}</h2>
             </div>
             <p className="max-w-md text-muted-foreground">
-              Von Dinner zu Drinks, von Lounge zu Dancefloor — bei uns geht der Abend nahtlos weiter.
+              {t("home.concepts.lead")}
             </p>
           </div>
 
