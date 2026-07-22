@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ChefHat, Wine, UtensilsCrossed, Coffee, Sparkles, Upload, CheckCircle2, ArrowRight, FileText, X } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
@@ -19,16 +20,17 @@ export const Route = createFileRoute("/jobs")({
   component: JobsPage,
 });
 
-const POSITIONS = [
-  { id: "Koch / Köchin", icon: ChefHat, desc: "Von À la carte bis Events — Kreativität in unserer Küche." },
-  { id: "Kellner:in / Service", icon: UtensilsCrossed, desc: "Herzliche Gastgeber, die unsere Gäste begeistern." },
-  { id: "Barkeeper:in", icon: Wine, desc: "Signature Drinks, Cigar Pairings und beste Vibes." },
-  { id: "Küchenhilfe", icon: Coffee, desc: "Support für unser Küchenteam — voll- oder teilzeit." },
-  { id: "Aushilfe / Events", icon: Sparkles, desc: "Flexibel bei DJ Nights, Brunches und privaten Feiern." },
-  { id: "Andere Position", icon: Sparkles, desc: "Du siehst deine Rolle nicht? Erzähl uns, was du kannst." },
+const POSITION_KEYS = [
+  { id: "chef", icon: ChefHat },
+  { id: "service", icon: UtensilsCrossed },
+  { id: "bar", icon: Wine },
+  { id: "kitchen", icon: Coffee },
+  { id: "events", icon: Sparkles },
+  { id: "other", icon: Sparkles },
 ] as const;
 
 function JobsPage() {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState<string>("");
   const formRef = useRef<HTMLDivElement>(null);
 
@@ -47,13 +49,12 @@ function JobsPage() {
         />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-          <p className="text-xs tracking-[0.4em] uppercase text-accent">— Karriere</p>
+          <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("jobs.kicker")}</p>
           <h1 className="font-display text-6xl lg:text-8xl mt-6 leading-[0.95] uppercase font-bold text-gradient-gold">
-            Stellen.
+            {t("jobs.title")}
           </h1>
           <p className="mt-8 max-w-2xl text-muted-foreground leading-relaxed text-lg">
-            Wir suchen leidenschaftliche Menschen, die Gastfreundschaft leben — Küche, Service, Bar.
-            Sende uns deine spontane Bewerbung mit Lebenslauf.
+            {t("jobs.lead")}
           </p>
         </div>
       </section>
@@ -63,25 +64,27 @@ function JobsPage() {
         <div className="mx-auto max-w-6xl px-6 lg:px-10">
           <div className="flex items-end justify-between flex-wrap gap-6 mb-10">
             <div>
-              <p className="text-xs tracking-[0.4em] uppercase text-accent">— Positionen</p>
+              <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("jobs.posKicker")}</p>
               <h2 className="font-display text-4xl lg:text-5xl uppercase font-bold mt-3 text-gradient-gold">
-                Wo passt du hin?
+                {t("jobs.posTitle")}
               </h2>
             </div>
             <p className="text-sm text-muted-foreground max-w-md">
-              Wähle eine Rolle und wir öffnen das Bewerbungsformular. Alle Positionen sind offen für spontane Bewerbungen.
+              {t("jobs.posLead")}
             </p>
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {POSITIONS.map((p) => {
+            {POSITION_KEYS.map((p) => {
               const Icon = p.icon;
-              const active = selected === p.id;
+              const title = t(`jobs.positions.${p.id}.title`);
+              const desc = t(`jobs.positions.${p.id}.desc`);
+              const active = selected === title;
               return (
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => pick(p.id)}
+                  onClick={() => pick(title)}
                   className={[
                     "group text-left rounded-2xl border p-6 transition-all duration-300",
                     "bg-[#0D2517]/40 backdrop-blur-sm hover:-translate-y-1",
@@ -92,11 +95,11 @@ function JobsPage() {
                     <span className="grid place-items-center h-11 w-11 rounded-full bg-accent/15 text-accent">
                       <Icon size={20} />
                     </span>
-                    <h3 className="font-display text-xl text-foreground">{p.id}</h3>
+                    <h3 className="font-display text-xl text-foreground">{title}</h3>
                   </div>
-                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{p.desc}</p>
+                  <p className="mt-4 text-sm text-muted-foreground leading-relaxed">{desc}</p>
                   <span className="mt-5 inline-flex items-center gap-2 text-xs tracking-[0.25em] uppercase text-accent">
-                    Bewerben <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+                    {t("jobs.apply")} <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
                   </span>
                 </button>
               );
@@ -112,12 +115,12 @@ function JobsPage() {
             <div aria-hidden className="absolute inset-0 opacity-15 pointer-events-none"
               style={{ backgroundImage: `url(${jungleTex})`, backgroundSize: "cover" }} />
             <div className="relative">
-              <p className="text-xs tracking-[0.4em] uppercase text-accent">— Spontane Bewerbung</p>
+              <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("jobs.formKicker")}</p>
               <h2 className="font-display text-3xl lg:text-4xl uppercase font-bold mt-3 text-gradient-gold">
-                Erzähl uns von dir.
+                {t("jobs.formTitle")}
               </h2>
               <p className="mt-4 text-muted-foreground text-sm">
-                Lade deinen Lebenslauf hoch (PDF, DOC, max. 10 MB). Wir melden uns innerhalb weniger Tage.
+                {t("jobs.formLead")}
               </p>
 
               <ApplicationForm selected={selected} onSelect={setSelected} />
@@ -130,6 +133,7 @@ function JobsPage() {
 }
 
 function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (v: string) => void }) {
+  const { t } = useTranslation();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -149,17 +153,17 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
     setError(null);
     if (!f) { setFile(null); return; }
     const ext = "." + (f.name.split(".").pop()?.toLowerCase() ?? "");
-    if (!ALLOWED.includes(ext)) { setError("Nur PDF, DOC oder DOCX erlaubt."); return; }
-    if (f.size > MAX_MB * 1024 * 1024) { setError(`Datei zu gross (max. ${MAX_MB} MB).`); return; }
+    if (!ALLOWED.includes(ext)) { setError(t("jobs.errType")); return; }
+    if (f.size > MAX_MB * 1024 * 1024) { setError(t("jobs.errSize", { mb: MAX_MB })); return; }
     setFile(f);
   }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!selected) { setError("Bitte wähle oben eine Position aus."); return; }
-    if (!firstName.trim() || !lastName.trim() || !email.trim()) { setError("Vorname, Nachname und E-Mail sind erforderlich."); return; }
-    if (!/^\S+@\S+\.\S+$/.test(email.trim())) { setError("Bitte gültige E-Mail-Adresse eingeben."); return; }
+    if (!selected) { setError(t("jobs.errNoPos")); return; }
+    if (!firstName.trim() || !lastName.trim() || !email.trim()) { setError(t("jobs.errRequired")); return; }
+    if (!/^\S+@\S+\.\S+$/.test(email.trim())) { setError(t("jobs.errEmail")); return; }
 
     setSubmitting(true);
     try {
@@ -201,10 +205,8 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
         <div className="mx-auto grid place-items-center h-14 w-14 rounded-full bg-emerald-500/20 text-emerald-400">
           <CheckCircle2 size={28} />
         </div>
-        <h3 className="mt-5 font-display text-2xl text-foreground">Danke, {firstName}!</h3>
-        <p className="mt-3 text-sm text-muted-foreground">
-          Wir haben deine Bewerbung erhalten und melden uns bald bei dir.
-        </p>
+        <h3 className="mt-5 font-display text-2xl text-foreground">{t("jobs.thanks")}, {firstName}!</h3>
+        <p className="mt-3 text-sm text-muted-foreground">{t("jobs.received")}</p>
         <button
           type="button"
           onClick={() => {
@@ -212,7 +214,7 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
           }}
           className="mt-6 inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-6 py-2.5 text-xs uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors"
         >
-          Weitere Bewerbung senden
+          {t("jobs.sendAnother")}
         </button>
       </div>
     );
@@ -222,40 +224,43 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
     <form onSubmit={submit} className="mt-8 space-y-5">
       {/* Selected position */}
       <div>
-        <label className="block text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">Position</label>
+        <label className="block text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">{t("jobs.position")}</label>
         <select
           value={selected}
           onChange={(e) => onSelect(e.target.value)}
           className="w-full bg-[#0D2517] border border-accent/25 rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent"
           required
         >
-          <option value="">— bitte wählen —</option>
-          {POSITIONS.map((p) => <option key={p.id} value={p.id}>{p.id}</option>)}
+          <option value="">{t("jobs.pickPosition")}</option>
+          {POSITION_KEYS.map((p) => {
+            const title = t(`jobs.positions.${p.id}.title`);
+            return <option key={p.id} value={title}>{title}</option>;
+          })}
         </select>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <TextField label="Vorname *" value={firstName} onChange={setFirstName} required />
-        <TextField label="Nachname *" value={lastName} onChange={setLastName} required />
-        <TextField label="E-Mail *" type="email" value={email} onChange={setEmail} required />
-        <TextField label="Telefon" type="tel" value={phone} onChange={setPhone} />
+        <TextField label={`${t("jobs.firstName")} *`} value={firstName} onChange={setFirstName} required />
+        <TextField label={`${t("jobs.lastName")} *`} value={lastName} onChange={setLastName} required />
+        <TextField label={`${t("jobs.email")} *`} type="email" value={email} onChange={setEmail} required />
+        <TextField label={t("jobs.phone")} type="tel" value={phone} onChange={setPhone} />
       </div>
 
       <div>
-        <label className="block text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">Nachricht</label>
+        <label className="block text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">{t("jobs.message")}</label>
         <textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           rows={5}
           maxLength={5000}
-          placeholder="Erzähl uns kurz von dir, deiner Erfahrung und Verfügbarkeit."
+          placeholder={t("jobs.messagePh")}
           className="w-full bg-[#0D2517] border border-accent/25 rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none focus:border-accent resize-none"
         />
       </div>
 
       {/* CV Dropzone */}
       <div>
-        <label className="block text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">Lebenslauf (PDF, DOC, DOCX)</label>
+        <label className="block text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">{t("jobs.cv")}</label>
         <div
           onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
           onDragLeave={() => setDragOver(false)}
@@ -282,7 +287,7 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
                 type="button"
                 onClick={(e) => { e.stopPropagation(); setFile(null); }}
                 className="p-1 rounded hover:bg-accent/20 text-muted-foreground"
-                aria-label="Datei entfernen"
+                aria-label={t("jobs.removeFile")}
               >
                 <X size={14} />
               </button>
@@ -290,8 +295,8 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
           ) : (
             <div className="flex flex-col items-center gap-2">
               <Upload size={22} className="text-accent" />
-              <p className="text-sm text-foreground">Datei hierher ziehen oder klicken</p>
-              <p className="text-xs text-muted-foreground">Max. {MAX_MB} MB</p>
+              <p className="text-sm text-foreground">{t("jobs.dropzone")}</p>
+              <p className="text-xs text-muted-foreground">{t("jobs.max")} {MAX_MB} MB</p>
             </div>
           )}
         </div>
@@ -300,13 +305,13 @@ function ApplicationForm({ selected, onSelect }: { selected: string; onSelect: (
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       <div className="flex items-center justify-between gap-4 flex-wrap pt-2">
-        <p className="text-xs text-muted-foreground">Mit dem Absenden bestätigst du unsere Datenschutzhinweise.</p>
+        <p className="text-xs text-muted-foreground">{t("jobs.consent")}</p>
         <button
           type="submit"
           disabled={submitting}
           className="inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-8 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors disabled:opacity-60"
         >
-          {submitting ? "Wird gesendet…" : "Bewerbung senden"}
+          {submitting ? t("jobs.sending") : t("jobs.submit")}
           <ArrowRight size={16} />
         </button>
       </div>
