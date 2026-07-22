@@ -53,6 +53,7 @@ function MenuPage() {
     { key: "amaya-mesa", label: t("menu.tabs.amayaMesa") },
     { key: "sushi-sharing", label: t("menu.tabs.sushiSharing") },
     { key: "wine", label: t("menu.tabs.wine") },
+    { key: "bar", label: t("menu.tabs.bar") },
   ];
 
   return (
