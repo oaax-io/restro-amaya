@@ -18,9 +18,10 @@ import mesaPdf from "@/assets/mesa-menu-pdf.asset.json";
 import sushiPdf from "@/assets/sushi-menu-pdf.asset.json";
 import winePdf from "@/assets/wine-menu-pdf.asset.json";
 import sushiAlaCarteImg from "@/assets/sushi-alacarte.jpg.asset.json";
+import barSlide1 from "@/assets/LuzPalokaj_Photography--33.jpg.asset.json";
 
 type Lang = "de" | "en";
-type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine";
+type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine" | "bar";
 
 export const Route = createFileRoute("/menu")({
   head: () => ({
