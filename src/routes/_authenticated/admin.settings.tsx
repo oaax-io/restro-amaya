@@ -3,7 +3,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card } from "@/components/admin/ui";
-import { LoungeTiersEditor } from "@/components/admin/TierEditor";
 
 export const Route = createFileRoute("/_authenticated/admin/settings")({
   component: SettingsAdmin,
@@ -71,12 +70,6 @@ function SettingsAdmin() {
           </div>
         )}
       </Card>
-
-      {!q.isLoading && (
-        <div className="mt-8">
-          <LoungeTiersEditor />
-        </div>
-      )}
     </div>
   );
 }
