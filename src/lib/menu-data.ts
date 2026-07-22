@@ -134,6 +134,7 @@ function useSectionsFor(menu_type: "lunch" | "mesa" | "sushi", fallback: MenuSec
 export function useLunchMenu() { return useSectionsFor("lunch", LUNCH_FALLBACK); }
 export function useMesaMenu() { return useSectionsFor("mesa", MESA_FALLBACK); }
 export function useSushiMenu() { return useSectionsFor("sushi", SUSHI_FALLBACK); }
+export function useBarMenu() { return useSectionsFor("bar", BAR_FALLBACK); }
 
 export function useWineMenu(): WineMenuSection[] {
   const q = useQuery({
