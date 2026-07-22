@@ -1008,3 +1008,108 @@ function SushiView({ lang }: { lang: Lang }) {
     </div>
   );
 }
+
+/* ---------- Bar — Signature Cocktails & Mocktails ---------- */
+
+function BarView({ lang }: { lang: Lang }) {
+  const { t } = useTranslation();
+  const BAR_MENU = useBarMenu();
+  return (
+    <div className="relative">
+      <Header title={t("menu.bar.title")} lead={t("menu.bar.lead")} />
+
+      {/* Hero image */}
+      <div className="relative mt-10 overflow-hidden rounded-3xl border border-[#E9A580]/40 shadow-2xl h-64 sm:h-80 lg:h-96">
+        <img
+          src={barSlide1.url}
+          alt={lang === "de" ? "Cocktail Zubereitung an der Amaya Bar" : "Cocktail preparation at the Amaya bar"}
+          className="absolute inset-0 w-full h-full object-cover"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0D2517]/80 via-transparent to-transparent" />
+        <div className="absolute bottom-0 left-0 p-6 sm:p-10">
+          <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+            Amaya Restaurant & Bar
+          </p>
+          <h3
+            className="mt-3 italic font-light text-3xl sm:text-5xl"
+            style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+          >
+            Liquid Jungle
+          </h3>
+        </div>
+      </div>
+
+      {/* Editorial sheet */}
+      <div
+        className="relative mt-12 overflow-hidden rounded-3xl border border-[#E9A580]/40 shadow-2xl"
+        style={{ backgroundColor: "#F3E7D7", color: "#0D2517" }}
+      >
+        <div
+          aria-hidden
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            backgroundImage: `url(${junglePattern.url})`,
+            backgroundRepeat: "repeat",
+            backgroundSize: "420px",
+            opacity: 0.18,
+            mixBlendMode: "multiply",
+          }}
+        />
+        <div aria-hidden className="absolute inset-3 rounded-2xl border border-[#E9A580]/45 pointer-events-none" />
+
+        <div className="relative px-6 py-12 sm:px-12 lg:px-16 lg:py-16">
+          <div className="text-center">
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#E9A580]">
+              {lang === "de" ? "Handcrafted" : "Handcrafted"}
+            </p>
+            <h3
+              className="mt-4 italic font-light text-4xl sm:text-5xl"
+              style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+            >
+              Bar
+            </h3>
+            <div className="mx-auto mt-5 h-px w-24 bg-[#E9A580]/60" />
+          </div>
+
+          <div className="mt-14 grid gap-12 lg:grid-cols-2 lg:gap-x-20">
+            {BAR_MENU.map((section) => (
+              <section key={section.id}>
+                <h4
+                  className="text-center italic font-light text-2xl sm:text-3xl"
+                  style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
+                >
+                  {section.title[lang]}
+                </h4>
+                <div className="mx-auto mt-3 mb-8 h-px w-12 bg-[#E9A580]/50" />
+                <ul className="space-y-7">
+                  {section.items.map((item, i) => (
+                    <li key={i} className="text-center">
+                      <div className="mt-1 flex items-center justify-center gap-2 flex-wrap">
+                        <h5 className="uppercase tracking-[0.18em] text-sm sm:text-base font-semibold text-[#0D2517]">
+                          {item.name[lang]}
+                        </h5>
+                      </div>
+                      <p className="mt-1.5 text-sm text-[#0D2517]/70 leading-snug max-w-md mx-auto">
+                        {item.desc[lang]}
+                      </p>
+                      <p className="mt-2 tabular-nums text-[#0D2517] text-base">
+                        CHF {item.price}
+                      </p>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ))}
+          </div>
+
+          <p className="mt-14 text-center text-[11px] text-[#0D2517]/60 italic">
+            {lang === "de"
+              ? "Alle Preise in Schweizer Franken inkl. 8.1% MWST."
+              : "All prices in Swiss Francs incl. 8.1% VAT."}
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
