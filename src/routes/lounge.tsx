@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { Cigarette, Check, Crown, Wine, Users, Clock, Send, Loader2 } from "lucide-react";
@@ -19,12 +20,8 @@ type LoungeImage = {
   sort_order: number;
 };
 
-const FALLBACK_IMAGES: { image_url: string; title: string; description: string }[] = [
-  { image_url: loungeSlide1.url, title: "Humidor", description: "Sorgfältig temperiert. Kubanisch, Nicaragua, Dominikanisch." },
-  { image_url: loungeSlide2.url, title: "Samt & Rauch", description: "Weiche Sessel, gedämpftes Licht, tiefe Aromen." },
-  { image_url: loungeSlide3.url, title: "Rare Spirits", description: "Gereifte Rums, single-cask Whiskys, exklusive Cognacs." },
-  { image_url: memberCard.url, title: "Members Only", description: "Ihr persönlicher Schlüssel zum privaten Amaya Club." },
-];
+const FALLBACK_TILE_KEYS = ["humidor", "samt", "rare", "members"] as const;
+const FALLBACK_URLS = [loungeSlide1.url, loungeSlide2.url, loungeSlide3.url, memberCard.url];
 
 export const Route = createFileRoute("/lounge")({
   head: () => ({
@@ -39,6 +36,7 @@ export const Route = createFileRoute("/lounge")({
 });
 
 function LoungePage() {
+  const { t } = useTranslation();
   const { data: images = [] } = useQuery({
     queryKey: ["public", "lounge-images"],
     queryFn: async () => {
@@ -72,7 +70,13 @@ function LoungePage() {
 
   const tiles = images.length > 0
     ? images
-    : FALLBACK_IMAGES.map((f, i) => ({ id: `fb-${i}`, sort_order: i, ...f } as LoungeImage));
+    : FALLBACK_TILE_KEYS.map((k, i) => ({
+        id: `fb-${i}`,
+        sort_order: i,
+        image_url: FALLBACK_URLS[i],
+        title: t(`lounge.tiles.${k}.title`),
+        description: t(`lounge.tiles.${k}.desc`),
+      } as LoungeImage));
 
   return (
     <SiteLayout>
@@ -82,18 +86,16 @@ function LoungePage() {
           style={{ backgroundImage: `url(${jungleTex})`, backgroundSize: "cover", backgroundPosition: "center" }} />
         <div className="absolute inset-0 bg-gradient-to-b from-background via-background/70 to-background pointer-events-none" />
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
-          <p className="text-xs tracking-[0.4em] uppercase text-accent">— 02 · Cigar Lounge</p>
+          <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("lounge.kicker")}</p>
           <h1 className="font-display text-6xl lg:text-8xl mt-6 leading-[0.95] uppercase font-bold text-gradient-gold">
-            Rauch<br/>&amp; Samt.
+            {t("lounge.titleA")}<br/>{t("lounge.titleB")}
           </h1>
           <p className="mt-8 max-w-2xl text-muted-foreground leading-relaxed text-lg">
-            Ein Refugium für Kenner. Gedämpftes Licht, weiche Sessel und ein Humidor,
-            der Kuba, Nicaragua und die Dominikanische Republik unter einem Blätterdach vereint.
-            Werde Mitglied &mdash; und öffne die Tür zu unserem privaten Kreis.
+            {t("lounge.lead")}
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <a href="#membership" className="btn-luxury">Member werden</a>
-            <a href="#cigars" className="btn-luxury btn-luxury--ghost">Mehr über unsere Zigarren</a>
+            <a href="#membership" className="btn-luxury">{t("lounge.becomeMember")}</a>
+            <a href="#cigars" className="btn-luxury btn-luxury--ghost">{t("lounge.moreCigars")}</a>
           </div>
         </div>
       </section>
@@ -130,27 +132,27 @@ function LoungePage() {
       <section id="cigars" className="py-24 lg:py-32 border-t border-accent/10">
         <div className="mx-auto max-w-6xl px-6 lg:px-10 grid lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-5">
-            <p className="text-xs tracking-[0.4em] uppercase text-accent">— Die Kunst der Zigarre</p>
-            <h2 className="font-display text-5xl lg:text-6xl mt-4 text-gradient-gold">Alles beginnt mit dem Blatt.</h2>
-            <p className="mt-6 text-muted-foreground leading-relaxed">
-              Unsere Zigarren sind kein Zufall. Jede einzelne wird von Hand gerollt, jahrelang gereift
-              und bei exakt 21°C und 70% Luftfeuchte in unserem Humidor gelagert. Vom leichten
-              Frühstückszug bis zum vollmundigen Nachtcorona &mdash; wir führen Sie durch jede Nuance.
-            </p>
+            <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("lounge.artKicker")}</p>
+            <h2 className="font-display text-5xl lg:text-6xl mt-4 text-gradient-gold">{t("lounge.artTitle")}</h2>
+            <p className="mt-6 text-muted-foreground leading-relaxed">{t("lounge.artBody")}</p>
           </div>
           <div className="lg:col-span-7 grid sm:grid-cols-2 gap-4">
             {[
-              { icon: Cigarette, title: "Kuba", body: "Cohiba, Montecristo, Partagás — die Klassiker aus Vuelta Abajo." },
-              { icon: Cigarette, title: "Nicaragua", body: "Padrón, My Father, Oliva — würzig, kräftig, komplex." },
-              { icon: Cigarette, title: "Dominikanisch", body: "Arturo Fuente, Davidoff — elegant und ausgewogen." },
-              { icon: Wine, title: "Pairing", body: "Rums aus 25 Jahren, torfige Whiskys, seltene Cognacs." },
-            ].map(({ icon: Icon, title, body }) => (
+              { icon: Cigarette, key: "cuba" },
+              { icon: Cigarette, key: "nica" },
+              { icon: Cigarette, key: "dom" },
+              { icon: Wine, key: "pair" },
+            ].map(({ icon: Icon, key }) => {
+              const title = t(`lounge.origins.${key}.title`);
+              const body = t(`lounge.origins.${key}.body`);
+              return (
               <div key={title} className="rounded-xl border border-accent/20 bg-card/40 p-6 hover:border-accent/50 transition">
                 <Icon className="text-accent" size={22} />
                 <h3 className="font-display text-2xl mt-3 text-bone">{title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{body}</p>
               </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </section>
@@ -161,11 +163,9 @@ function LoungePage() {
           style={{ backgroundImage: `url(${jungleTex})`, backgroundSize: "cover" }} />
         <div className="relative mx-auto max-w-6xl px-6 lg:px-10">
           <div className="text-center max-w-2xl mx-auto">
-            <p className="text-xs tracking-[0.4em] uppercase text-accent">— Members Club</p>
-            <h2 className="font-display text-5xl lg:text-6xl mt-4 text-gradient-gold">Werde Mitglied.</h2>
-            <p className="mt-6 text-muted-foreground leading-relaxed">
-              Zwei Mitgliedschaften. Ein Ziel: Ihnen den besten Zigarrenabend Ihres Lebens zu schenken.
-            </p>
+            <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("lounge.clubKicker")}</p>
+            <h2 className="font-display text-5xl lg:text-6xl mt-4 text-gradient-gold">{t("lounge.clubTitle")}</h2>
+            <p className="mt-6 text-muted-foreground leading-relaxed">{t("lounge.clubLead")}</p>
           </div>
 
           <div className="mt-12 grid md:grid-cols-2 gap-6 lg:gap-8">
@@ -198,9 +198,7 @@ function LoungePage() {
       <section className="py-16 border-t border-accent/10">
         <div className="mx-auto max-w-4xl px-6 lg:px-10 text-center">
           <Clock className="mx-auto text-accent" size={22} />
-          <p className="mt-4 text-muted-foreground">
-            Cigar Lounge geöffnet Di–Sa ab 18:30 Uhr. Members haben 24/7 Zutritt.
-          </p>
+          <p className="mt-4 text-muted-foreground">{t("lounge.hours")}</p>
         </div>
       </section>
     </SiteLayout>
@@ -210,6 +208,7 @@ function LoungePage() {
 function TierCard({ tier, price, period, perks, icon: Icon, highlighted, badge }: {
   tier: string; price: string; period: string; perks: string[]; icon: typeof Users; highlighted?: boolean; badge?: string;
 }) {
+  const { t } = useTranslation();
   return (
     <div className={[
       "relative rounded-2xl p-8 lg:p-10 border transition",
@@ -219,7 +218,7 @@ function TierCard({ tier, price, period, perks, icon: Icon, highlighted, badge }
     ].join(" ")}>
       {highlighted && (
         <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-accent text-[#0D2517] text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1 rounded-full">
-          Empfohlen
+          {t("lounge.recommended")}
         </span>
       )}
       <div className="flex items-start justify-between">
@@ -248,6 +247,7 @@ function TierCard({ tier, price, period, perks, icon: Icon, highlighted, badge }
 }
 
 function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierElite: LoungeTier }) {
+  const { t } = useTranslation();
   const qc = useQueryClient();
   const [tier, setTier] = useState<"standard" | "premium">("standard");
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
@@ -270,7 +270,7 @@ function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierEli
       message: String(fd.get("message") ?? "").trim() || null,
     };
     if (!payload.first_name || !payload.last_name || !payload.email) {
-      setError("Bitte Vor- und Nachname sowie E-Mail ausfüllen.");
+      setError(t("lounge.form.errRequired"));
       setState("error"); return;
     }
     const { error: err } = await supabase.from("lounge_members" as never).insert(payload as never);
@@ -284,11 +284,9 @@ function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierEli
     return (
       <div className="max-w-2xl mx-auto text-center rounded-2xl border border-accent/40 bg-card/60 p-10">
         <Check className="mx-auto text-accent" size={40} />
-        <h3 className="font-display text-3xl mt-4 text-bone">Willkommen im Kreis.</h3>
-        <p className="mt-3 text-muted-foreground">
-          Wir haben Ihren Antrag erhalten und melden uns innert 48 Stunden mit den Zahlungsdetails.
-        </p>
-        <button onClick={() => setState("idle")} className="btn-luxury btn-luxury--ghost mt-8">Weiteren Antrag stellen</button>
+        <h3 className="font-display text-3xl mt-4 text-bone">{t("lounge.form.welcome")}</h3>
+        <p className="mt-3 text-muted-foreground">{t("lounge.form.success")}</p>
+        <button onClick={() => setState("idle")} className="btn-luxury btn-luxury--ghost mt-8">{t("lounge.form.another")}</button>
       </div>
     );
   }
@@ -298,7 +296,7 @@ function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierEli
 
   return (
     <form onSubmit={onSubmit} className="max-w-3xl mx-auto rounded-2xl border border-accent/20 bg-card/40 p-8 lg:p-10 space-y-6">
-      <h3 className="font-display text-3xl text-bone">Mitgliedschaft beantragen</h3>
+      <h3 className="font-display text-3xl text-bone">{t("lounge.form.title")}</h3>
 
       {/* Tier picker */}
       <div className="grid grid-cols-2 gap-3">
@@ -320,29 +318,27 @@ function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierEli
       </div>
 
       <div className="grid sm:grid-cols-2 gap-4">
-        <div><label className={labelCls}>Vorname *</label><input name="first_name" required className={inputCls} /></div>
-        <div><label className={labelCls}>Nachname *</label><input name="last_name" required className={inputCls} /></div>
-        <div><label className={labelCls}>E-Mail *</label><input name="email" type="email" required className={inputCls} /></div>
-        <div><label className={labelCls}>Telefon</label><input name="phone" type="tel" className={inputCls} /></div>
-        <div><label className={labelCls}>Geburtsdatum</label><input name="birth_date" type="date" className={inputCls} /></div>
-        <div><label className={labelCls}>Adresse</label><input name="address" className={inputCls} /></div>
-        <div><label className={labelCls}>PLZ</label><input name="postal_code" className={inputCls} /></div>
-        <div><label className={labelCls}>Ort</label><input name="city" className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.firstName")} *</label><input name="first_name" required className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.lastName")} *</label><input name="last_name" required className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.email")} *</label><input name="email" type="email" required className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.phone")}</label><input name="phone" type="tel" className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.birth")}</label><input name="birth_date" type="date" className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.address")}</label><input name="address" className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.zip")}</label><input name="postal_code" className={inputCls} /></div>
+        <div><label className={labelCls}>{t("lounge.form.city")}</label><input name="city" className={inputCls} /></div>
       </div>
       <div>
-        <label className={labelCls}>Nachricht (optional)</label>
-        <textarea name="message" rows={4} className={inputCls} placeholder="Ihre Interessen, Lieblingszigarren, besondere Wünsche…" />
+        <label className={labelCls}>{t("lounge.form.messageLabel")}</label>
+        <textarea name="message" rows={4} className={inputCls} placeholder={t("lounge.form.messagePh")} />
       </div>
 
       {error && <p className="text-sm text-red-400">{error}</p>}
 
       <div className="flex items-center justify-between gap-4 flex-wrap">
-        <p className="text-xs text-white/50">
-          Nach Prüfung erhalten Sie Zahlungsdetails per E-Mail. Der Jahresbeitrag wird nach Bestätigung fällig.
-        </p>
+        <p className="text-xs text-white/50">{t("lounge.form.note")}</p>
         <button type="submit" disabled={state === "loading"} className="btn-luxury inline-flex items-center gap-2 disabled:opacity-60">
           {state === "loading" ? <Loader2 className="animate-spin" size={16} /> : <Send size={16} />}
-          Antrag senden
+          {t("lounge.form.submit")}
         </button>
       </div>
     </form>
