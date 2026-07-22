@@ -81,11 +81,10 @@ function EventsPage() {
         <div className="relative mx-auto max-w-7xl px-6 lg:px-10">
           <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("hero.slides.events.tag")}</p>
           <h1 className="font-display text-6xl lg:text-8xl mt-6 leading-[0.95] uppercase font-bold text-gradient-gold">
-            Events.
+            {t("events.title")}
           </h1>
           <p className="mt-8 max-w-2xl text-muted-foreground leading-relaxed text-lg">
-            {t("hero.slides.events.sub")} — von DJ Nights über Cigar Tastings bis zu deiner
-            privaten Feier.
+            {t("hero.slides.events.sub")} — {t("events.lead")}
           </p>
         </div>
       </section>
@@ -94,13 +93,13 @@ function EventsPage() {
       <section className="pb-24 lg:pb-32">
         <div className="mx-auto max-w-6xl px-6 lg:px-10 space-y-24 lg:space-y-32">
           {events.length === 0 && (
-            <p className="text-center text-muted-foreground py-12">Aktuell sind keine Events geplant — schau bald wieder vorbei.</p>
+            <p className="text-center text-muted-foreground py-12">{t("events.none")}</p>
           )}
           {events.map((ev, idx) => {
             const reverse = idx % 2 === 1;
             const tilt = reverse ? "lg:rotate-2" : "lg:-rotate-2";
             const ctaHref = ev.cta_href ?? "/reservation";
-            const ctaLabel = ev.cta_label ?? "Jetzt teilnehmen";
+            const ctaLabel = ev.cta_label ?? t("events.joinNow");
             const isExternal = ctaHref.startsWith("mailto:") || ctaHref.startsWith("http") || ctaHref.startsWith("tel:");
             const dateStr = formatDate(ev);
             const timeStr = formatTime(ev);
@@ -143,7 +142,7 @@ function EventsPage() {
                         </span>
                       )}
                       <span className={`rounded-full text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1 ${ev.is_paid ? "bg-white/90 text-[#0D2517]" : "bg-emerald-500/90 text-white"}`}>
-                        {ev.is_paid ? (ev.price_text ?? "Ticket") : "Freier Eintritt"}
+                        {ev.is_paid ? (ev.price_text ?? t("events.ticket")) : t("events.freeEntry")}
                       </span>
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-white">
@@ -166,11 +165,11 @@ function EventsPage() {
                   )}
 
                   <dl className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                    {dateStr && <Meta icon={<Calendar size={16} />} label="Datum" value={dateStr} />}
-                    {timeStr && <Meta icon={<Clock size={16} />} label="Zeit" value={timeStr} />}
-                    {ev.location && <Meta icon={<MapPin size={16} />} label="Ort" value={ev.location} />}
-                    {ev.capacity && <Meta icon={<Users size={16} />} label="Kapazität" value={ev.capacity} />}
-                    {ev.is_paid && ev.price_text && <Meta icon={<Tag size={16} />} label="Preis" value={ev.price_text} />}
+                    {dateStr && <Meta icon={<Calendar size={16} />} label={t("events.date")} value={dateStr} />}
+                    {timeStr && <Meta icon={<Clock size={16} />} label={t("events.time")} value={timeStr} />}
+                    {ev.location && <Meta icon={<MapPin size={16} />} label={t("events.location")} value={ev.location} />}
+                    {ev.capacity && <Meta icon={<Users size={16} />} label={t("events.capacity")} value={ev.capacity} />}
+                    {ev.is_paid && ev.price_text && <Meta icon={<Tag size={16} />} label={t("events.price")} value={ev.price_text} />}
                   </dl>
 
                   <div className="mt-10">
@@ -209,19 +208,18 @@ function EventsPage() {
               style={{ backgroundImage: `url(${jungleTex})`, backgroundSize: "cover" }}
             />
             <div className="relative">
-              <p className="text-xs tracking-[0.4em] uppercase text-accent">— Dein Event</p>
+              <p className="text-xs tracking-[0.4em] uppercase text-accent">— {t("events.ownKicker")}</p>
               <h3 className="font-display text-3xl lg:text-5xl uppercase font-bold mt-4 text-gradient-gold">
-                Plane deine eigene Nacht.
+                {t("events.ownTitle")}
               </h3>
               <p className="mt-6 text-muted-foreground max-w-2xl mx-auto">
-                Firmenanlass, Hochzeit, Release-Party — wir kuratieren Menü, Musik und Atmosphäre
-                nach deinen Vorstellungen.
+                {t("events.ownBody")}
               </p>
               <a
                 href="mailto:events@amaya-restaurant.ch?subject=Event-Anfrage"
                 className="mt-8 inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-8 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors"
               >
-                Anfrage senden
+                {t("events.ownCta")}
                 <ArrowRight size={16} />
               </a>
             </div>
