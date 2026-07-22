@@ -6,13 +6,14 @@ import {
   AMAYA_MESA as MESA_FALLBACK,
   SUSHI_SHARING as SUSHI_FALLBACK,
   WINE_MENU as WINE_FALLBACK,
+  BAR_MENU as BAR_FALLBACK,
   type MenuItem,
   type MenuSection,
   type WineItem,
   type WineMenuSection,
 } from "@/data/menu";
 
-export type MenuType = "weekly" | "lunch" | "mesa" | "sushi" | "wine";
+export type MenuType = "weekly" | "lunch" | "mesa" | "sushi" | "wine" | "bar";
 
 type DbCategory = {
   id: string;
