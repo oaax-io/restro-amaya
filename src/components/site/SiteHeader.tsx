@@ -84,12 +84,12 @@ export function SiteHeader() {
               <Facebook size={18} />
             </a>
           </div>
-          <a
-            href="#reserve"
+          <Link
+            to="/reservation"
             className="hidden sm:inline-flex items-center rounded-full bg-gold px-5 py-2.5 text-sm font-medium uppercase tracking-widest text-gold-foreground hover:opacity-90 transition"
           >
             {t("nav.reserve")}
-          </a>
+          </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
