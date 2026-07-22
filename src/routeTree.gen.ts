@@ -18,6 +18,7 @@ import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -78,6 +79,11 @@ const DatenschutzRoute = DatenschutzRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgbRoute = AgbRouteImport.update({
+  id: '/agb',
+  path: '/agb',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -171,6 +177,7 @@ const AuthenticatedAdminApplicationsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
@@ -197,6 +204,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
@@ -224,6 +232,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
@@ -252,6 +261,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/agb'
     | '/auth'
     | '/datenschutz'
     | '/events'
@@ -278,6 +288,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/agb'
     | '/auth'
     | '/datenschutz'
     | '/events'
@@ -304,6 +315,7 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/agb'
     | '/auth'
     | '/datenschutz'
     | '/events'
@@ -332,6 +344,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AgbRoute: typeof AgbRoute
   AuthRoute: typeof AuthRoute
   DatenschutzRoute: typeof DatenschutzRoute
   EventsRoute: typeof EventsRoute
@@ -406,6 +419,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agb': {
+      id: '/agb'
+      path: '/agb'
+      fullPath: '/agb'
+      preLoaderRoute: typeof AgbRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -571,6 +591,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AgbRoute: AgbRoute,
   AuthRoute: AuthRoute,
   DatenschutzRoute: DatenschutzRoute,
   EventsRoute: EventsRoute,
