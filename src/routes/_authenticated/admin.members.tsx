@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field } from "@/components/admin/ui";
 import { Trash2, Mail, Phone, Crown, Users, Calendar, MapPin, CreditCard } from "lucide-react";
+import { LoungeTiersEditor } from "@/components/admin/TierEditor";
 
 type Status = "pending" | "active" | "rejected" | "expired";
 type Payment = "unpaid" | "paid" | "refunded";
@@ -83,6 +84,16 @@ function MembersAdmin() {
     <div>
       <PageHeader title="Cigar Lounge Members" subtitle="Eingehende Mitgliedschaftsanträge einsehen und verwalten." />
       {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+
+      <div className="mt-8">
+        <h2 className="font-display text-2xl text-[#0D2517] mb-4">Mitgliedschaften konfigurieren</h2>
+        <p className="text-sm text-black/60 mb-4">Name, Preis, Badge und Vorteile für Solo &amp; Elite jederzeit anpassen.</p>
+        <LoungeTiersEditor />
+      </div>
+
+      <div className="mt-10 mb-4 border-t border-black/10 pt-8">
+        <h2 className="font-display text-2xl text-[#0D2517]">Mitgliederanträge</h2>
+      </div>
 
       <div className="mt-6 flex flex-wrap gap-2">
         <FilterBtn active={filter === "all"} onClick={() => setFilter("all")} label={`Alle (${counts.all})`} />
