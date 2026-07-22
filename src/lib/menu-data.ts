@@ -118,7 +118,7 @@ export function useWeeklyMenu() {
   return q.data ?? WEEKLY_FALLBACK;
 }
 
-function useSectionsFor(menu_type: "lunch" | "mesa" | "sushi", fallback: MenuSection[]): MenuSection[] {
+function useSectionsFor(menu_type: "lunch" | "mesa" | "sushi" | "bar", fallback: MenuSection[]): MenuSection[] {
   const q = useQuery({
     queryKey: ["menu", menu_type],
     queryFn: async () => {
