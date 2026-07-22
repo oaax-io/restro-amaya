@@ -13,9 +13,12 @@ import { Route as ReservationRouteImport } from './routes/reservation'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as LoungeRouteImport } from './routes/lounge'
 import { Route as JobsRouteImport } from './routes/jobs'
+import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
+import { Route as DatenschutzRouteImport } from './routes/datenschutz'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -53,6 +56,11 @@ const JobsRoute = JobsRouteImport.update({
   path: '/jobs',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const GalleryRoute = GalleryRouteImport.update({
   id: '/gallery',
   path: '/gallery',
@@ -63,9 +71,19 @@ const EventsRoute = EventsRouteImport.update({
   path: '/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DatenschutzRoute = DatenschutzRouteImport.update({
+  id: '/datenschutz',
+  path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgbRoute = AgbRouteImport.update({
+  id: '/agb',
+  path: '/agb',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -159,9 +177,12 @@ const AuthenticatedAdminApplicationsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
+  '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/impressum': typeof ImpressumRoute
   '/jobs': typeof JobsRoute
   '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
@@ -183,9 +204,12 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
+  '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/impressum': typeof ImpressumRoute
   '/jobs': typeof JobsRoute
   '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
@@ -208,9 +232,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
+  '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
+  '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/impressum': typeof ImpressumRoute
   '/jobs': typeof JobsRoute
   '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
@@ -234,9 +261,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/agb'
     | '/auth'
+    | '/datenschutz'
     | '/events'
     | '/gallery'
+    | '/impressum'
     | '/jobs'
     | '/lounge'
     | '/menu'
@@ -258,9 +288,12 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/agb'
     | '/auth'
+    | '/datenschutz'
     | '/events'
     | '/gallery'
+    | '/impressum'
     | '/jobs'
     | '/lounge'
     | '/menu'
@@ -282,9 +315,12 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/about'
+    | '/agb'
     | '/auth'
+    | '/datenschutz'
     | '/events'
     | '/gallery'
+    | '/impressum'
     | '/jobs'
     | '/lounge'
     | '/menu'
@@ -308,9 +344,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
+  AgbRoute: typeof AgbRoute
   AuthRoute: typeof AuthRoute
+  DatenschutzRoute: typeof DatenschutzRoute
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
+  ImpressumRoute: typeof ImpressumRoute
   JobsRoute: typeof JobsRoute
   LoungeRoute: typeof LoungeRoute
   MenuRoute: typeof MenuRoute
@@ -347,6 +386,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof JobsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/gallery': {
       id: '/gallery'
       path: '/gallery'
@@ -361,11 +407,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof EventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/datenschutz': {
+      id: '/datenschutz'
+      path: '/datenschutz'
+      fullPath: '/datenschutz'
+      preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth': {
       id: '/auth'
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agb': {
+      id: '/agb'
+      path: '/agb'
+      fullPath: '/agb'
+      preLoaderRoute: typeof AgbRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -531,9 +591,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
+  AgbRoute: AgbRoute,
   AuthRoute: AuthRoute,
+  DatenschutzRoute: DatenschutzRoute,
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
+  ImpressumRoute: ImpressumRoute,
   JobsRoute: JobsRoute,
   LoungeRoute: LoungeRoute,
   MenuRoute: MenuRoute,
