@@ -53,9 +53,9 @@ export function Header() {
 
         <div className="flex items-center gap-5">
           <LanguageSwitcher />
-          <a href="#reserve" className="btn-luxury hidden sm:inline-flex">
+          <Link to="/reservation" className="btn-luxury hidden sm:inline-flex">
             {t("nav.reserve")}
-          </a>
+          </Link>
           <button
             className="lg:hidden text-foreground"
             onClick={() => setOpen((o) => !o)}
@@ -76,9 +76,9 @@ export function Header() {
                 {l.label}
               </Link>
             ))}
-            <a href="#reserve" onClick={() => setOpen(false)} className="btn-luxury mt-2">
+            <Link to="/reservation" onClick={() => setOpen(false)} className="btn-luxury mt-2">
               {t("nav.reserve")}
-            </a>
+            </Link>
           </div>
         </div>
       )}

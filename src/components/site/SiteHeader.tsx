@@ -84,12 +84,12 @@ export function SiteHeader() {
               <Facebook size={18} />
             </a>
           </div>
-          <a
-            href="#reserve"
+          <Link
+            to="/reservation"
             className="hidden sm:inline-flex items-center rounded-full bg-gold px-5 py-2.5 text-sm font-medium uppercase tracking-widest text-gold-foreground hover:opacity-90 transition"
           >
             {t("nav.reserve")}
-          </a>
+          </Link>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
@@ -123,13 +123,13 @@ export function SiteHeader() {
                       {l.label}
                     </Link>
                   ))}
-                  <a
-                    href="#reserve"
+                  <Link
+                    to="/reservation"
                     onClick={() => setOpen(false)}
                     className="mt-2 inline-flex items-center justify-center rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-widest text-gold-foreground hover:opacity-90 transition shadow-lg"
                   >
                     {t("nav.reserve")}
-                  </a>
+                  </Link>
                 </nav>
                 <div className="mt-auto flex items-center gap-3 pt-6 border-t border-gold/10">
                   <LanguageSwitcher />
