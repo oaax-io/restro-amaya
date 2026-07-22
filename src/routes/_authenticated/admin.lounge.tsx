@@ -164,7 +164,6 @@ function LoungeAdmin() {
             </div>
           </Card>
         )}
-        )}
         {(q.data ?? []).map((img, idx, arr) => (
           <Card key={img.id} className="p-4">
             <div className="aspect-[3/4] bg-black/5 rounded overflow-hidden relative">
