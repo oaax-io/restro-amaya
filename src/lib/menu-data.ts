@@ -6,13 +6,14 @@ import {
   AMAYA_MESA as MESA_FALLBACK,
   SUSHI_SHARING as SUSHI_FALLBACK,
   WINE_MENU as WINE_FALLBACK,
+  BAR_MENU as BAR_FALLBACK,
   type MenuItem,
   type MenuSection,
   type WineItem,
   type WineMenuSection,
 } from "@/data/menu";
 
-export type MenuType = "weekly" | "lunch" | "mesa" | "sushi" | "wine";
+export type MenuType = "weekly" | "lunch" | "mesa" | "sushi" | "wine" | "bar";
 
 type DbCategory = {
   id: string;
@@ -117,7 +118,7 @@ export function useWeeklyMenu() {
   return q.data ?? WEEKLY_FALLBACK;
 }
 
-function useSectionsFor(menu_type: "lunch" | "mesa" | "sushi", fallback: MenuSection[]): MenuSection[] {
+function useSectionsFor(menu_type: "lunch" | "mesa" | "sushi" | "bar", fallback: MenuSection[]): MenuSection[] {
   const q = useQuery({
     queryKey: ["menu", menu_type],
     queryFn: async () => {
@@ -133,6 +134,7 @@ function useSectionsFor(menu_type: "lunch" | "mesa" | "sushi", fallback: MenuSec
 export function useLunchMenu() { return useSectionsFor("lunch", LUNCH_FALLBACK); }
 export function useMesaMenu() { return useSectionsFor("mesa", MESA_FALLBACK); }
 export function useSushiMenu() { return useSectionsFor("sushi", SUSHI_FALLBACK); }
+export function useBarMenu() { return useSectionsFor("bar", BAR_FALLBACK); }
 
 export function useWineMenu(): WineMenuSection[] {
   const q = useQuery({

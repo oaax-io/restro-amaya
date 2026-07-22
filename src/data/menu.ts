@@ -22,6 +22,19 @@ export type WineItem = {
   bottle: string;
 };
 
+export type BarMenuSection = {
+  id: string;
+  title: { de: string; en: string };
+  items: BarItem[];
+};
+
+export type BarItem = {
+  name: { de: string; en: string };
+  desc: { de: string; en: string };
+  price: string;
+  type?: "cocktail" | "mocktail";
+};
+
 export type WineMenuSection = {
   id: string;
   title: { de: string; en: string };
@@ -846,6 +859,36 @@ export const WINE_MENU: WineMenuSection[] = [
       { name: { de: "◆ Pétrus 2003", en: "◆ Pétrus 2003" }, desc: { de: "Merlot · 70 cl", en: "Merlot · 70 cl" }, origin: { de: "Frankreich, Pomerol", en: "France, Pomerol" }, bottle: "4'980.00" },
       { name: { de: "◆ Pétrus 2012", en: "◆ Pétrus 2012" }, desc: { de: "Merlot · 70 cl", en: "Merlot · 70 cl" }, origin: { de: "Frankreich, Pomerol", en: "France, Pomerol" }, bottle: "4'995.00" },
       { name: { de: "◆ Pétrus 2015", en: "◆ Pétrus 2015" }, desc: { de: "Merlot · 70 cl", en: "Merlot · 70 cl" }, origin: { de: "Frankreich, Pomerol", en: "France, Pomerol" }, bottle: "5'120.00" },
+    ],
+  },
+];
+
+export const BAR_MENU: BarMenuSection[] = [
+  {
+    id: "bar-cocktails",
+    title: { de: "Signature Cocktails", en: "Signature Cocktails" },
+    items: [
+      { name: { de: "Sublime Sylvan", en: "Sublime Sylvan" }, desc: { de: "Monkey 47, Sherry Luxardo, Pfirsich, Limette", en: "Monkey 47, Sherry Luxardo, peach, lime" }, price: "19.00" },
+      { name: { de: "Pine Breeze", en: "Pine Breeze" }, desc: { de: "Rum Plantation Ananas & Grand Terroir, Tepache, Limette", en: "Rum Plantation pineapple & Grand Terroir, tepache, lime" }, price: "19.00" },
+      { name: { de: "Woodland Delight", en: "Woodland Delight" }, desc: { de: "Bourbon Angels Envy, Sherry Pedro Ximenez, Grand Marnier, Old Fashion Syrup, Geräuchertes Rosmarin", en: "Bourbon Angels Envy, Sherry Pedro Ximenez, Grand Marnier, old fashioned syrup, smoked rosemary" }, price: "22.00" },
+      { name: { de: "Sunset", en: "Sunset" }, desc: { de: "Rum Plantation Island Fiji, Bacardi Razz, Himbeere, Limette", en: "Rum Plantation Island Fiji, Bacardi Razz, raspberry, lime" }, price: "19.00" },
+      { name: { de: "Mystic Passion", en: "Mystic Passion" }, desc: { de: "Grey Goose, Passoã, Kokosnusslikör, Passionsfrucht, Kokossirup", en: "Grey Goose, Passoã, coconut liqueur, passion fruit, coconut syrup" }, price: "19.00" },
+      { name: { de: "Mogli", en: "Mogli" }, desc: { de: "Gin Mare & G'Vine Floraison, Zitrone, Mandarine, Cava", en: "Gin Mare & G'Vine Floraison, lemon, mandarin, cava" }, price: "19.00" },
+      { name: { de: "Chocolate Whisper", en: "Chocolate Whisper" }, desc: { de: "Grey Goose, Schweizer Schokoladenlikör, Frangelico, Kaffee, Kokosnuss", en: "Grey Goose, Swiss chocolate liqueur, Frangelico, coffee, coconut" }, price: "19.00" },
+      { name: { de: "Lava Under Ice", en: "Lava Under Ice" }, desc: { de: "Grey Goose, Cointreau, Grenadine, Mandarinen-Shrub, Zitrone", en: "Grey Goose, Cointreau, grenadine, mandarin shrub, lemon" }, price: "19.00" },
+      { name: { de: "Blausee", en: "Blausee" }, desc: { de: "Tequila Patron Reposado, Cointreau, Blue Curaçao, Limette, Ananas", en: "Tequila Patron Reposado, Cointreau, blue curaçao, lime, pineapple" }, price: "19.00" },
+      { name: { de: "Lady Jungle", en: "Lady Jungle" }, desc: { de: "Aperol, Passoã, Prosecco, Passionsfrucht-Schaum", en: "Aperol, Passoã, prosecco, passion fruit foam" }, price: "19.00" },
+    ],
+  },
+  {
+    id: "bar-mocktails",
+    title: { de: "Signature Mocktails", en: "Signature Mocktails" },
+    items: [
+      { name: { de: "Citrus Forest Dew", en: "Citrus Forest Dew" }, desc: { de: "Süsse Amaretti, Zitronensaft, Old Fashion Syrup, Zitronenschaum", en: "Sweet amaretti, lemon juice, old fashioned syrup, lemon foam" }, price: "17.00" },
+      { name: { de: "Sylvan Symphony", en: "Sylvan Symphony" }, desc: { de: "Captain Morgan 0%, Passionsfrucht, Limette, Minze", en: "Captain Morgan 0%, passion fruit, lime, mint" }, price: "17.00" },
+      { name: { de: "Love in the Woods", en: "Love in the Woods" }, desc: { de: "Captain Morgan 0%, Cranberrysaft, Limette, Tepache", en: "Captain Morgan 0%, cranberry juice, lime, tepache" }, price: "17.00" },
+      { name: { de: "Spring Never Left", en: "Spring Never Left" }, desc: { de: "G'nuine Gin 0%, Gurke, Zitronengras, Orangensaft, Roter Fruchtsirup", en: "G'nuine Gin 0%, cucumber, lemongrass, orange juice, red fruit syrup" }, price: "17.00" },
+      { name: { de: "Berry Carda-Twist", en: "Berry Carda-Twist" }, desc: { de: "Kardamom-Rotfrucht-Infusion, Limettensaft", en: "Cardamom-red fruit infusion, lime juice" }, price: "16.00" },
     ],
   },
 ];
