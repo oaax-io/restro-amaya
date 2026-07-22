@@ -82,7 +82,7 @@ function WeeklyMenuHome() {
       <div className="mx-auto max-w-7xl px-6 lg:px-10">
         <div className="flex flex-wrap items-end justify-between gap-6 mb-12">
           <div>
-            <p className="mono-label text-gold">— Wochenmenü —</p>
+            <p className="mono-label text-gold">— {t("home.weekly.kicker")} —</p>
             <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">{t("menu.weekly.title")}</h2>
           </div>
           <a
@@ -93,7 +93,7 @@ function WeeklyMenuHome() {
             className={`inline-flex items-center gap-2 rounded-full bg-gold text-gold-foreground hover:opacity-90 transition px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em] ${!weeklyPdfUrl ? "pointer-events-none opacity-50" : ""}`}
           >
             <Download className="size-4" />
-            {lang === "de" ? "Wochenkarte als PDF" : "Weekly menu as PDF"}
+            {t("home.weekly.pdf")}
           </a>
         </div>
 
@@ -125,11 +125,11 @@ function WeeklyMenuHome() {
           <div className="mt-10 flex flex-wrap items-center justify-center gap-6 text-xs uppercase tracking-[0.25em] text-muted-foreground">
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              {lang === "de" ? "Take Away (TA) – dieselbe Qualität, zum besseren Preis." : "Take Away (TA) – same quality, better price."}
+              {t("home.weekly.takeaway")}
             </span>
             <span className="inline-flex items-center gap-2">
               <span className="w-1.5 h-1.5 rounded-full bg-gold" />
-              {lang === "de" ? "Preise inkl. MwSt." : "Prices incl. VAT"}
+              {t("home.weekly.vat")}
             </span>
           </div>
         </div>
