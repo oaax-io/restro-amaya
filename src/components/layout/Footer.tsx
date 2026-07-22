@@ -189,7 +189,7 @@ export function Footer() {
               className="size-10 inline-flex items-center justify-center rounded-full border border-border hover:border-accent hover:text-accent transition-colors">
               <svg viewBox="0 0 24 24" fill="currentColor" className="size-4"><path d="M16.6 5.82A4.28 4.28 0 0 1 15.54 3h-3.09v12.4a2.59 2.59 0 0 1-2.59 2.5 2.59 2.59 0 0 1 0-5.17c.27 0 .53.04.78.12V9.69a5.7 5.7 0 0 0-.78-.05 5.69 5.69 0 1 0 5.69 5.69V9.01a7.35 7.35 0 0 0 4.29 1.37V7.29a4.28 4.28 0 0 1-3.24-1.47Z"/></svg>
             </a>
-            <a href="https://youtube.com" target="_blank" rel="noreferrer" aria-label="YouTube"
+            <a href="https://www.youtube.com/@amaya.switzerland" target="_blank" rel="noreferrer" aria-label="YouTube"
               className="size-10 inline-flex items-center justify-center rounded-full border border-border hover:border-accent hover:text-accent transition-colors">
               <Youtube className="size-4" />
             </a>
