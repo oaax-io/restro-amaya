@@ -29,7 +29,15 @@ function ImpressumPage() {
       <LegalSection title="Kontakt">
         <p className="not-prose">
           E-Mail: info@amaya-restaurant.ch
-          <br />Website: www.amaya-restaurant.ch
+          <br />Website:{" "}
+          <a
+            href="https://www.amaya-restaurant.ch"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline underline-offset-2 hover:text-amber-300 transition-colors"
+          >
+            www.amaya-restaurant.ch
+          </a>
         </p>
       </LegalSection>
 
