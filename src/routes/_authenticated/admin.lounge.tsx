@@ -4,6 +4,17 @@ import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field } from "@/components/admin/ui";
 import { Trash2, ArrowUp, ArrowDown, Upload, Eye, EyeOff } from "lucide-react";
+import loungeSlide1 from "@/assets/LuzPalokaj_Photography--14.jpg.asset.json";
+import loungeSlide2 from "@/assets/LuzPalokaj_Photography--36.jpg.asset.json";
+import loungeSlide3 from "@/assets/LuzPalokaj_Photography--34.jpg.asset.json";
+import memberCard from "@/assets/Amaya_Member.png.asset.json";
+
+const DEFAULT_TILES = [
+  { url: loungeSlide1.url, title: "Humidor", description: "Sorgfältig temperiert. Kubanisch, Nicaragua, Dominikanisch." },
+  { url: loungeSlide2.url, title: "Samt & Rauch", description: "Weiche Sessel, gedämpftes Licht, tiefe Aromen." },
+  { url: loungeSlide3.url, title: "Rare Spirits", description: "Gereifte Rums, single-cask Whiskys, exklusive Cognacs." },
+  { url: memberCard.url, title: "Members Only", description: "Ihr persönlicher Schlüssel zum privaten Amaya Club." },
+];
 
 const SIGN_TTL = 60 * 60 * 24 * 365 * 5;
 
@@ -25,6 +36,7 @@ function LoungeAdmin() {
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [importing, setImporting] = useState(false);
 
   const q = useQuery({
     queryKey: ["admin", "lounge-images"],
@@ -96,6 +108,37 @@ function LoungeAdmin() {
     qc.invalidateQueries({ queryKey: ["public", "lounge-images"] });
   }
 
+  async function importDefaults() {
+    setImporting(true); setError(null);
+    try {
+      const existing = q.data ?? [];
+      let sort = Math.max(0, ...existing.map((i) => i.sort_order)) + 10;
+      for (const tile of DEFAULT_TILES) {
+        const res = await fetch(tile.url);
+        const blob = await res.blob();
+        const ext = (blob.type.split("/")[1] || "jpg").split("+")[0];
+        const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+        const up = await supabase.storage.from("lounge-images").upload(path, blob, { contentType: blob.type, upsert: false });
+        if (up.error) throw up.error;
+        const signed = await supabase.storage.from("lounge-images").createSignedUrl(path, SIGN_TTL);
+        if (signed.error) throw signed.error;
+        const ins = await supabase.from("lounge_images" as never).insert({
+          image_url: signed.data.signedUrl,
+          title: tile.title,
+          description: tile.description,
+          sort_order: sort,
+          is_published: true,
+        } as never);
+        if (ins.error) throw ins.error;
+        sort += 10;
+      }
+      qc.invalidateQueries({ queryKey: ["admin", "lounge-images"] });
+      qc.invalidateQueries({ queryKey: ["public", "lounge-images"] });
+    } catch (e) {
+      setError(e instanceof Error ? e.message : String(e));
+    } finally { setImporting(false); }
+  }
+
   return (
     <div>
       <PageHeader title="Cigar Lounge Bilder" subtitle="Bilder für die Lounge-Seite hochladen, sortieren und beschriften."
@@ -112,7 +155,15 @@ function LoungeAdmin() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {(q.data ?? []).length === 0 && (
-          <Card className="col-span-full"><p className="text-sm text-black/60">Noch keine Bilder. Auf der öffentlichen Seite werden aktuell Beispielbilder angezeigt.</p></Card>
+          <Card className="col-span-full">
+            <p className="text-sm text-black/60">Noch keine Bilder in der Datenbank. Auf der öffentlichen Seite werden aktuell die Standard-Beispielbilder angezeigt.</p>
+            <div className="mt-3">
+              <Btn onClick={importDefaults} disabled={importing}>
+                {importing ? "Importiere…" : "Aktuelle Beispielbilder übernehmen (bearbeitbar)"}
+              </Btn>
+            </div>
+          </Card>
+        )}
         )}
         {(q.data ?? []).map((img, idx, arr) => (
           <Card key={img.id} className="p-4">
