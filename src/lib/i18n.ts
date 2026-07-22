@@ -46,6 +46,30 @@ const resources = {
       },
       about: { title: "Über uns", kicker: "Kontakt", hours: "Öffnungszeiten", address: "Adresse", contact: "Kontakt" },
       jobsMeta: { title: "Offene Stellen", none: "Aktuell sind keine Stellen offen." },
+      home: {
+        concepts: {
+          kicker: "Konzepte",
+          titleA: "Vier Räume.",
+          titleB: "Eine Nacht.",
+          lead: "Von Dinner zu Drinks, von Lounge zu Dancefloor — bei uns geht der Abend nahtlos weiter.",
+        },
+        stats: { concepts: "Konzepte", seats: "Sitzplätze", open: "Geöffnet bis" },
+        weekly: {
+          kicker: "Wochenmenü",
+          pdf: "Wochenkarte als PDF",
+          takeaway: "Take Away (TA) – dieselbe Qualität, zum besseren Preis.",
+          vat: "Preise inkl. MwSt.",
+        },
+        heroExtras: {
+          welcome: { eyebrow: "00 — Welcome to Amaya", title: "Mitten im Dschungel.", sub: "Lebendes Blätterdach, warmes Licht, Fischgrät-Parkett — eine grüne Oase mitten in Rothenburg." },
+          restaurant: { eyebrow: "01 — Restaurant", title: "Wild gewachsene Küche.", sub: "Modernste Küche unter handgeflochtenen Lampen und dichtem Blätterhimmel — kompromisslos und aromenstark." },
+          lounge: { eyebrow: "02 — Cigar Lounge", title: "Rauch & Samt.", sub: "Gedämpftes Licht, samtige Sessel und gereifte Spirituosen — ein Refugium für Kenner." },
+          bar: { eyebrow: "03 — Bar", title: "Liquid Jungle.", sub: "Signature Cocktails vor lebender Pflanzenwand — handcrafted hinter der Amaya-Bar." },
+          signature: { eyebrow: "04 — Signature Drinks", title: "Botanische Alchemie.", sub: "Hand-gravierte Eiswürfel, Rosmarinrauch und seltene Spirits — jedes Glas ein kleines Ritual." },
+          garden: { eyebrow: "05 — Bar Garden", title: "Grüner Aperitivo.", sub: "Frisch gepresst, botanisch infundiert, serviert vor dichtem Blätterwerk." },
+          events: { eyebrow: "06 — Events & Nights", title: "Nächte ohne Regeln.", sub: "Private Events, DJ-Nights, Geburtstage — wir verwandeln den Raum in deine Bühne." },
+        },
+      },
       reserve: {
         title: "Reservieren",
         kicker: "Ein Tisch für Sie",
