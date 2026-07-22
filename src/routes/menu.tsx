@@ -143,6 +143,7 @@ function MenuPage() {
             <SushiView lang={lang} />
           )}
           {tab === "wine" && <WineView lang={lang} />}
+          {tab === "bar" && <BarView lang={lang} />}
 
           {/* Allergen note + CTA */}
           <div className="mt-24 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center border-t border-border/60 pt-10">
