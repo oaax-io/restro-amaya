@@ -13,6 +13,7 @@ import { Route as ReservationRouteImport } from './routes/reservation'
 import { Route as MenuRouteImport } from './routes/menu'
 import { Route as LoungeRouteImport } from './routes/lounge'
 import { Route as JobsRouteImport } from './routes/jobs'
+import { Route as ImpressumRouteImport } from './routes/impressum'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
@@ -52,6 +53,11 @@ const LoungeRoute = LoungeRouteImport.update({
 const JobsRoute = JobsRouteImport.update({
   id: '/jobs',
   path: '/jobs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ImpressumRoute = ImpressumRouteImport.update({
+  id: '/impressum',
+  path: '/impressum',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GalleryRoute = GalleryRouteImport.update({
@@ -169,6 +175,7 @@ export interface FileRoutesByFullPath {
   '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/impressum': typeof ImpressumRoute
   '/jobs': typeof JobsRoute
   '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
@@ -194,6 +201,7 @@ export interface FileRoutesByTo {
   '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/impressum': typeof ImpressumRoute
   '/jobs': typeof JobsRoute
   '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
@@ -220,6 +228,7 @@ export interface FileRoutesById {
   '/datenschutz': typeof DatenschutzRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
+  '/impressum': typeof ImpressumRoute
   '/jobs': typeof JobsRoute
   '/lounge': typeof LoungeRoute
   '/menu': typeof MenuRoute
@@ -247,6 +256,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/events'
     | '/gallery'
+    | '/impressum'
     | '/jobs'
     | '/lounge'
     | '/menu'
@@ -272,6 +282,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/events'
     | '/gallery'
+    | '/impressum'
     | '/jobs'
     | '/lounge'
     | '/menu'
@@ -297,6 +308,7 @@ export interface FileRouteTypes {
     | '/datenschutz'
     | '/events'
     | '/gallery'
+    | '/impressum'
     | '/jobs'
     | '/lounge'
     | '/menu'
@@ -324,6 +336,7 @@ export interface RootRouteChildren {
   DatenschutzRoute: typeof DatenschutzRoute
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
+  ImpressumRoute: typeof ImpressumRoute
   JobsRoute: typeof JobsRoute
   LoungeRoute: typeof LoungeRoute
   MenuRoute: typeof MenuRoute
@@ -358,6 +371,13 @@ declare module '@tanstack/react-router' {
       path: '/jobs'
       fullPath: '/jobs'
       preLoaderRoute: typeof JobsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/impressum': {
+      id: '/impressum'
+      path: '/impressum'
+      fullPath: '/impressum'
+      preLoaderRoute: typeof ImpressumRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/gallery': {
@@ -555,6 +575,7 @@ const rootRouteChildren: RootRouteChildren = {
   DatenschutzRoute: DatenschutzRoute,
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
+  ImpressumRoute: ImpressumRoute,
   JobsRoute: JobsRoute,
   LoungeRoute: LoungeRoute,
   MenuRoute: MenuRoute,
