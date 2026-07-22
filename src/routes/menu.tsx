@@ -8,7 +8,7 @@ import {
   type WineItem,
   type WineMenuSection,
 } from "@/data/menu";
-import { useWeeklyMenu, useLunchMenu, useMesaMenu, useSushiMenu, useWineMenu, usePdfUrl } from "@/lib/menu-data";
+import { useWeeklyMenu, useLunchMenu, useMesaMenu, useSushiMenu, useWineMenu, useBarMenu, usePdfUrl } from "@/lib/menu-data";
 import { Leaf, Flame, Sparkles, ArrowRight, Wine } from "lucide-react";
 import { Download } from "lucide-react";
 import junglePattern from "@/assets/jungle-pattern.svg.asset.json";
