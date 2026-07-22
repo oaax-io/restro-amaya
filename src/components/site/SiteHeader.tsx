@@ -66,7 +66,7 @@ export function SiteHeader() {
           <div className="hidden sm:flex items-center gap-2">
             <LanguageSwitcher />
             <a
-              href="https://www.instagram.com/"
+              href="https://www.instagram.com/amaya.switzerland/"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Instagram"
@@ -75,7 +75,7 @@ export function SiteHeader() {
               <Instagram size={18} />
             </a>
             <a
-              href="https://www.facebook.com/"
+              href="https://www.facebook.com/amaya.switzerland"
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Facebook"
@@ -133,10 +133,10 @@ export function SiteHeader() {
                 </nav>
                 <div className="mt-auto flex items-center gap-3 pt-6 border-t border-gold/10">
                   <LanguageSwitcher />
-                  <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-full text-foreground/80 hover:text-gold hover:bg-gold/10 transition">
+                  <a href="https://www.instagram.com/amaya.switzerland/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="p-2 rounded-full text-foreground/80 hover:text-gold hover:bg-gold/10 transition">
                     <Instagram size={20} />
                   </a>
-                  <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-full text-foreground/80 hover:text-gold hover:bg-gold/10 transition">
+                  <a href="https://www.facebook.com/amaya.switzerland" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="p-2 rounded-full text-foreground/80 hover:text-gold hover:bg-gold/10 transition">
                     <Facebook size={20} />
                   </a>
                 </div>
