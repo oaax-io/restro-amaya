@@ -143,8 +143,8 @@ export const Route = createFileRoute("/")({
     meta: [
       { title: "Amaya — Restaurant · Cigar Lounge · Events · Rothenburg LU" },
       { name: "description", content: "Restaurant, Cigar Lounge, Bar und Events unter einem Dach. Modernste Küche und Nightlife im Jungle-Ambiente — mitten in Rothenburg, Luzern." },
-      { property: "og:title", content: "Amaya Restaurant & Bar" },
-      { property: "og:description", content: "Restaurant · Cigar Lounge · Bar · Events — im Jungle-Ambiente." },
+      { property: "og:title", content: "Amaya — Restaurant · Cigar Lounge · Events · Rothenburg LU" },
+      { property: "og:description", content: "Restaurant, Cigar Lounge, Bar und Events unter einem Dach. Modernste Küche und Nightlife im Jungle-Ambiente — mitten in Rothenburg, Luzern." },
       { property: "og:type", content: "restaurant" },
     ],
   }),
