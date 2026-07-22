@@ -226,7 +226,7 @@ function ReservationWidget() {
       )}
 
       <p className="mt-5 pt-5 border-t border-border mono-label text-muted-foreground text-center">
-        <Link to="/reservation" className="hover:text-gold">Volles Formular →</Link>
+        <Link to="/reservation" className="hover:text-gold">Reservierungswidget →</Link>
       </p>
     </motion.div>
   );
