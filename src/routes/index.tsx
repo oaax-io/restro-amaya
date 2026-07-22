@@ -234,9 +234,9 @@ function Index() {
             </p>
             <div className="mt-10 grid grid-cols-3 gap-6">
               {[
-                { n: "04", l: "Konzepte" },
-                { n: "120", l: "Sitzplätze" },
-                { n: "03:00", l: "Open until" },
+                { n: "04", l: t("home.stats.concepts") },
+                { n: "120", l: t("home.stats.seats") },
+                { n: "03:00", l: t("home.stats.open") },
               ].map((s) => (
                 <div key={s.l} className="border-l border-gold/40 pl-4">
                   <p className="display-serif text-4xl lg:text-5xl text-gradient-gold">{s.n}</p>
@@ -253,11 +253,11 @@ function Index() {
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
           <div className="flex flex-wrap items-end justify-between gap-6 mb-14">
             <div>
-              <p className="mono-label text-gold">— Konzepte —</p>
-              <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">Vier Räume.<br/>Eine Nacht.</h2>
+              <p className="mono-label text-gold">— {t("home.concepts.kicker")} —</p>
+              <h2 className="display-serif text-5xl lg:text-7xl mt-4 text-gradient-gold">{t("home.concepts.titleA")}<br/>{t("home.concepts.titleB")}</h2>
             </div>
             <p className="max-w-md text-muted-foreground">
-              Von Dinner zu Drinks, von Lounge zu Dancefloor — bei uns geht der Abend nahtlos weiter.
+              {t("home.concepts.lead")}
             </p>
           </div>
 
