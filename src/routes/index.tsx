@@ -154,7 +154,7 @@ export const Route = createFileRoute("/")({
 function Index() {
   const { t } = useTranslation();
 
-  const { data: showReservation = true } = useQuery({
+  const { data: showReservation } = useQuery({
     queryKey: ["site_settings", "show_hero_reservation_card"],
     queryFn: async () => {
       const { data } = await supabase
@@ -196,7 +196,7 @@ function Index() {
         videoSrc={jungleVideo.url}
         audioSrc={jungleAudio.url}
       >
-        {showReservation ? <ReservationCard variant="overlay" /> : null}
+        {showReservation === true ? <ReservationCard variant="overlay" /> : null}
       </HeroSlider>
 
       <GastronoviReservation />
