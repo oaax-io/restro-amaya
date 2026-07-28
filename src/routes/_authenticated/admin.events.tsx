@@ -36,6 +36,7 @@ function EventsAdmin() {
   const qc = useQueryClient();
   const [error, setError] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
+  const [pendingDelete, setPendingDelete] = useState<EventRow | null>(null);
 
   const q = useQuery({
     queryKey: ["admin", "events"],
@@ -54,7 +55,7 @@ function EventsAdmin() {
     setCreating(true); setError(null);
     try {
       const items = q.data ?? [];
-      const nextSort = Math.max(0, ...items.map((i) => i.sort_order)) + 10;
+      const nextSort = items.length ? Math.min(...items.map((i) => i.sort_order)) - 10 : 0;
       const { error } = await supabase.from("events" as never).insert({
         title: "Neues Event",
         kicker: "Event",
@@ -66,6 +67,7 @@ function EventsAdmin() {
       if (error) throw error;
       qc.invalidateQueries({ queryKey: ["admin", "events"] });
       qc.invalidateQueries({ queryKey: ["public", "events"] });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally { setCreating(false); }
@@ -79,12 +81,12 @@ function EventsAdmin() {
   }
 
   async function removeEvent(row: EventRow) {
-    if (!confirm(`Event „${row.title}" wirklich löschen?`)) return;
     if (row.flyer_url) {
       const m = row.flyer_url.match(/\/event-flyers\/([^?]+)/);
       if (m) await supabase.storage.from("event-flyers").remove([decodeURIComponent(m[1])]);
     }
     await supabase.from("events" as never).delete().eq("id", row.id);
+    setPendingDelete(null);
     qc.invalidateQueries({ queryKey: ["admin", "events"] });
     qc.invalidateQueries({ queryKey: ["public", "events"] });
   }
@@ -144,7 +146,7 @@ function EventsAdmin() {
             first={idx === 0}
             last={idx === (q.data?.length ?? 0) - 1}
             onUpdate={(patch) => updateEvent(ev.id, patch)}
-            onRemove={() => removeEvent(ev)}
+            onRemove={() => setPendingDelete(ev)}
             onMove={(dir) => move(ev.id, dir)}
             onUploadFlyer={(f) => uploadFlyer(ev, f)}
           />
@@ -153,6 +155,22 @@ function EventsAdmin() {
           <p className="text-black/50 py-12 text-center">Noch keine Events. Lege jetzt das erste an.</p>
         )}
       </div>
+
+      {pendingDelete && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/50" onClick={() => setPendingDelete(null)} />
+          <div className="relative bg-white rounded-lg border border-black/10 shadow-xl p-6 max-w-md w-full">
+            <h3 className="font-display text-2xl text-[#0D2517]">Event löschen?</h3>
+            <p className="mt-3 text-sm text-black/70">
+              „{pendingDelete.title}" wird dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.
+            </p>
+            <div className="mt-6 flex justify-end gap-3">
+              <Btn variant="ghost" onClick={() => setPendingDelete(null)}>Abbrechen</Btn>
+              <Btn variant="danger" onClick={() => removeEvent(pendingDelete)}>Löschen</Btn>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
