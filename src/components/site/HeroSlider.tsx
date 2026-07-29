@@ -18,7 +18,7 @@ export interface HeroSliderProps {
 
 export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderProps) {
   const [index, setIndex] = useState(0);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -26,6 +26,13 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
     const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 6500);
     return () => clearInterval(t);
   }, [slides.length]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a || muted) return;
+    a.volume = 0.45;
+    a.play().catch(() => setMuted(true));
+  }, [audioSrc, muted]);
 
   const toggleSound = async () => {
     const a = audioRef.current;
