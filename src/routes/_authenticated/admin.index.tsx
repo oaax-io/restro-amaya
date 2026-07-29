@@ -1,7 +1,7 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { CalendarCheck, UtensilsCrossed, Briefcase, Mail, Image as ImageIcon } from "lucide-react";
+import { CalendarCheck, UtensilsCrossed, Briefcase, Mail, Image as ImageIcon, Users, BarChart3 } from "lucide-react";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
   component: Dashboard,
@@ -28,6 +28,26 @@ function Dashboard() {
     },
   });
 
+  const analytics = useQuery({
+    queryKey: ["admin", "analytics-summary"],
+    queryFn: async () => {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const week = new Date();
+      week.setDate(week.getDate() - 7);
+      const [todayRes, weekRes] = await Promise.all([
+        supabase.from("analytics_pageviews").select("visitor_id").gte("created_at", today.toISOString()).limit(20000),
+        supabase.from("analytics_pageviews").select("visitor_id, path").gte("created_at", week.toISOString()).limit(20000),
+      ]);
+      const todayVisitors = new Set((todayRes.data ?? []).map((r) => r.visitor_id)).size;
+      const weekVisitors = new Set((weekRes.data ?? []).map((r) => r.visitor_id)).size;
+      const counts = new Map<string, number>();
+      (weekRes.data ?? []).forEach((r) => counts.set(r.path, (counts.get(r.path) ?? 0) + 1));
+      const top = [...counts.entries()].sort((a, b) => b[1] - a[1])[0];
+      return { todayVisitors, weekVisitors, topPath: top?.[0] ?? "—", topCount: top?.[1] ?? 0 };
+    },
+  });
+
   const cards = [
     { label: "Offene Reservierungen", value: stats.data?.pending ?? "—", icon: CalendarCheck, to: "/admin/reservations" },
     { label: "Sichtbare Gerichte", value: stats.data?.menuVisible ?? "—", icon: UtensilsCrossed, to: "/admin/menu" },
@@ -40,6 +60,22 @@ function Dashboard() {
     <div>
       <PageHeader title="Dashboard" subtitle="Willkommen zurück im Amaya Admin-Bereich." />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 mt-8">
+        <Link to="/admin/analytics" className="bg-white rounded-lg border border-black/10 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <p className="text-xs tracking-[0.25em] uppercase text-black/60">Besucher heute</p>
+            <Users size={20} className="text-[#0D2517]" />
+          </div>
+          <p className="mt-4 font-display text-4xl text-[#0D2517]">{analytics.data?.todayVisitors ?? "—"}</p>
+          <p className="mt-1 text-sm text-black/50">diese Woche: {analytics.data?.weekVisitors ?? "—"}</p>
+        </Link>
+        <Link to="/admin/analytics" className="bg-white rounded-lg border border-black/10 p-6 shadow-sm transition-shadow hover:shadow-md">
+          <div className="flex items-center justify-between">
+            <p className="text-xs tracking-[0.25em] uppercase text-black/60">Meistbesuchte Seite</p>
+            <BarChart3 size={20} className="text-[#0D2517]" />
+          </div>
+          <p className="mt-4 font-display text-2xl text-[#0D2517] truncate">{analytics.data?.topPath ?? "—"}</p>
+          <p className="mt-1 text-sm text-black/50">{analytics.data?.topCount ?? 0} Aufrufe (7 Tage)</p>
+        </Link>
         {cards.map((c) => {
           const Icon = c.icon;
           return (
