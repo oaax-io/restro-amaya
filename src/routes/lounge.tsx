@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { Cigarette, Check, Crown, Wine, Users, Clock, Send, Loader2 } from "lucide-react";
 import jungleTex from "@/assets/jungle-texture.jpg";
 import { DEFAULT_TIER_SOLO, DEFAULT_TIER_ELITE, type LoungeTier } from "@/lib/loungeTiers";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import loungeSlide1 from "@/assets/LuzPalokaj_Photography--14.jpg.asset.json";
 import loungeSlide2 from "@/assets/LuzPalokaj_Photography--36.jpg.asset.json";
 import loungeSlide3 from "@/assets/LuzPalokaj_Photography--34.jpg.asset.json";
