@@ -375,7 +375,20 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [tier, setTier] = useState<"standard" | "premium" | "corporate">("standard");
-  const [corporatePlan, setCorporatePlan] = useState(CORPORATE_PLANS[0].plan);
+  const { data: corporate } = useQuery({
+    queryKey: ["public", "corporate-membership"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("key,value")
+        .eq("key", "corporate_membership")
+        .maybeSingle();
+      if (error) throw error;
+      return (data?.value as CorporateMembershipData | undefined) ?? null;
+    },
+  });
+  const corporatePlans = (corporate ?? DEFAULT_CORPORATE_MEMBERSHIP).plans ?? [];
+  const [corporatePlan, setCorporatePlan] = useState("");
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -453,12 +466,12 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
           <label className={labelCls}>Corporate Plan</label>
           <select
             name="corporate_plan"
-            value={corporatePlan}
+            value={corporatePlan || corporatePlans[0]?.plan || ""}
             onChange={(e) => setCorporatePlan(e.target.value)}
             className={inputCls}
           >
-            {CORPORATE_PLANS.map((p) => (
-              <option key={p.plan} value={p.plan} className="bg-[#0D2517]">
+            {corporatePlans.map((p, i) => (
+              <option key={`${p.plan}-${i}`} value={p.plan} className="bg-[#0D2517]">
                 {p.plan} — {p.cards} Karten · {p.fee}/J. · {p.credit} Guthaben
               </option>
             ))}
