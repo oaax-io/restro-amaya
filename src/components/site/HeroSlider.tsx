@@ -82,7 +82,7 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
       <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/10 to-transparent" />
 
       {audioSrc && (
-        <audio ref={audioRef} src={audioSrc} loop preload="auto" muted />
+        <audio ref={audioRef} src={audioSrc} loop preload="auto" muted={muted} />
       )}
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-28 sm:pt-32 pb-10 min-h-[100svh] flex flex-col lg:grid lg:grid-cols-[1.2fr_minmax(320px,440px)] gap-8 lg:gap-12 items-center">
