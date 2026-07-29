@@ -31,6 +31,7 @@ import { Route as AuthenticatedAdminMenuRouteImport } from './routes/_authentica
 import { Route as AuthenticatedAdminMembersRouteImport } from './routes/_authenticated/admin.members'
 import { Route as AuthenticatedAdminLoungeRouteImport } from './routes/_authenticated/admin.lounge'
 import { Route as AuthenticatedAdminJobsRouteImport } from './routes/_authenticated/admin.jobs'
+import { Route as AuthenticatedAdminInquiriesRouteImport } from './routes/_authenticated/admin.inquiries'
 import { Route as AuthenticatedAdminHoursRouteImport } from './routes/_authenticated/admin.hours'
 import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authenticated/admin.gallery'
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
@@ -151,6 +152,12 @@ const AuthenticatedAdminJobsRoute = AuthenticatedAdminJobsRouteImport.update({
   path: '/jobs',
   getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
+const AuthenticatedAdminInquiriesRoute =
+  AuthenticatedAdminInquiriesRouteImport.update({
+    id: '/inquiries',
+    path: '/inquiries',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
 const AuthenticatedAdminHoursRoute = AuthenticatedAdminHoursRouteImport.update({
   id: '/hours',
   path: '/hours',
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
+  '/admin/inquiries': typeof AuthenticatedAdminInquiriesRoute
   '/admin/jobs': typeof AuthenticatedAdminJobsRoute
   '/admin/lounge': typeof AuthenticatedAdminLoungeRoute
   '/admin/members': typeof AuthenticatedAdminMembersRoute
@@ -227,6 +235,7 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AuthenticatedAdminEventsRoute
   '/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/admin/hours': typeof AuthenticatedAdminHoursRoute
+  '/admin/inquiries': typeof AuthenticatedAdminInquiriesRoute
   '/admin/jobs': typeof AuthenticatedAdminJobsRoute
   '/admin/lounge': typeof AuthenticatedAdminLoungeRoute
   '/admin/members': typeof AuthenticatedAdminMembersRoute
@@ -257,6 +266,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/events': typeof AuthenticatedAdminEventsRoute
   '/_authenticated/admin/gallery': typeof AuthenticatedAdminGalleryRoute
   '/_authenticated/admin/hours': typeof AuthenticatedAdminHoursRoute
+  '/_authenticated/admin/inquiries': typeof AuthenticatedAdminInquiriesRoute
   '/_authenticated/admin/jobs': typeof AuthenticatedAdminJobsRoute
   '/_authenticated/admin/lounge': typeof AuthenticatedAdminLoungeRoute
   '/_authenticated/admin/members': typeof AuthenticatedAdminMembersRoute
@@ -287,6 +297,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/gallery'
     | '/admin/hours'
+    | '/admin/inquiries'
     | '/admin/jobs'
     | '/admin/lounge'
     | '/admin/members'
@@ -314,6 +325,7 @@ export interface FileRouteTypes {
     | '/admin/events'
     | '/admin/gallery'
     | '/admin/hours'
+    | '/admin/inquiries'
     | '/admin/jobs'
     | '/admin/lounge'
     | '/admin/members'
@@ -343,6 +355,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/events'
     | '/_authenticated/admin/gallery'
     | '/_authenticated/admin/hours'
+    | '/_authenticated/admin/inquiries'
     | '/_authenticated/admin/jobs'
     | '/_authenticated/admin/lounge'
     | '/_authenticated/admin/members'
@@ -525,6 +538,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminJobsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/_authenticated/admin/inquiries': {
+      id: '/_authenticated/admin/inquiries'
+      path: '/inquiries'
+      fullPath: '/admin/inquiries'
+      preLoaderRoute: typeof AuthenticatedAdminInquiriesRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
     '/_authenticated/admin/hours': {
       id: '/_authenticated/admin/hours'
       path: '/hours'
@@ -569,6 +589,7 @@ interface AuthenticatedAdminRouteChildren {
   AuthenticatedAdminEventsRoute: typeof AuthenticatedAdminEventsRoute
   AuthenticatedAdminGalleryRoute: typeof AuthenticatedAdminGalleryRoute
   AuthenticatedAdminHoursRoute: typeof AuthenticatedAdminHoursRoute
+  AuthenticatedAdminInquiriesRoute: typeof AuthenticatedAdminInquiriesRoute
   AuthenticatedAdminJobsRoute: typeof AuthenticatedAdminJobsRoute
   AuthenticatedAdminLoungeRoute: typeof AuthenticatedAdminLoungeRoute
   AuthenticatedAdminMembersRoute: typeof AuthenticatedAdminMembersRoute
@@ -585,6 +606,7 @@ const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
   AuthenticatedAdminEventsRoute: AuthenticatedAdminEventsRoute,
   AuthenticatedAdminGalleryRoute: AuthenticatedAdminGalleryRoute,
   AuthenticatedAdminHoursRoute: AuthenticatedAdminHoursRoute,
+  AuthenticatedAdminInquiriesRoute: AuthenticatedAdminInquiriesRoute,
   AuthenticatedAdminJobsRoute: AuthenticatedAdminJobsRoute,
   AuthenticatedAdminLoungeRoute: AuthenticatedAdminLoungeRoute,
   AuthenticatedAdminMembersRoute: AuthenticatedAdminMembersRoute,
