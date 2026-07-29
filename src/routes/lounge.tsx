@@ -273,8 +273,9 @@ function CorporateMembership() {
         </p>
       </div>
 
+      <div className="mt-10 rounded-2xl border border-accent/20 bg-card/40 overflow-hidden">
       {/* Table — desktop */}
-      <div className="mt-10 hidden md:block overflow-x-auto rounded-2xl border border-accent/20 bg-card/40">
+      <div className="hidden md:block overflow-x-auto">
         <table className="w-full text-sm">
           <thead>
             <tr className="border-b border-accent/20">
@@ -300,9 +301,9 @@ function CorporateMembership() {
       </div>
 
       {/* Cards — mobile */}
-      <div className="mt-10 grid gap-4 md:hidden">
+      <div className="grid md:hidden divide-y divide-accent/10">
         {CORPORATE_PLANS.map((p) => (
-          <div key={p.plan} className="rounded-2xl border border-accent/20 bg-card/40 p-6">
+          <div key={p.plan} className="p-6">
             <h4 className="font-display text-2xl text-bone">{p.plan}</h4>
             <dl className="mt-4 space-y-2 text-sm">
               {[
@@ -321,7 +322,7 @@ function CorporateMembership() {
         ))}
       </div>
 
-      <Accordion type="single" collapsible className="mt-8 max-w-4xl mx-auto rounded-2xl border border-accent/20 bg-card/40 px-6">
+      <Accordion type="single" collapsible className="border-t border-accent/20 px-6">
         <AccordionItem value="benefits" className="border-accent/10">
           <AccordionTrigger className="font-display text-xl text-bone hover:text-accent">
             Mitgliedschaftsvorteile
@@ -364,6 +365,7 @@ function CorporateMembership() {
           </AccordionContent>
         </AccordionItem>
       </Accordion>
+      </div>
     </div>
   );
 }
