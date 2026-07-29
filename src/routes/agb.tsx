@@ -36,6 +36,10 @@ function AgbPage() {
         Mitgliedschaften der Cigar Lounge werden jährlich abgerechnet und sind nicht übertragbar. Eine Kündigung ist unter Einhaltung der bei Vertragsabschluss vereinbarten Frist möglich. Bereits bezahlte Jahresbeiträge werden nicht anteilig zurückerstattet.
       </LegalSection>
 
+      <LegalSection id="corporate-mitgliedschaft" title="Corporate Mitgliedschaft">
+        Corporate Mitgliedschaften (Corporate Duo, Team, Business, Premium) beinhalten ein gemeinsames jährliches Konsum-Guthaben, das zwischen allen dem Unternehmen zugeordneten Mitgliedskarten geteilt wird. Das Guthaben ist nicht rückerstattbar und kann nicht ins Folgejahr übertragen werden. Mitgliedskarten werden auf den Namen des Unternehmens und/oder nominierter Mitarbeitender ausgestellt. Der 10%-Rabatt ist nicht mit anderen Aktionen oder Sonderangeboten kombinierbar. Zusätzliche Mitgliedskarten können für eine Jahresgebühr von CHF 300–500 pro Karte hinzugefügt werden, ohne zusätzliches Konsum-Guthaben.
+      </LegalSection>
+
       <LegalSection title="Haftung">
         Für Garderobe und mitgebrachte Gegenstände wird keine Haftung übernommen. Wir haften nicht für leichte Fahrlässigkeit sowie für indirekte Schäden und Folgeschäden.
       </LegalSection>

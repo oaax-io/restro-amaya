@@ -48,9 +48,9 @@ export function LegalLayout({ title, children }: { title: string; children: Reac
   );
 }
 
-export function LegalSection({ title, children }: { title: string; children: ReactNode }) {
+export function LegalSection({ title, children, id }: { title: string; children: ReactNode; id?: string }) {
   return (
-    <section className="pt-4">
+    <section id={id} className="pt-4 scroll-mt-32">
       <h2 className="font-display text-2xl uppercase tracking-wider text-foreground mt-6 mb-3">{title}</h2>
       <div className="space-y-3 whitespace-pre-line">{children}</div>
     </section>
