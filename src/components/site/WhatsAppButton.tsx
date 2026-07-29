@@ -12,7 +12,7 @@ export function WhatsAppButton() {
       }}
     >
       <a
-        href="https://wa.me/41796902525"
+        href="https://wa.me/41796802525"
         target="_blank"
         rel="noopener noreferrer"
         aria-label="WhatsApp Chat"
