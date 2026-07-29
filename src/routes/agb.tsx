@@ -37,6 +37,8 @@ function AgbPage() {
       </LegalSection>
 
       <LegalSection title="Haftung">
+        {" "}
+      </LegalSection>
         Für Garderobe und mitgebrachte Gegenstände wird keine Haftung übernommen. Wir haften nicht für leichte Fahrlässigkeit sowie für indirekte Schäden und Folgeschäden.
       </LegalSection>
 
