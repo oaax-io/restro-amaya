@@ -18,7 +18,7 @@ export interface HeroSliderProps {
 
 export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderProps) {
   const [index, setIndex] = useState(0);
-  const [muted, setMuted] = useState(true);
+  const [muted, setMuted] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
@@ -26,6 +26,13 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
     const t = setInterval(() => setIndex((i) => (i + 1) % slides.length), 6500);
     return () => clearInterval(t);
   }, [slides.length]);
+
+  useEffect(() => {
+    const a = audioRef.current;
+    if (!a || muted) return;
+    a.volume = 0.45;
+    a.play().catch(() => setMuted(true));
+  }, [audioSrc, muted]);
 
   const toggleSound = async () => {
     const a = audioRef.current;
@@ -75,7 +82,7 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
       <div className="absolute inset-0 bg-gradient-to-r from-background/70 via-background/10 to-transparent" />
 
       {audioSrc && (
-        <audio ref={audioRef} src={audioSrc} loop preload="auto" muted />
+        <audio ref={audioRef} src={audioSrc} loop preload="auto" muted={muted} />
       )}
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 pt-28 sm:pt-32 pb-10 min-h-[100svh] flex flex-col lg:grid lg:grid-cols-[1.2fr_minmax(320px,440px)] gap-8 lg:gap-12 items-center">
