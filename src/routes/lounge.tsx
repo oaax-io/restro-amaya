@@ -389,6 +389,7 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
   });
   const corporatePlans = (corporate ?? DEFAULT_CORPORATE_MEMBERSHIP).plans ?? [];
   const [corporatePlan, setCorporatePlan] = useState("");
+  const selectedCorporatePlan = corporatePlan || corporatePlans[0]?.plan || "";
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -408,7 +409,7 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
       city: String(fd.get("city") ?? "").trim() || null,
       membership_type: tier,
       message: tier === "corporate"
-        ? [`Plan: ${corporatePlan}`, msg].filter(Boolean).join("\n")
+        ? [`Plan: ${selectedCorporatePlan}`, msg].filter(Boolean).join("\n")
         : msg || null,
     };
     if (!payload.first_name || !payload.last_name || !payload.email) {
@@ -466,7 +467,7 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
           <label className={labelCls}>Corporate Plan</label>
           <select
             name="corporate_plan"
-            value={corporatePlan || corporatePlans[0]?.plan || ""}
+            value={selectedCorporatePlan}
             onChange={(e) => setCorporatePlan(e.target.value)}
             className={inputCls}
           >
