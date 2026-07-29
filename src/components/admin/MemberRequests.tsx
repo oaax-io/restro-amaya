@@ -76,7 +76,8 @@ export function MemberRequests() {
 
   return (
     <div>
-      <div className="mt-6 flex flex-wrap gap-2">
+      {error && <p className="mt-4 text-sm text-red-600">{error}</p>}
+      <div className="mt-2 flex flex-wrap gap-2">
         <FilterBtn active={filter === "all"} onClick={() => setFilter("all")} label={`Alle (${counts.all})`} />
         {STATUSES.map((s) => (
           <FilterBtn key={s} active={filter === s} onClick={() => setFilter(s)} label={`${STATUS_META[s].label} (${counts[s] ?? 0})`} />
