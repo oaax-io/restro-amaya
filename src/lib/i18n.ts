@@ -80,6 +80,7 @@ const resources = {
       },
       footer: { rights: "Alle Rechte vorbehalten", admin: "Admin" },
       whatsapp: { tooltip: "Chat mit uns" },
+      location: { tooltip: "Wo findest du uns?", title: "Wo findest du uns?" },
       days: { mon: "Montag", tue: "Dienstag", wed: "Mittwoch", thu: "Donnerstag", fri: "Freitag", sat: "Samstag", sun: "Sonntag" },
 
       closed: "Geschlossen",
@@ -275,6 +276,7 @@ const resources = {
       },
       footer: { rights: "All rights reserved", admin: "Admin" },
       whatsapp: { tooltip: "Chat with us" },
+      location: { tooltip: "Where to find us?", title: "Where to find us?" },
       days: { mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" },
 
       closed: "Closed",
