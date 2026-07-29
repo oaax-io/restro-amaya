@@ -373,7 +373,8 @@ function CorporateMembership() {
 function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierElite: LoungeTier }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
-  const [tier, setTier] = useState<"standard" | "premium">("standard");
+  const [tier, setTier] = useState<"standard" | "premium" | "corporate">("standard");
+  const [corporatePlan, setCorporatePlan] = useState(CORPORATE_PLANS[0].plan);
   const [state, setState] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [error, setError] = useState<string | null>(null);
 
@@ -381,6 +382,7 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
     e.preventDefault();
     setState("loading"); setError(null);
     const fd = new FormData(e.currentTarget);
+    const msg = String(fd.get("message") ?? "").trim();
     const payload = {
       first_name: String(fd.get("first_name") ?? "").trim(),
       last_name: String(fd.get("last_name") ?? "").trim(),
@@ -391,7 +393,9 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
       postal_code: String(fd.get("postal_code") ?? "").trim() || null,
       city: String(fd.get("city") ?? "").trim() || null,
       membership_type: tier,
-      message: String(fd.get("message") ?? "").trim() || null,
+      message: tier === "corporate"
+        ? [`Plan: ${corporatePlan}`, msg].filter(Boolean).join("\n")
+        : msg || null,
     };
     if (!payload.first_name || !payload.last_name || !payload.email) {
       setError(t("lounge.form.errRequired"));
@@ -423,8 +427,8 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
       <h3 className="font-display text-3xl text-bone">{t("lounge.form.title")}</h3>
 
       {/* Tier picker */}
-      <div className="grid grid-cols-2 gap-3">
-        {(["standard", "premium"] as const).map((t) => (
+      <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+        {(["standard", "premium", "corporate"] as const).map((t) => (
           <button
             key={t}
             type="button"
@@ -436,10 +440,30 @@ function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; ti
           >
             {t === "standard"
               ? `${tierSolo.tier} · ${tierSolo.price}/J.`
-              : `${tierElite.tier} · ${tierElite.price}/J.`}
+              : t === "premium"
+                ? `${tierElite.tier} · ${tierElite.price}/J.`
+                : "Corporate"}
           </button>
         ))}
       </div>
+
+      {tier === "corporate" && (
+        <div>
+          <label className={labelCls}>Corporate Plan</label>
+          <select
+            name="corporate_plan"
+            value={corporatePlan}
+            onChange={(e) => setCorporatePlan(e.target.value)}
+            className={inputCls}
+          >
+            {CORPORATE_PLANS.map((p) => (
+              <option key={p.plan} value={p.plan} className="bg-[#0D2517]">
+                {p.plan} — {p.cards} Karten · {p.fee}/J. · {p.credit} Guthaben
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
 
       <div className="grid sm:grid-cols-2 gap-4">
         <div><label className={labelCls}>{t("lounge.form.firstName")} *</label><input name="first_name" required className={inputCls} /></div>
