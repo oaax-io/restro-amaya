@@ -79,7 +79,9 @@ const resources = {
         error: "Etwas ist schiefgelaufen. Bitte versuchen Sie es erneut.",
       },
       footer: { rights: "Alle Rechte vorbehalten", admin: "Admin" },
+      whatsapp: { tooltip: "Chat mit uns" },
       days: { mon: "Montag", tue: "Dienstag", wed: "Mittwoch", thu: "Donnerstag", fri: "Freitag", sat: "Samstag", sun: "Sonntag" },
+
       closed: "Geschlossen",
       jobs: {
         kicker: "Karriere",
@@ -272,7 +274,9 @@ const resources = {
         error: "Something went wrong. Please try again.",
       },
       footer: { rights: "All rights reserved", admin: "Admin" },
+      whatsapp: { tooltip: "Chat with us" },
       days: { mon: "Monday", tue: "Tuesday", wed: "Wednesday", thu: "Thursday", fri: "Friday", sat: "Saturday", sun: "Sunday" },
+
       closed: "Closed",
       jobs: {
         kicker: "Careers",
