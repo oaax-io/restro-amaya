@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field } from "@/components/admin/ui";
 import { Trash2, Mail, Phone, Crown, Users, Calendar, MapPin, CreditCard } from "lucide-react";
 import { LoungeTiersEditor } from "@/components/admin/TierEditor";
+import { CorporateMembershipEditor } from "@/components/admin/CorporateMembershipEditor";
 
 type Status = "pending" | "active" | "rejected" | "expired";
 type Payment = "unpaid" | "paid" | "refunded";
@@ -89,6 +90,14 @@ function MembersAdmin() {
         <h2 className="font-display text-2xl text-[#0D2517] mb-4">Mitgliedschaften konfigurieren</h2>
         <p className="text-sm text-black/60 mb-4">Name, Preis, Badge und Vorteile für Solo &amp; Elite jederzeit anpassen.</p>
         <LoungeTiersEditor />
+
+        <div className="mt-8">
+          <h3 className="font-display text-xl text-[#0D2517] mb-2">Corporate Mitgliedschaft</h3>
+          <p className="text-sm text-black/60 mb-4">
+            Alle Corporate-Pläne, Vorteile und Bedingungen anpassen — die Änderungen erscheinen direkt auf der Lounge-Seite.
+          </p>
+          <CorporateMembershipEditor />
+        </div>
       </div>
 
       <div className="mt-10 mb-4 border-t border-black/10 pt-8">
