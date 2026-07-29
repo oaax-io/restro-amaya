@@ -74,53 +74,6 @@ function Editor({ initial }: { initial: CorporateMembershipData }) {
     setData({ ...data, plans });
   }
 
-  function ListEditor({
-    title,
-    field,
-  }: {
-    title: string;
-    field: "benefits" | "terms";
-  }) {
-    const items = data[field];
-    return (
-      <div className="mt-6">
-        <div className="flex items-center justify-between">
-          <span className={label}>{title}</span>
-          <button
-            type="button"
-            onClick={() => setData({ ...data, [field]: [...items, ""] })}
-            className="inline-flex items-center gap-1 text-xs text-[#0D2517] hover:underline"
-          >
-            <Plus size={14} /> Hinzufügen
-          </button>
-        </div>
-        <ul className="mt-2 space-y-2">
-          {items.map((item, i) => (
-            <li key={i} className="flex items-center gap-2">
-              <input
-                className={input}
-                value={item}
-                onChange={(e) => {
-                  const next = [...items];
-                  next[i] = e.target.value;
-                  setData({ ...data, [field]: next });
-                }}
-              />
-              <button
-                type="button"
-                onClick={() => setData({ ...data, [field]: items.filter((_, idx) => idx !== i) })}
-                className="p-2 rounded hover:bg-black/5 text-black/60"
-                aria-label="Eintrag entfernen"
-              >
-                <Trash2 size={14} />
-              </button>
-            </li>
-          ))}
-        </ul>
-      </div>
-    );
-  }
-
   return (
     <Card className="p-6">
       <h3 className="font-medium text-lg">Corporate Mitgliedschaft</h3>
@@ -194,8 +147,12 @@ function Editor({ initial }: { initial: CorporateMembershipData }) {
         </div>
       </div>
 
-      <ListEditor title="Mitgliedschaftsvorteile" field="benefits" />
-      <ListEditor title="Bedingungen" field="terms" />
+      <ListEditor
+        title="Mitgliedschaftsvorteile"
+        items={data.benefits}
+        onChange={(benefits) => setData({ ...data, benefits })}
+      />
+      <ListEditor title="Bedingungen" items={data.terms} onChange={(terms) => setData({ ...data, terms })} />
 
       <div className="mt-6 flex justify-end">
         <button
@@ -208,5 +165,53 @@ function Editor({ initial }: { initial: CorporateMembershipData }) {
         </button>
       </div>
     </Card>
+  );
+}
+
+function ListEditor({
+  title,
+  items,
+  onChange,
+}: {
+  title: string;
+  items: string[];
+  onChange: (next: string[]) => void;
+}) {
+  return (
+    <div className="mt-6">
+      <div className="flex items-center justify-between">
+        <span className={label}>{title}</span>
+        <button
+          type="button"
+          onClick={() => onChange([...items, ""])}
+          className="inline-flex items-center gap-1 text-xs text-[#0D2517] hover:underline"
+        >
+          <Plus size={14} /> Hinzufügen
+        </button>
+      </div>
+      <ul className="mt-2 space-y-2">
+        {items.map((item, i) => (
+          <li key={i} className="flex items-center gap-2">
+            <input
+              className={input}
+              value={item}
+              onChange={(e) => {
+                const next = [...items];
+                next[i] = e.target.value;
+                onChange(next);
+              }}
+            />
+            <button
+              type="button"
+              onClick={() => onChange(items.filter((_, idx) => idx !== i))}
+              className="p-2 rounded hover:bg-black/5 text-black/60"
+              aria-label="Eintrag entfernen"
+            >
+              <Trash2 size={14} />
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }
