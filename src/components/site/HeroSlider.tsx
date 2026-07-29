@@ -134,7 +134,7 @@ export function HeroSlider({ slides, videoSrc, audioSrc, children }: HeroSliderP
               <button
                 type="button"
                 onClick={toggleSound}
-                aria-label={muted ? "Dschungel-Sound einschalten" : "Ton stummschalten"}
+                aria-label={muted ? "Sound einschalten" : "Ton stummschalten"}
                 className="ml-2 h-10 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-background/40 backdrop-blur-md px-3 text-xs uppercase tracking-widest text-gold hover:bg-gold hover:text-gold-foreground transition"
               >
                 {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
