@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { MapPin } from "lucide-react";
 import {
@@ -11,6 +11,17 @@ import {
 export function LocationButton() {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
+
+  useEffect(() => {
+    const showTimer = setTimeout(() => setShowTooltip(true), 1500);
+    const hideTimer = setTimeout(() => setShowTooltip(false), 6500);
+
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(hideTimer);
+    };
+  }, []);
 
   return (
     <>
@@ -30,7 +41,19 @@ export function LocationButton() {
           <MapPin className="w-7 h-7" aria-hidden="true" />
         </button>
 
-        <span className="absolute right-full mr-3 top-1/2 -translate-y-1/2 px-3 py-1.5 bg-background text-foreground text-sm rounded-lg shadow-md border border-gold/20 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none hidden md:block">
+        <span
+          className={`
+            absolute right-full mr-3 top-1/2 -translate-y-1/2
+            px-3 py-1.5 bg-background text-foreground text-sm
+            rounded-lg shadow-md border border-gold/20 whitespace-nowrap
+            pointer-events-none transition-all duration-300 ease-out
+            ${
+              showTooltip
+                ? "opacity-100 translate-x-0"
+                : "opacity-0 translate-x-2 md:group-hover:opacity-100 md:group-hover:translate-x-0"
+            }
+          `}
+        >
           {t("location.tooltip")}
         </span>
       </div>
