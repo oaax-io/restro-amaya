@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_clicks: {
+        Row: {
+          created_at: string
+          id: string
+          path: string
+          session_id: string
+          viewport_height: number | null
+          viewport_width: number | null
+          x_percent: number
+          y_percent: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          path: string
+          session_id: string
+          viewport_height?: number | null
+          viewport_width?: number | null
+          x_percent: number
+          y_percent: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          path?: string
+          session_id?: string
+          viewport_height?: number | null
+          viewport_width?: number | null
+          x_percent?: number
+          y_percent?: number
+        }
+        Relationships: []
+      }
+      analytics_pageviews: {
+        Row: {
+          browser: string | null
+          created_at: string
+          device_type: string
+          id: string
+          path: string
+          referrer: string | null
+          session_id: string
+          visitor_id: string
+        }
+        Insert: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string
+          id?: string
+          path: string
+          referrer?: string | null
+          session_id: string
+          visitor_id: string
+        }
+        Update: {
+          browser?: string | null
+          created_at?: string
+          device_type?: string
+          id?: string
+          path?: string
+          referrer?: string | null
+          session_id?: string
+          visitor_id?: string
+        }
+        Relationships: []
+      }
       events: {
         Row: {
           capacity: string | null
