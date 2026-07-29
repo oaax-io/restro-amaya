@@ -14,6 +14,7 @@ import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import i18n from "../lib/i18n";
 import { Toaster } from "@/components/ui/sonner";
+import { AnalyticsTracker } from "@/components/site/AnalyticsTracker";
 
 function NotFoundComponent() {
   return (
@@ -135,6 +136,7 @@ function RootComponent() {
         {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
         <Outlet />
         <Toaster richColors position="top-center" />
+        <AnalyticsTracker />
       </I18nextProvider>
     </QueryClientProvider>
   );
