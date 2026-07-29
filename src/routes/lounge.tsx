@@ -189,6 +189,8 @@ function LoungePage() {
             />
           </div>
 
+          <CorporateMembership />
+
           <div className="mt-16">
             <MembershipForm tierSolo={tierSolo} tierElite={tierElite} />
           </div>
@@ -248,6 +250,125 @@ function TierCard({ tier, price, period, perks, icon: Icon, highlighted, badge }
 }
 
 function MembershipForm({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierElite: LoungeTier }) {
+  return <MembershipFormInner tierSolo={tierSolo} tierElite={tierElite} />;
+}
+
+const CORPORATE_PLANS = [
+  { plan: "Corporate Duo", cards: "2", fee: "CHF 5'500", credit: "CHF 4'500", discount: "10%" },
+  { plan: "Corporate Team", cards: "3", fee: "CHF 7'800", credit: "CHF 6'300", discount: "10%" },
+  { plan: "Corporate Business", cards: "5", fee: "CHF 12'000", credit: "CHF 9'500", discount: "10%" },
+  { plan: "Corporate Premium", cards: "10", fee: "CHF 22'000", credit: "CHF 17'000", discount: "10%" },
+];
+
+function CorporateMembership() {
+  return (
+    <div className="mt-20">
+      <div className="text-center max-w-2xl mx-auto">
+        <p className="text-xs tracking-[0.4em] uppercase text-accent">— Für Unternehmen</p>
+        <h3 className="font-display text-4xl lg:text-5xl mt-4 text-gradient-gold uppercase">
+          AMAYA Corporate Membership
+        </h3>
+        <p className="mt-6 text-muted-foreground leading-relaxed">
+          Unsere Corporate Mitgliedschaft ist ideal für Unternehmen, die Mitarbeitende belohnen, Kunden bewirten und das ganze Jahr über von exklusiven Vorteilen profitieren möchten.
+        </p>
+      </div>
+
+      {/* Table — desktop */}
+      <div className="mt-10 hidden md:block overflow-x-auto rounded-2xl border border-accent/20 bg-card/40">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-accent/20">
+              {["Plan", "Mitgliedskarten", "Jahresgebühr", "Konsum-Guthaben", "Rabatt"].map((h) => (
+                <th key={h} className="px-5 py-4 text-left text-[11px] tracking-[0.25em] uppercase text-white/60 font-medium">
+                  {h}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {CORPORATE_PLANS.map((p) => (
+              <tr key={p.plan} className="border-b border-accent/10 last:border-0 hover:bg-accent/5 transition">
+                <td className="px-5 py-5 font-display text-xl text-bone whitespace-nowrap">{p.plan}</td>
+                <td className="px-5 py-5 text-foreground/80">{p.cards}</td>
+                <td className="px-5 py-5 font-display text-lg text-gradient-gold whitespace-nowrap">{p.fee}</td>
+                <td className="px-5 py-5 font-display text-lg text-gradient-gold whitespace-nowrap">{p.credit}</td>
+                <td className="px-5 py-5 text-accent font-semibold">{p.discount}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Cards — mobile */}
+      <div className="mt-10 grid gap-4 md:hidden">
+        {CORPORATE_PLANS.map((p) => (
+          <div key={p.plan} className="rounded-2xl border border-accent/20 bg-card/40 p-6">
+            <h4 className="font-display text-2xl text-bone">{p.plan}</h4>
+            <dl className="mt-4 space-y-2 text-sm">
+              {[
+                ["Mitgliedskarten", p.cards],
+                ["Jahresgebühr", p.fee],
+                ["Konsum-Guthaben", p.credit],
+                ["Rabatt", p.discount],
+              ].map(([k, v]) => (
+                <div key={k} className="flex items-center justify-between gap-4 border-b border-accent/10 pb-2 last:border-0">
+                  <dt className="text-[11px] tracking-[0.2em] uppercase text-white/60">{k}</dt>
+                  <dd className="text-accent font-medium">{v}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+        ))}
+      </div>
+
+      <Accordion type="single" collapsible className="mt-8 max-w-4xl mx-auto rounded-2xl border border-accent/20 bg-card/40 px-6">
+        <AccordionItem value="benefits" className="border-accent/10">
+          <AccordionTrigger className="font-display text-xl text-bone hover:text-accent">
+            Mitgliedschaftsvorteile
+          </AccordionTrigger>
+          <AccordionContent>
+            <ul className="space-y-3 pb-2">
+              {[
+                "Gemeinsames jährliches Konsum-Guthaben für alle Mitgliedskarten.",
+                "10% Rabatt auf jeden Besuch und Einkauf bei AMAYA.",
+                "Ideal, um Kunden zu bewirten, Mitarbeitende zu belohnen oder Geschäftstreffen auszurichten.",
+                "Exklusiver Zugang zu Members-only-Angeboten und speziellen Events.",
+              ].map((item) => (
+                <li key={item} className="flex items-start gap-3 text-sm text-foreground/80">
+                  <Check className="text-accent shrink-0 mt-0.5" size={16} />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </AccordionContent>
+        </AccordionItem>
+        <AccordionItem value="terms" className="border-0">
+          <AccordionTrigger className="font-display text-xl text-bone hover:text-accent">
+            Bedingungen
+          </AccordionTrigger>
+          <AccordionContent>
+            <ul className="space-y-3 pb-2 list-disc pl-5 text-sm text-foreground/80 marker:text-accent">
+              <li>Das jährliche Konsum-Guthaben wird zwischen allen dem Unternehmen zugeordneten Mitgliedskarten geteilt.</li>
+              <li>Das Guthaben ist nicht rückerstattbar und kann nicht ins Folgejahr übertragen werden.</li>
+              <li>Mitgliedskarten werden auf den Namen des Unternehmens und/oder nominierter Mitarbeitender ausgestellt.</li>
+              <li>Der 10%-Rabatt ist nicht mit anderen Aktionen oder Sonderangeboten kombinierbar.</li>
+              <li>Zusätzliche Mitgliedskarten können für eine Jahresgebühr von CHF 300–500 pro Karte hinzugefügt werden, ohne zusätzliches Konsum-Guthaben.</li>
+            </ul>
+            <Link
+              to="/agb"
+              hash="corporate-mitgliedschaft"
+              className="inline-block mt-4 text-xs tracking-[0.25em] uppercase text-accent hover:text-bone transition"
+            >
+              Vollständige AGB ansehen →
+            </Link>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
+function MembershipFormInner({ tierSolo, tierElite }: { tierSolo: LoungeTier; tierElite: LoungeTier }) {
   const { t } = useTranslation();
   const qc = useQueryClient();
   const [tier, setTier] = useState<"standard" | "premium">("standard");
