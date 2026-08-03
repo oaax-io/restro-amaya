@@ -860,22 +860,6 @@ function SushiView({ lang }: { lang: Lang }) {
       <Header title={t("menu.sushiSharing.title")} lead={t("menu.sushiSharing.lead")} />
 
       <div className="mt-6 flex justify-center sm:justify-start">
-        <div className="relative flex size-32 sm:size-36 items-center justify-center rounded-full border border-[#E9A580]/60 bg-[#0D2517] text-center shadow-[0_0_40px_-10px_rgba(233,165,128,0.6)] animate-[pulse_3s_ease-in-out_infinite]">
-          <span
-            aria-hidden
-            className="absolute inset-1.5 rounded-full border border-dashed border-[#E9A580]/40"
-          />
-          <span className="px-4 text-[10px] sm:text-[11px] font-semibold uppercase leading-tight tracking-[0.18em] text-[#E9A580]">
-            {lang === "de" ? (
-              <>Nur am<br />Wochenende<br />verfügbar</>
-            ) : (
-              <>Only<br />on the<br />weekend</>
-            )}
-          </span>
-        </div>
-      </div>
-
-      <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
           href={sushiPdfUrl}
           download="Amaya-Sushi-Menu.pdf"
