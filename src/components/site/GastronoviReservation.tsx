@@ -2,6 +2,38 @@ import { useEffect, useRef } from "react";
 
 export function GastronoviReservation() {
   const scriptHostRef = useRef<HTMLDivElement>(null);
+  const patchRef = useRef<HTMLDivElement>(null);
+
+  // The widget runs in a cross-origin iframe, so its content cannot be styled
+  // directly. We cover the "Vorbestellung mit Reservierung" tile with a patch
+  // matching the section background. Geometry mirrors the widget's own CSS
+  // (3-column grid above 500px iframe width, stacked list below).
+  useEffect(() => {
+    const host = document.getElementById("reservation");
+    const patch = patchRef.current;
+    if (!host || !patch) return;
+
+    const position = () => {
+      const w = host.clientWidth;
+      if (w <= 500) {
+        patch.style.left = "8px";
+        patch.style.width = `${w - 16}px`;
+        patch.style.top = "103px";
+        patch.style.height = "85px";
+      } else {
+        const col = (w - 40) / 3;
+        patch.style.left = `${20 + col}px`;
+        patch.style.width = `${col}px`;
+        patch.style.top = "21px";
+        patch.style.height = "150px";
+      }
+    };
+
+    position();
+    const ro = new ResizeObserver(position);
+    ro.observe(host);
+    return () => ro.disconnect();
+  }, []);
 
   useEffect(() => {
     const scriptHost = scriptHostRef.current;
