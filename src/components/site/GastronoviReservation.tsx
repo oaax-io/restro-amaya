@@ -152,15 +152,19 @@ export function GastronoviReservation() {
           <div>
             <button
               type="button"
-              onClick={() => setActiveEntry(null)}
+              onClick={() => {
+                lastHeightRef.current = null;
+                setActiveEntry(null);
+              }}
               className="mb-3 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-[#E9A580]/80 transition-colors hover:text-[#E9A580]"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
-              Zurück zur Auswahl
+              Andere Auswahl
             </button>
             <div className="relative">
               <iframe
                 ref={iframeRef}
+                key={activeEntry}
                 id="gastronaviReservationWidget-0"
                 src={entryUrl(activeEntry)}
                 title="Online Reservation"
@@ -169,7 +173,7 @@ export function GastronoviReservation() {
                 onLoad={handleIframeLoad}
                 style={{
                   width: "100%",
-                  height: 480,
+                  height: MIN_IFRAME_HEIGHT,
                   minHeight: "unset",
                   border: "none",
                   display: "block",
