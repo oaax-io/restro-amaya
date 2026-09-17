@@ -24,6 +24,9 @@ const STEP_MS = 900;
 /** Floor for the iframe height so the module's footer buttons ("Weiter",
  *  "Reservieren") are always reachable, even if no height message arrives. */
 const MIN_IFRAME_HEIGHT = 900;
+/** Height of the widget's own header/back strip that we clip away, so guests
+ *  cannot navigate back to Gastronovi's 4-tile screen ("Vorbestellung …"). */
+const TOP_CLIP_PX = 56;
 
 export function GastronoviReservation() {
   const [activeEntry, setActiveEntry] = useState<EntryKey | null>(null);
@@ -86,7 +89,7 @@ export function GastronoviReservation() {
       const raw = extractHeight(e.data);
       if (raw === null) return;
       // Always keep a generous floor so the widget's footer buttons stay visible.
-      const h = Math.max(raw + 40, MIN_IFRAME_HEIGHT);
+      const h = Math.max(raw + 40, MIN_IFRAME_HEIGHT) + TOP_CLIP_PX;
       if (lastHeightRef.current !== null && Math.abs(h - lastHeightRef.current) > 120) {
         showVeil(STEP_MS);
       }
@@ -161,7 +164,10 @@ export function GastronoviReservation() {
               <ArrowLeft className="h-3.5 w-3.5" />
               Andere Auswahl
             </button>
-            <div className="relative">
+            {/* The widget renders its own back link / header at the very top,
+                which leads back to Gastronovi's 4-tile screen (including
+                "Vorbestellung mit Reservierung"). We clip that strip away. */}
+            <div className="relative overflow-hidden">
               <iframe
                 ref={iframeRef}
                 key={activeEntry}
@@ -173,11 +179,12 @@ export function GastronoviReservation() {
                 onLoad={handleIframeLoad}
                 style={{
                   width: "100%",
-                  height: MIN_IFRAME_HEIGHT,
+                  height: MIN_IFRAME_HEIGHT + TOP_CLIP_PX,
                   minHeight: "unset",
                   border: "none",
                   display: "block",
                   background: "transparent",
+                  marginTop: -TOP_CLIP_PX,
                 }}
               />
               {/* Dark veil: hides the widget's white background while it loads
