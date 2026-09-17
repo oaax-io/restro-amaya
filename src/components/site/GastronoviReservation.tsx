@@ -24,6 +24,9 @@ const STEP_MS = 900;
 /** Floor for the iframe height so the module's footer buttons ("Weiter",
  *  "Reservieren") are always reachable, even if no height message arrives. */
 const MIN_IFRAME_HEIGHT = 900;
+/** Height of the widget's own header/back strip that we clip away, so guests
+ *  cannot navigate back to Gastronovi's 4-tile screen ("Vorbestellung …"). */
+const TOP_CLIP_PX = 56;
 
 export function GastronoviReservation() {
   const [activeEntry, setActiveEntry] = useState<EntryKey | null>(null);
