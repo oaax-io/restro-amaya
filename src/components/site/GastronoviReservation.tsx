@@ -123,7 +123,14 @@ export function GastronoviReservation() {
           <div className="mx-auto mt-3 h-px w-14 hairline-gold" />
         </div>
 
-        <div id="reservation" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }} />
+        <div id="reservation" className="relative" style={{ width: "100%", padding: 0, margin: 0, background: "#0d2517" }}>
+          <div
+            ref={patchRef}
+            aria-hidden="true"
+            className="absolute z-10"
+            style={{ backgroundColor: "#0d2517", borderRadius: 12 }}
+          />
+        </div>
         <div id="script" ref={scriptHostRef} style={{ display: "none" }} />
       </div>
 
