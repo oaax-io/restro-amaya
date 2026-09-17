@@ -179,7 +179,7 @@ export function GastronoviReservation() {
                 onLoad={handleIframeLoad}
                 style={{
                   width: "100%",
-                  height: MIN_IFRAME_HEIGHT,
+                  height: MIN_IFRAME_HEIGHT + TOP_CLIP_PX,
                   minHeight: "unset",
                   border: "none",
                   display: "block",
