@@ -46,20 +46,49 @@ export function GastronoviReservation() {
     };
   }, []);
 
-  // Keep the cross-origin iframe height in sync with its content. Every height
-  // change also re-applies the dark veil so step transitions never flash white.
+  // Keep the cross-origin iframe height in sync with its content. Gastronovi
+  // sends the height either as an object, a JSON string or a "height:123"
+  // string — accept all of them, otherwise the module gets cut off and the
+  // "Weiter" buttons at the bottom become unreachable.
   useEffect(() => {
+    const extractHeight = (data: unknown): number | null => {
+      if (typeof data === "number" && data > 0) return data;
+      if (typeof data === "string") {
+        try {
+          const parsed = JSON.parse(data);
+          const nested = extractHeight(parsed);
+          if (nested) return nested;
+        } catch {
+          /* not JSON */
+        }
+        const m = data.match(/(\d{2,5})(?:px)?\s*$/);
+        if (m && /height/i.test(data)) return Number(m[1]);
+        return null;
+      }
+      if (data && typeof data === "object") {
+        const o = data as Record<string, unknown>;
+        for (const k of ["height", "iframeHeight", "scrollHeight", "documentHeight"]) {
+          const v = o[k];
+          if (typeof v === "number" && v > 0) return v;
+          if (typeof v === "string" && Number(v) > 0) return Number(v);
+        }
+      }
+      return null;
+    };
+
     const handleMessage = (e: MessageEvent) => {
       const iframe = iframeRef.current;
       if (!iframe) return;
-      if (e.data && typeof e.data === "object" && typeof e.data.height === "number") {
-        const h = e.data.height;
-        if (lastHeightRef.current !== null && Math.abs(h - lastHeightRef.current) > 4) {
-          showVeil(STEP_MS);
-        }
-        lastHeightRef.current = h;
-        iframe.style.height = h + "px";
+      if (!/gastronovi\.com$/.test(new URL(e.origin || "http://x").hostname)) return;
+      const raw = extractHeight(e.data);
+      if (raw === null) return;
+      // Always keep a generous floor so the widget's footer buttons stay visible.
+      const h = Math.max(raw + 40, MIN_IFRAME_HEIGHT);
+      if (lastHeightRef.current !== null && Math.abs(h - lastHeightRef.current) > 120) {
+        showVeil(STEP_MS);
       }
+      lastHeightRef.current = h;
+      iframe.style.height = h + "px";
     };
     window.addEventListener("message", handleMessage);
     return () => window.removeEventListener("message", handleMessage);
