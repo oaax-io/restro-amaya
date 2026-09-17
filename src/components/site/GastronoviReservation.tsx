@@ -89,7 +89,7 @@ export function GastronoviReservation() {
       const raw = extractHeight(e.data);
       if (raw === null) return;
       // Always keep a generous floor so the widget's footer buttons stay visible.
-      const h = Math.max(raw + 40, MIN_IFRAME_HEIGHT);
+      const h = Math.max(raw + 40, MIN_IFRAME_HEIGHT) + TOP_CLIP_PX;
       if (lastHeightRef.current !== null && Math.abs(h - lastHeightRef.current) > 120) {
         showVeil(STEP_MS);
       }
