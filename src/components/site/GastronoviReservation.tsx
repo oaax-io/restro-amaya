@@ -90,9 +90,10 @@ export function GastronoviReservation() {
               style={{
                 width: "100%",
                 height: 480,
+                minHeight: "unset",
                 border: "none",
                 display: "block",
-                backgroundColor: "#0d2517",
+                background: "transparent",
               }}
             />
           </div>
