@@ -21,6 +21,9 @@ const SETTLE_MS = 1400;
 /** Short veil re-applied whenever the widget changes its internal height
  *  (i.e. navigates between steps) — covers the white flash of that transition. */
 const STEP_MS = 900;
+/** Floor for the iframe height so the module's footer buttons ("Weiter",
+ *  "Reservieren") are always reachable, even if no height message arrives. */
+const MIN_IFRAME_HEIGHT = 900;
 
 export function GastronoviReservation() {
   const [activeEntry, setActiveEntry] = useState<EntryKey | null>(null);
