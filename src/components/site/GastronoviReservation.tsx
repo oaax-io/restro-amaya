@@ -161,7 +161,10 @@ export function GastronoviReservation() {
               <ArrowLeft className="h-3.5 w-3.5" />
               Andere Auswahl
             </button>
-            <div className="relative">
+            {/* The widget renders its own back link / header at the very top,
+                which leads back to Gastronovi's 4-tile screen (including
+                "Vorbestellung mit Reservierung"). We clip that strip away. */}
+            <div className="relative overflow-hidden">
               <iframe
                 ref={iframeRef}
                 key={activeEntry}
@@ -178,6 +181,7 @@ export function GastronoviReservation() {
                   border: "none",
                   display: "block",
                   background: "transparent",
+                  marginTop: -TOP_CLIP_PX,
                 }}
               />
               {/* Dark veil: hides the widget's white background while it loads
