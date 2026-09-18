@@ -3,10 +3,15 @@ import { Loader2 } from "lucide-react";
 
 export type GastronoviEntryPoint = "reservation" | "pickup" | "voucher";
 
-const SCRIPT_BASE = "https://services.gastronovi.com/restaurants/108779/scripts/reservation/entry";
+const IFRAME_BASE = "https://services.gastronovi.com/restaurants/108779/reservierung/widget";
 
-const scriptUrl = (entryPoint: GastronoviEntryPoint) =>
-  `${SCRIPT_BASE}/${entryPoint}?L=de_CH`;
+/**
+ * Direct inline embed URL per entry point. `embed=1` + `fixedButton=0` force
+ * Gastronovi to render the module inline — without them the script falls back
+ * to a button that opens a new browser window (especially on mobile).
+ */
+const iframeUrl = (entryPoint: GastronoviEntryPoint) =>
+  `${IFRAME_BASE}?entry=${entryPoint}&embed=1&companyRoute=1&fixedButton=0&L=de_CH&iframeId=${SCRIPT_ID}`;
 
 const isGastronoviOrigin = (origin: string) => {
   try {
