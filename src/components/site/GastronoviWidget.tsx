@@ -64,11 +64,13 @@ const removeExistingWidget = () => {
 export function GastronoviWidget({
   entryPoint,
   fill = false,
+  minHeight = MIN_HEIGHT,
 }: {
   entryPoint: GastronoviEntryPoint;
-  /** Fill the parent's height and let the module scroll inside itself
-   *  (used in the chat panel, where outer growth would clip the content). */
+  /** Fill the parent's height and let the module scroll inside itself. */
   fill?: boolean;
+  /** Minimum iframe height in grow mode (the iframe grows with its content). */
+  minHeight?: number;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
