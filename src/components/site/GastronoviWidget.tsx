@@ -61,7 +61,15 @@ const removeExistingWidget = () => {
  * iframe + listeners are removed again on unmount / entry change, so there
  * is never more than one active Gastronovi widget on the page.
  */
-export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPoint }) {
+export function GastronoviWidget({
+  entryPoint,
+  fill = false,
+}: {
+  entryPoint: GastronoviEntryPoint;
+  /** Fill the parent's height and let the module scroll inside itself
+   *  (used in the chat panel, where outer growth would clip the content). */
+  fill?: boolean;
+}) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
