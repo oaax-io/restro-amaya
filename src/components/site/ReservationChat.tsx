@@ -198,16 +198,18 @@ export function ReservationChat() {
                   </p>
                 </div>
               ) : (
-                <div className="p-3">
+                <div className="flex min-h-0 flex-1 flex-col p-3">
                   <button
                     type="button"
                     onClick={() => setActiveEntry(null)}
-                    className="mb-3 inline-flex items-center gap-2 rounded-full border border-gold/50 bg-background px-4 py-2 text-xs uppercase tracking-[0.15em] text-gold shadow-[0_6px_18px_-8px_rgba(233,165,128,0.6)] transition-all duration-300 hover:border-gold hover:bg-gold hover:text-background hover:shadow-[0_10px_24px_-8px_rgba(233,165,128,0.8)] active:scale-95"
+                    className="mb-3 inline-flex shrink-0 items-center gap-2 self-start rounded-full border border-gold/50 bg-background px-4 py-2 text-xs uppercase tracking-[0.15em] text-gold shadow-[0_6px_18px_-8px_rgba(233,165,128,0.6)] transition-all duration-300 hover:border-gold hover:bg-gold hover:text-background hover:shadow-[0_10px_24px_-8px_rgba(233,165,128,0.8)] active:scale-95"
                   >
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Andere Auswahl
                   </button>
-                  <GastronoviWidget key={activeEntry} entryPoint={activeEntry} />
+                  <div className="min-h-0 flex-1">
+                    <GastronoviWidget key={activeEntry} entryPoint={activeEntry} fill />
+                  </div>
                 </div>
               )}
             </div>
