@@ -97,7 +97,7 @@ export function GastronoviWidget({
       frame.style.border = "none";
       frame.style.background = "transparent";
       frame.style.display = "block";
-      frame.style.height = fill ? "100%" : `${MIN_HEIGHT}px`;
+      frame.style.height = fill ? "100%" : `${minHeight}px`;
       frame.setAttribute("loading", "eager");
       frame.addEventListener("load", () => setReady(true));
       host.appendChild(frame);
@@ -111,7 +111,7 @@ export function GastronoviWidget({
       if (frame instanceof HTMLIFrameElement) {
         // In fill mode the iframe keeps the panel height and scrolls internally,
         // so growing content can never be clipped.
-        if (!fill) frame.style.height = `${Math.max(h + 40, MIN_HEIGHT)}px`;
+        if (!fill) frame.style.height = `${Math.max(h + 40, minHeight)}px`;
         setReady(true);
       }
     };
@@ -130,7 +130,7 @@ export function GastronoviWidget({
         )
         .forEach((n) => n.remove());
     };
-  }, [entryPoint, fill]);
+  }, [entryPoint, fill, minHeight]);
 
   return (
     <div
