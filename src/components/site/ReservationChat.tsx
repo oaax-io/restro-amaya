@@ -125,14 +125,14 @@ export function ReservationChat() {
             aria-label="Online Reservation"
           >
             {/* Chat header */}
-            <div className="relative shrink-0 border-b border-gold/25 bg-white px-4 py-3">
+            <div className="relative shrink-0 border-b border-gold/30 bg-background px-4 py-3">
               <div className="flex items-center gap-3 pr-8">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gold/40 text-gold">
                   <CalendarCheck className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
                   <p className="mono-label text-gold">Online Reservation</p>
-                  <p className="mt-0.5 truncate font-display text-sm tracking-wide text-neutral-900">
+                  <p className="mt-0.5 truncate font-display text-sm tracking-wide text-white">
                     Amaya Restaurant &amp; Bar
                   </p>
                 </div>
@@ -141,7 +141,7 @@ export function ReservationChat() {
                 type="button"
                 onClick={close}
                 aria-label="Schliessen"
-                className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full text-neutral-400 transition-colors hover:bg-gold/10 hover:text-gold"
+                className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full text-white/60 transition-colors hover:bg-gold/15 hover:text-gold"
               >
                 <X className="h-4 w-4" />
               </button>
