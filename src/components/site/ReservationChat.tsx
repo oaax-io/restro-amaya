@@ -45,6 +45,19 @@ export function ReservationChat() {
     return () => window.removeEventListener("amaya:open-reservation-chat", onOpen);
   }, []);
 
+  // Keep touch/wheel movement inside the reservation panel while it is open.
+  useEffect(() => {
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    const previousOverscroll = document.body.style.overscrollBehavior;
+    document.body.style.overflow = "hidden";
+    document.body.style.overscrollBehavior = "none";
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.body.style.overscrollBehavior = previousOverscroll;
+    };
+  }, [open]);
+
   const close = () => {
     setOpen(false);
     // Reset after the exit animation so the widget/script is fully removed.
@@ -195,7 +208,7 @@ export function ReservationChat() {
                   </p>
                 </div>
               ) : (
-                <div className="flex flex-col p-3">
+                <div className="flex flex-col p-3 pb-8">
                   <button
                     type="button"
                     onClick={() => setActiveEntry(null)}
@@ -204,7 +217,7 @@ export function ReservationChat() {
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Andere Auswahl
                   </button>
-                  <GastronoviWidget key={activeEntry} entryPoint={activeEntry} minHeight={620} />
+                  <GastronoviWidget key={activeEntry} entryPoint={activeEntry} minHeight={760} />
                 </div>
               )}
             </div>
