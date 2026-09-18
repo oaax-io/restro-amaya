@@ -1,4 +1,4 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { Instagram, Facebook, Menu, X } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/components/ui/sheet";
@@ -8,7 +8,6 @@ import logoAsset from "@/assets/amaya-logo.svg.asset.json";
 
 export function SiteHeader() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
 
@@ -128,7 +127,10 @@ export function SiteHeader() {
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      setTimeout(() => navigate({ to: "/reservation" }), 50);
+                      setTimeout(
+                        () => window.dispatchEvent(new CustomEvent("amaya:open-reservation-chat")),
+                        50
+                      );
                     }}
                     className="mt-2 inline-flex items-center justify-center rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-widest text-gold-foreground hover:opacity-90 transition shadow-lg"
                   >
