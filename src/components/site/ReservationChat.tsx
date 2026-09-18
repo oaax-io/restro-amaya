@@ -93,8 +93,14 @@ export function ReservationChat() {
           </AnimatePresence>
           {!open && (
             <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E9A580] opacity-60" />
-              <span className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-background bg-[#E9A580]" />
+              <span
+                className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#E4BA61]"
+                style={{ boxShadow: "0 0 8px 2px rgba(228, 186, 97, 0.7)" }}
+              />
+              <span
+                className="relative inline-flex h-3.5 w-3.5 rounded-full border-2 border-background bg-[#E4BA61]"
+                style={{ boxShadow: "0 0 10px 2px rgba(228, 186, 97, 0.8)" }}
+              />
             </span>
           )}
         </button>
