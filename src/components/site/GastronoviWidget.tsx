@@ -57,9 +57,9 @@ const removeExistingWidget = () => {
 };
 
 /**
- * Loads exactly one Gastronovi entry-point script into its own container.
- * Script, injected nodes and listeners are removed again on unmount / entry change,
- * so there is never more than one active Gastronovi widget on the page.
+ * Embeds exactly one Gastronovi entry point as a direct inline iframe.
+ * iframe + listeners are removed again on unmount / entry change, so there
+ * is never more than one active Gastronovi widget on the page.
  */
 export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPoint }) {
   const hostRef = useRef<HTMLDivElement>(null);
@@ -70,42 +70,28 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
     if (!host) return;
 
     let disposed = false;
-    let script: HTMLScriptElement | null = null;
     setReady(false);
     removeExistingWidget();
     host.replaceChildren();
     host.dataset.amayaGastronoviWidget = entryPoint;
 
-    // Delay one frame so React's development remount cannot execute the
-    // third-party loader twice. The stable ID is an additional singleton guard.
+    // Delay one frame so React's development remount cannot build the
+    // widget twice. The stable ID is an additional singleton guard.
     const loadFrame = window.requestAnimationFrame(() => {
-      if (disposed || !host.isConnected || document.getElementById(SCRIPT_ID)) return;
-      script = document.createElement("script");
-      script.id = SCRIPT_ID;
-      script.src = scriptUrl(entryPoint);
-      script.async = true;
-      script.dataset.gastronovi = entryPoint;
-      host.appendChild(script);
+      if (disposed || !host.isConnected) return;
+      const frame = document.createElement("iframe");
+      frame.id = SCRIPT_ID;
+      frame.src = iframeUrl(entryPoint);
+      frame.title = "Gastronovi";
+      frame.style.width = "100%";
+      frame.style.border = "none";
+      frame.style.background = "transparent";
+      frame.style.display = "block";
+      frame.style.height = `${MIN_HEIGHT}px`;
+      frame.setAttribute("loading", "eager");
+      frame.addEventListener("load", () => setReady(true));
+      host.appendChild(frame);
     });
-
-    // Style only the iframe(s) Gastronovi injects inside this container.
-    const styleIframes = () => {
-      const frames = host.querySelectorAll("iframe");
-      frames.forEach((f) => {
-        f.style.width = "100%";
-        f.style.border = "none";
-        f.style.background = "transparent";
-        f.style.display = "block";
-        if (!f.style.height || parseInt(f.style.height, 10) < MIN_HEIGHT) {
-          f.style.height = `${MIN_HEIGHT}px`;
-        }
-      });
-      if (frames.length > 0) setReady(true);
-    };
-
-    const observer = new MutationObserver(styleIframes);
-    observer.observe(host, { childList: true, subtree: true });
-    styleIframes();
 
     const onMessage = (e: MessageEvent) => {
       if (!isGastronoviOrigin(e.origin)) return;
@@ -123,8 +109,6 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
       disposed = true;
       window.cancelAnimationFrame(loadFrame);
       window.removeEventListener("message", onMessage);
-      observer.disconnect();
-      script?.remove();
       host.replaceChildren();
       delete host.dataset.amayaGastronoviWidget;
       // Remove any Gastronovi script/style nodes that landed outside our host.
