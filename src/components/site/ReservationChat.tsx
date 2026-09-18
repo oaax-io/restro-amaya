@@ -115,10 +115,10 @@ export function ReservationChat() {
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
             className="fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-gold/30 bg-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)]"
             style={{
-              bottom: "calc(15.5rem + env(safe-area-inset-bottom))",
+              bottom: "calc(0.75rem + env(safe-area-inset-bottom))",
               right: "calc(1rem + env(safe-area-inset-right))",
               width: "min(26rem, calc(100vw - 2rem))",
-              height: "min(40rem, calc(100dvh - 18rem))",
+              height: "min(52rem, calc(100dvh - 1.5rem))",
               minHeight: "24rem",
             }}
             role="dialog"
