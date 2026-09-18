@@ -2,6 +2,7 @@ import { type ReactNode } from "react";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { WhatsAppButton } from "@/components/site/WhatsAppButton";
 import { LocationButton } from "@/components/site/LocationButton";
+import { ReservationChat } from "@/components/site/ReservationChat";
 import { Footer } from "./Footer";
 
 export function SiteLayout({ children }: { children: ReactNode }) {
@@ -12,6 +13,7 @@ export function SiteLayout({ children }: { children: ReactNode }) {
       <Footer />
       <LocationButton />
       <WhatsAppButton />
+      <ReservationChat />
     </div>
   );
 }
