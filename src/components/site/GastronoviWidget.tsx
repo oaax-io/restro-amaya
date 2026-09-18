@@ -41,6 +41,15 @@ const extractHeight = (data: unknown): number | null => {
 };
 
 const MIN_HEIGHT = 700;
+const SCRIPT_ID = "amaya-gastronovi-entry-script";
+const WIDGET_HOST_ID = "amaya-gastronovi-widget-host";
+
+const removeExistingWidget = () => {
+  document.getElementById(SCRIPT_ID)?.remove();
+  document
+    .querySelectorAll<HTMLElement>(`[data-amaya-gastronovi-widget]:not(#${WIDGET_HOST_ID})`)
+    .forEach((node) => node.remove());
+};
 
 /**
  * Loads exactly one Gastronovi entry-point script into its own container.
@@ -55,14 +64,24 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
     const host = hostRef.current;
     if (!host) return;
 
+    let disposed = false;
+    let script: HTMLScriptElement | null = null;
     setReady(false);
-    host.innerHTML = "";
+    removeExistingWidget();
+    host.replaceChildren();
+    host.dataset.amayaGastronoviWidget = entryPoint;
 
-    const script = document.createElement("script");
-    script.src = scriptUrl(entryPoint);
-    script.async = true;
-    script.dataset.gastronovi = entryPoint;
-    host.appendChild(script);
+    // Delay one frame so React's development remount cannot execute the
+    // third-party loader twice. The stable ID is an additional singleton guard.
+    const loadFrame = window.requestAnimationFrame(() => {
+      if (disposed || !host.isConnected || document.getElementById(SCRIPT_ID)) return;
+      script = document.createElement("script");
+      script.id = SCRIPT_ID;
+      script.src = scriptUrl(entryPoint);
+      script.async = true;
+      script.dataset.gastronovi = entryPoint;
+      host.appendChild(script);
+    });
 
     // Style only the iframe(s) Gastronovi injects inside this container.
     const styleIframes = () => {
@@ -96,9 +115,13 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
     window.addEventListener("message", onMessage);
 
     return () => {
+      disposed = true;
+      window.cancelAnimationFrame(loadFrame);
       window.removeEventListener("message", onMessage);
       observer.disconnect();
-      host.innerHTML = "";
+      script?.remove();
+      host.replaceChildren();
+      delete host.dataset.amayaGastronoviWidget;
       // Remove any Gastronovi script/style nodes that landed outside our host.
       document
         .querySelectorAll<HTMLElement>(
@@ -110,7 +133,7 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
 
   return (
     <div className="relative w-full overflow-x-hidden">
-      <div ref={hostRef} className="w-full" />
+      <div id={WIDGET_HOST_ID} ref={hostRef} className="w-full" />
       {!ready && (
         <div className="flex flex-col items-center justify-center gap-4 py-24">
           <Loader2 className="h-7 w-7 animate-spin text-[#E9A580]/80" />
