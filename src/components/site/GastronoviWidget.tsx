@@ -128,13 +128,23 @@ export function GastronoviWidget({
         )
         .forEach((n) => n.remove());
     };
-  }, [entryPoint]);
+  }, [entryPoint, fill]);
 
   return (
-    <div className="relative w-full overflow-x-hidden">
-      <div id={WIDGET_HOST_ID} ref={hostRef} className="w-full" />
+    <div
+      className={
+        fill
+          ? "relative flex h-full min-h-0 w-full flex-col overflow-x-hidden"
+          : "relative w-full overflow-x-hidden"
+      }
+    >
+      <div
+        id={WIDGET_HOST_ID}
+        ref={hostRef}
+        className={fill ? "min-h-0 w-full flex-1" : "w-full"}
+      />
       {!ready && (
-        <div className="flex flex-col items-center justify-center gap-4 py-24">
+        <div className="absolute inset-x-0 top-0 flex flex-col items-center justify-center gap-4 py-24">
           <Loader2 className="h-7 w-7 animate-spin text-[#E9A580]/80" />
           <span className="text-xs uppercase tracking-[0.25em] text-[#E9A580]/60">
             Einen Moment …
