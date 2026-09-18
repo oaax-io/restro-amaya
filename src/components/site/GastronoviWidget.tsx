@@ -64,11 +64,13 @@ const removeExistingWidget = () => {
 export function GastronoviWidget({
   entryPoint,
   fill = false,
+  minHeight = MIN_HEIGHT,
 }: {
   entryPoint: GastronoviEntryPoint;
-  /** Fill the parent's height and let the module scroll inside itself
-   *  (used in the chat panel, where outer growth would clip the content). */
+  /** Fill the parent's height and let the module scroll inside itself. */
   fill?: boolean;
+  /** Minimum iframe height in grow mode (the iframe grows with its content). */
+  minHeight?: number;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
@@ -95,7 +97,7 @@ export function GastronoviWidget({
       frame.style.border = "none";
       frame.style.background = "transparent";
       frame.style.display = "block";
-      frame.style.height = fill ? "100%" : `${MIN_HEIGHT}px`;
+      frame.style.height = fill ? "100%" : `${minHeight}px`;
       frame.setAttribute("loading", "eager");
       frame.addEventListener("load", () => setReady(true));
       host.appendChild(frame);
@@ -109,7 +111,7 @@ export function GastronoviWidget({
       if (frame instanceof HTMLIFrameElement) {
         // In fill mode the iframe keeps the panel height and scrolls internally,
         // so growing content can never be clipped.
-        if (!fill) frame.style.height = `${Math.max(h + 40, MIN_HEIGHT)}px`;
+        if (!fill) frame.style.height = `${Math.max(h + 40, minHeight)}px`;
         setReady(true);
       }
     };
@@ -128,7 +130,7 @@ export function GastronoviWidget({
         )
         .forEach((n) => n.remove());
     };
-  }, [entryPoint, fill]);
+  }, [entryPoint, fill, minHeight]);
 
   return (
     <div

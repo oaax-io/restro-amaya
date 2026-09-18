@@ -155,11 +155,8 @@ export function ReservationChat() {
 
             {/* Chat body */}
             <div
-              className={
-                activeEntry
-                  ? "flex min-h-0 flex-1 flex-col overflow-hidden"
-                  : "amaya-scroll min-h-0 flex-1 overflow-y-auto"
-              }
+              className="amaya-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
+              style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
             >
               {!activeEntry ? (
                 <div className="flex flex-col gap-3 p-4">
@@ -198,7 +195,7 @@ export function ReservationChat() {
                   </p>
                 </div>
               ) : (
-                <div className="flex min-h-0 flex-1 flex-col p-3">
+                <div className="flex flex-col p-3">
                   <button
                     type="button"
                     onClick={() => setActiveEntry(null)}
@@ -207,9 +204,7 @@ export function ReservationChat() {
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Andere Auswahl
                   </button>
-                  <div className="min-h-0 flex-1">
-                    <GastronoviWidget key={activeEntry} entryPoint={activeEntry} fill />
-                  </div>
+                  <GastronoviWidget key={activeEntry} entryPoint={activeEntry} minHeight={620} />
                 </div>
               )}
             </div>
