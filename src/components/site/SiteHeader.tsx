@@ -84,12 +84,15 @@ export function SiteHeader() {
               <Facebook size={18} />
             </a>
           </div>
-          <Link
-            to="/reservation"
+          <button
+            type="button"
+            onClick={() =>
+              window.dispatchEvent(new CustomEvent("amaya:open-reservation-chat"))
+            }
             className="hidden sm:inline-flex items-center rounded-full bg-gold px-5 py-2.5 text-sm font-medium uppercase tracking-widest text-gold-foreground hover:opacity-90 transition"
           >
             {t("nav.reserve")}
-          </Link>
+          </button>
 
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
