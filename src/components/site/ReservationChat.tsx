@@ -154,7 +154,7 @@ export function ReservationChat() {
             </div>
 
             {/* Chat body */}
-            <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className="amaya-scroll min-h-0 flex-1 overflow-y-auto">
               {!activeEntry ? (
                 <div className="flex flex-col gap-3 p-4">
                   <div>
