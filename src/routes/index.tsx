@@ -8,7 +8,6 @@ import { supabase } from "@/integrations/supabase/client";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import { HeroSlider } from "@/components/site/HeroSlider";
 import { ReservationCard } from "@/components/site/ReservationCard";
-import { GastronoviReservation } from "@/components/site/GastronoviReservation";
 import { useWeeklyMenu, usePdfUrl } from "@/lib/menu-data";
 
 import jungleTex from "@/assets/jungle-texture.jpg";
@@ -198,8 +197,6 @@ function Index() {
       >
         {showReservation === true ? <ReservationCard variant="overlay" /> : null}
       </HeroSlider>
-
-      <GastronoviReservation />
 
       {/* STORY / INTRO */}
       <section className="relative py-28 lg:py-40 overflow-hidden">
