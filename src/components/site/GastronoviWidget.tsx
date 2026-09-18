@@ -3,7 +3,7 @@ import { Loader2 } from "lucide-react";
 
 export type GastronoviEntryPoint = "reservation" | "pickup" | "voucher";
 
-const IFRAME_BASE = "https://services.gastronovi.com/restaurants/108779/reservierung/widget";
+const IFRAME_BASE = "https://services.gastronovi.com/restaurants/108779/reservation/widget/entry";
 
 /**
  * Direct inline embed URL per entry point. `embed=1` + `fixedButton=0` force
@@ -11,7 +11,7 @@ const IFRAME_BASE = "https://services.gastronovi.com/restaurants/108779/reservie
  * to a button that opens a new browser window (especially on mobile).
  */
 const iframeUrl = (entryPoint: GastronoviEntryPoint) =>
-  `${IFRAME_BASE}?entry=${entryPoint}&embed=1&companyRoute=1&fixedButton=0&L=de_CH&iframeId=${SCRIPT_ID}`;
+  `${IFRAME_BASE}/${entryPoint}/referral?embed=1&companyRoute=1&resetlang=1&fixedButton=0&L=de_CH&iframeId=${SCRIPT_ID}`;
 
 const isGastronoviOrigin = (origin: string) => {
   try {
@@ -22,6 +22,17 @@ const isGastronoviOrigin = (origin: string) => {
 };
 
 const extractHeight = (data: unknown): number | null => {
+  // Gastronovi's official embed sends [iframeId, "setHeight", height].
+  if (Array.isArray(data)) {
+    if (data[0] !== SCRIPT_ID || data[1] !== "setHeight") return null;
+    const value = data[2];
+    if (typeof value === "number" && value > 0) return value;
+    if (typeof value === "string") {
+      const parsed = Number.parseFloat(value);
+      return Number.isFinite(parsed) && parsed > 0 ? parsed : null;
+    }
+    return null;
+  }
   if (typeof data === "number" && data > 0) return data;
   if (typeof data === "string") {
     try {
@@ -97,7 +108,10 @@ export function GastronoviWidget({
       frame.style.border = "none";
       frame.style.background = "transparent";
       frame.style.display = "block";
-      frame.style.height = fill ? "100%" : `${minHeight}px`;
+      frame.style.height = `${minHeight}px`;
+      frame.style.overflow = "hidden";
+      frame.setAttribute("scrolling", "no");
+      frame.setAttribute("allow", "payment");
       frame.setAttribute("loading", "eager");
       frame.addEventListener("load", () => setReady(true));
       host.appendChild(frame);
@@ -105,15 +119,14 @@ export function GastronoviWidget({
 
     const onMessage = (e: MessageEvent) => {
       if (!isGastronoviOrigin(e.origin)) return;
+      const frame = host.querySelector("iframe");
+      if (!(frame instanceof HTMLIFrameElement) || e.source !== frame.contentWindow) return;
       const h = extractHeight(e.data);
       if (!h) return;
-      const frame = host.querySelector("iframe");
-      if (frame instanceof HTMLIFrameElement) {
-        // In fill mode the iframe keeps the panel height and scrolls internally,
-        // so growing content can never be clipped.
-        if (!fill) frame.style.height = `${Math.max(h + 40, minHeight)}px`;
-        setReady(true);
-      }
+      // Always grow to Gastronovi's full reported document height. The parent
+      // chat owns scrolling, preventing the bottom action bar being clipped.
+      frame.style.height = `${Math.max(Math.ceil(h) + 24, minHeight)}px`;
+      setReady(true);
     };
     window.addEventListener("message", onMessage);
 
@@ -136,14 +149,14 @@ export function GastronoviWidget({
     <div
       className={
         fill
-          ? "relative flex h-full min-h-0 w-full flex-col overflow-x-hidden"
+          ? "relative flex min-h-0 w-full flex-col overflow-x-hidden"
           : "relative w-full overflow-x-hidden"
       }
     >
       <div
         id={WIDGET_HOST_ID}
         ref={hostRef}
-        className={fill ? "min-h-0 w-full flex-1" : "w-full"}
+        className="w-full"
       />
       {!ready && (
         <div className="absolute inset-x-0 top-0 flex flex-col items-center justify-center gap-4 py-24">
