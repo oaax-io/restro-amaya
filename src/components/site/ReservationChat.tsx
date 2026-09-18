@@ -113,7 +113,7 @@ export function ReservationChat() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 24, scale: 0.96 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-gold/25 bg-[#0d2517] shadow-[0_30px_80px_-20px_rgba(0,0,0,0.7)]"
+            className="fixed z-50 flex flex-col overflow-hidden rounded-2xl border border-gold/30 bg-white shadow-[0_30px_80px_-20px_rgba(0,0,0,0.5)]"
             style={{
               bottom: "calc(15.5rem + env(safe-area-inset-bottom))",
               right: "calc(1rem + env(safe-area-inset-right))",
@@ -125,14 +125,14 @@ export function ReservationChat() {
             aria-label="Online Reservation"
           >
             {/* Chat header */}
-            <div className="relative shrink-0 border-b border-gold/20 bg-[#07150C] px-4 py-3">
+            <div className="relative shrink-0 border-b border-gold/25 bg-white px-4 py-3">
               <div className="flex items-center gap-3 pr-8">
                 <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-gold/40 text-gold">
                   <CalendarCheck className="h-5 w-5" />
                 </span>
                 <div className="min-w-0">
                   <p className="mono-label text-gold">Online Reservation</p>
-                  <p className="mt-0.5 truncate font-display text-sm tracking-wide text-[#f3ede4]">
+                  <p className="mt-0.5 truncate font-display text-sm tracking-wide text-neutral-900">
                     Amaya Restaurant &amp; Bar
                   </p>
                 </div>
@@ -141,7 +141,7 @@ export function ReservationChat() {
                 type="button"
                 onClick={close}
                 aria-label="Schliessen"
-                className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full text-[#f3ede4]/60 transition-colors hover:bg-gold/10 hover:text-gold"
+                className="absolute right-3 top-3 grid h-8 w-8 place-items-center rounded-full text-neutral-400 transition-colors hover:bg-gold/10 hover:text-gold"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -151,7 +151,7 @@ export function ReservationChat() {
             <div className="min-h-0 flex-1 overflow-y-auto">
               {!activeEntry ? (
                 <div className="flex flex-col gap-3 p-4">
-                  <p className="text-xs leading-relaxed text-[#f3ede4]/60">
+                  <p className="text-xs leading-relaxed text-neutral-500">
                     Herzlich willkommen! Wie können wir Ihnen weiterhelfen?
                   </p>
                   {TILES.map(({ key, label, sub, Icon }, i) => (
@@ -162,21 +162,21 @@ export function ReservationChat() {
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.08 * (i + 1), duration: 0.3 }}
-                      className="group flex w-full items-center gap-3 rounded-xl border border-gold/25 bg-[#102B1B] px-4 py-3.5 text-left transition-all duration-300 hover:border-gold/60 hover:shadow-[0_12px_30px_-12px_rgba(233,165,128,0.35)]"
+                      className="group flex w-full items-center gap-3 rounded-xl border border-gold/25 bg-white px-4 py-3.5 text-left transition-all duration-300 hover:border-gold/60 hover:shadow-[0_12px_30px_-12px_rgba(233,165,128,0.45)]"
                     >
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gold/40 text-gold transition-colors group-hover:bg-gold group-hover:text-[#0d2517]">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gold/40 text-gold transition-colors group-hover:bg-gold group-hover:text-white">
                         <Icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block font-display text-sm tracking-wide text-[#f3ede4]">
+                        <span className="block font-display text-sm tracking-wide text-neutral-900">
                           {label}
                         </span>
-                        <span className="mt-0.5 block text-xs text-[#f3ede4]/50">{sub}</span>
+                        <span className="mt-0.5 block text-xs text-neutral-500">{sub}</span>
                       </span>
                       <ArrowLeft className="h-4 w-4 shrink-0 rotate-180 text-gold/60 transition-transform duration-300 group-hover:translate-x-0.5" />
                     </motion.button>
                   ))}
-                  <p className="mono-label mt-2 text-center text-[#f3ede4]/30">
+                  <p className="mono-label mt-2 text-center text-neutral-400">
                     Jederzeit verfügbar
                   </p>
                 </div>
