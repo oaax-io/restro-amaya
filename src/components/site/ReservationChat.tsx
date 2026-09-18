@@ -151,9 +151,14 @@ export function ReservationChat() {
             <div className="min-h-0 flex-1 overflow-y-auto">
               {!activeEntry ? (
                 <div className="flex flex-col gap-3 p-4">
-                  <p className="text-xs leading-relaxed text-neutral-500">
-                    Herzlich willkommen! Wie können wir Ihnen weiterhelfen?
-                  </p>
+                  <div>
+                    <p className="font-display text-base leading-snug text-white">
+                      Wir freuen uns, dich als Gast zu begrüssen!
+                    </p>
+                    <p className="mt-1.5 text-xs leading-relaxed text-white/70">
+                      Wähle für die Online-Reservation eine der folgenden Optionen:
+                    </p>
+                  </div>
                   {TILES.map(({ key, label, sub, Icon }, i) => (
                     <motion.button
                       key={key}
@@ -162,21 +167,21 @@ export function ReservationChat() {
                       initial={{ opacity: 0, y: 12 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.08 * (i + 1), duration: 0.3 }}
-                      className="group flex w-full items-center gap-3 rounded-xl border border-gold/25 bg-white px-4 py-3.5 text-left transition-all duration-300 hover:border-gold/60 hover:shadow-[0_12px_30px_-12px_rgba(233,165,128,0.45)]"
+                      className="group flex w-full items-center gap-3 rounded-xl border border-gold/25 bg-background px-4 py-3.5 text-left transition-all duration-300 hover:border-gold/60 hover:shadow-[0_12px_30px_-12px_rgba(233,165,128,0.45)]"
                     >
-                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gold/40 text-gold transition-colors group-hover:bg-gold group-hover:text-white">
+                      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full border border-gold/40 text-gold transition-colors group-hover:bg-gold group-hover:text-background">
                         <Icon className="h-5 w-5" />
                       </span>
                       <span className="min-w-0 flex-1">
-                        <span className="block font-display text-sm tracking-wide text-neutral-900">
+                        <span className="block font-display text-sm tracking-wide text-white">
                           {label}
                         </span>
-                        <span className="mt-0.5 block text-xs text-neutral-500">{sub}</span>
+                        <span className="mt-0.5 block text-xs text-white/60">{sub}</span>
                       </span>
                       <ArrowLeft className="h-4 w-4 shrink-0 rotate-180 text-gold/60 transition-transform duration-300 group-hover:translate-x-0.5" />
                     </motion.button>
                   ))}
-                  <p className="mono-label mt-2 text-center text-neutral-400">
+                  <p className="mono-label mt-2 text-center text-white/40">
                     Jederzeit verfügbar
                   </p>
                 </div>
