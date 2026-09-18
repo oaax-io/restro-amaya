@@ -128,7 +128,10 @@ export function SiteHeader() {
                     type="button"
                     onClick={() => {
                       setOpen(false);
-                      setTimeout(() => navigate({ to: "/reservation" }), 50);
+                      setTimeout(
+                        () => window.dispatchEvent(new CustomEvent("amaya:open-reservation-chat")),
+                        50
+                      );
                     }}
                     className="mt-2 inline-flex items-center justify-center rounded-full bg-gold px-5 py-3 text-sm font-semibold uppercase tracking-widest text-gold-foreground hover:opacity-90 transition shadow-lg"
                   >

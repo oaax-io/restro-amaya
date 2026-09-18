@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CalendarCheck, ShoppingBag, Gift, ArrowLeft, X } from "lucide-react";
 import { GastronoviWidget, type GastronoviEntryPoint } from "./GastronoviWidget";
@@ -37,6 +37,13 @@ const TILES: {
 export function ReservationChat() {
   const [open, setOpen] = useState(false);
   const [activeEntry, setActiveEntry] = useState<GastronoviEntryPoint | null>(null);
+
+  // External open requests (e.g. from the header/sidebar "Reservieren" button)
+  useEffect(() => {
+    const onOpen = () => setOpen(true);
+    window.addEventListener("amaya:open-reservation-chat", onOpen);
+    return () => window.removeEventListener("amaya:open-reservation-chat", onOpen);
+  }, []);
 
   const close = () => {
     setOpen(false);
