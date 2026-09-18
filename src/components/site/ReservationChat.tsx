@@ -155,11 +155,8 @@ export function ReservationChat() {
 
             {/* Chat body */}
             <div
-              className={
-                activeEntry
-                  ? "flex min-h-0 flex-1 flex-col overflow-hidden"
-                  : "amaya-scroll min-h-0 flex-1 overflow-y-auto"
-              }
+              className="amaya-scroll min-h-0 flex-1 overflow-y-auto overflow-x-hidden"
+              style={{ overscrollBehavior: "contain", WebkitOverflowScrolling: "touch", touchAction: "pan-y" }}
             >
               {!activeEntry ? (
                 <div className="flex flex-col gap-3 p-4">
