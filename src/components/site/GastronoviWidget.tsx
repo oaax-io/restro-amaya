@@ -61,7 +61,15 @@ const removeExistingWidget = () => {
  * iframe + listeners are removed again on unmount / entry change, so there
  * is never more than one active Gastronovi widget on the page.
  */
-export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPoint }) {
+export function GastronoviWidget({
+  entryPoint,
+  fill = false,
+}: {
+  entryPoint: GastronoviEntryPoint;
+  /** Fill the parent's height and let the module scroll inside itself
+   *  (used in the chat panel, where outer growth would clip the content). */
+  fill?: boolean;
+}) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [ready, setReady] = useState(false);
 
@@ -87,7 +95,7 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
       frame.style.border = "none";
       frame.style.background = "transparent";
       frame.style.display = "block";
-      frame.style.height = `${MIN_HEIGHT}px`;
+      frame.style.height = fill ? "100%" : `${MIN_HEIGHT}px`;
       frame.setAttribute("loading", "eager");
       frame.addEventListener("load", () => setReady(true));
       host.appendChild(frame);
@@ -99,7 +107,9 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
       if (!h) return;
       const frame = host.querySelector("iframe");
       if (frame instanceof HTMLIFrameElement) {
-        frame.style.height = `${Math.max(h + 40, MIN_HEIGHT)}px`;
+        // In fill mode the iframe keeps the panel height and scrolls internally,
+        // so growing content can never be clipped.
+        if (!fill) frame.style.height = `${Math.max(h + 40, MIN_HEIGHT)}px`;
         setReady(true);
       }
     };
@@ -118,13 +128,23 @@ export function GastronoviWidget({ entryPoint }: { entryPoint: GastronoviEntryPo
         )
         .forEach((n) => n.remove());
     };
-  }, [entryPoint]);
+  }, [entryPoint, fill]);
 
   return (
-    <div className="relative w-full overflow-x-hidden">
-      <div id={WIDGET_HOST_ID} ref={hostRef} className="w-full" />
+    <div
+      className={
+        fill
+          ? "relative flex h-full min-h-0 w-full flex-col overflow-x-hidden"
+          : "relative w-full overflow-x-hidden"
+      }
+    >
+      <div
+        id={WIDGET_HOST_ID}
+        ref={hostRef}
+        className={fill ? "min-h-0 w-full flex-1" : "w-full"}
+      />
       {!ready && (
-        <div className="flex flex-col items-center justify-center gap-4 py-24">
+        <div className="absolute inset-x-0 top-0 flex flex-col items-center justify-center gap-4 py-24">
           <Loader2 className="h-7 w-7 animate-spin text-[#E9A580]/80" />
           <span className="text-xs uppercase tracking-[0.25em] text-[#E9A580]/60">
             Einen Moment …
