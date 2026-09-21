@@ -42,12 +42,23 @@ export const Route = createFileRoute("/menu")({
   component: MenuPage,
 });
 
+const TAB_VISIBILITY_KEY: Record<TabKey, MenuKey> = {
+  weekly: "weekly",
+  lunch: "lunch",
+  "amaya-mesa": "mesa",
+  "sushi-sharing": "sushi",
+  wine: "wine",
+  bar: "bar",
+};
+
 function MenuPage() {
   const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("en") ? "en" : "de";
   const [tab, setTab] = useState<TabKey>("weekly");
+  const { data: visibility } = useMenuVisibility();
+  const vis = visibility ?? DEFAULT_MENU_VISIBILITY;
 
-  const tabs: { key: TabKey; label: string }[] = [
+  const allTabs: { key: TabKey; label: string }[] = [
     { key: "weekly", label: t("menu.tabs.weekly") },
     { key: "lunch", label: t("menu.tabs.lunch") },
     { key: "amaya-mesa", label: t("menu.tabs.amayaMesa") },
@@ -55,6 +66,13 @@ function MenuPage() {
     { key: "wine", label: t("menu.tabs.wine") },
     { key: "bar", label: t("menu.tabs.bar") },
   ];
+  const tabs = allTabs.filter((tb) => vis[TAB_VISIBILITY_KEY[tb.key]]);
+
+  useEffect(() => {
+    if (tabs.length && !tabs.some((tb) => tb.key === tab)) setTab(tabs[0].key);
+  }, [tabs.map((tb) => tb.key).join(","), tab]);
+
+  const activeTab = tabs.some((tb) => tb.key === tab) ? tab : tabs[0]?.key;
 
   return (
     <SiteLayout>
