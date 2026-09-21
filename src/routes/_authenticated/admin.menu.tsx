@@ -7,6 +7,7 @@ import { Trash2, Plus, Upload, Download, ExternalLink, Wand2, FileDown } from "l
 import { parseWeeklyPdf, generateWeeklyPdf, type ParsedWeekly } from "@/lib/menu-pdf";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useMenuVisibility, saveMenuVisibility, MENU_KEYS, MENU_LABELS, DEFAULT_MENU_VISIBILITY, type MenuKey } from "@/lib/menu-visibility";
 
 export const Route = createFileRoute("/_authenticated/admin/menu")({
   component: MenuAdmin,
@@ -26,6 +27,7 @@ function MenuAdmin() {
   return (
     <div>
       <PageHeader title="Speisekarte" subtitle="Alle Karten (Wochen, Lunch, Mesa, Sushi, Wein) — Kategorien, Gerichte und PDF." />
+      <div className="mt-6"><VisibilityCard /></div>
       <div className="mt-6 flex flex-wrap gap-2">
         {TYPES.map((t) => (
           <button key={t.key} onClick={() => setType(t.key)}
@@ -41,6 +43,48 @@ function MenuAdmin() {
       </div>
       <div className="mt-8"><TypeEditor key={type} type={type} /></div>
     </div>
+  );
+}
+
+function VisibilityCard() {
+  const qc = useQueryClient();
+  const { data, isLoading } = useMenuVisibility();
+  const [saving, setSaving] = useState<MenuKey | null>(null);
+  const vis = data ?? DEFAULT_MENU_VISIBILITY;
+
+  async function toggle(key: MenuKey) {
+    setSaving(key);
+    try {
+      await saveMenuVisibility({ ...vis, [key]: !vis[key] });
+      await qc.invalidateQueries({ queryKey: ["menu-visibility"] });
+      toast.success(!vis[key] ? `${MENU_LABELS[key]} ist wieder sichtbar` : `${MENU_LABELS[key]} ist deaktiviert`);
+    } catch (e: any) {
+      toast.error(e?.message ?? "Speichern fehlgeschlagen");
+    } finally {
+      setSaving(null);
+    }
+  }
+
+  return (
+    <Card>
+      <h3 className="font-medium text-[#0D2517]">Sichtbarkeit der Karten</h3>
+      <p className="text-sm text-black/60 mt-1">Deaktivierte Karten erscheinen nicht mehr auf der Website.</p>
+      <div className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+        {MENU_KEYS.map((key) => {
+          const on = vis[key];
+          return (
+            <button key={key} disabled={isLoading || saving === key} onClick={() => toggle(key)}
+              className="flex items-center justify-between gap-3 px-4 py-3 rounded border border-black/10 bg-white disabled:opacity-50 hover:border-[#0D2517]/40 transition">
+              <span className="text-sm text-[#0D2517]">{MENU_LABELS[key]}</span>
+              <span className="text-xs px-2 py-1 rounded-full font-medium"
+                style={{ background: on ? "#0D2517" : "rgba(0,0,0,0.08)", color: on ? "#F3E7D7" : "rgba(0,0,0,0.55)" }}>
+                {on ? "Aktiv" : "Aus"}
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </Card>
   );
 }
 

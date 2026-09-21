@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMenuVisibility, DEFAULT_MENU_VISIBILITY, type MenuKey } from "@/lib/menu-visibility";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import {
   type MenuItem,
@@ -42,12 +43,23 @@ export const Route = createFileRoute("/menu")({
   component: MenuPage,
 });
 
+const TAB_VISIBILITY_KEY: Record<TabKey, MenuKey> = {
+  weekly: "weekly",
+  lunch: "lunch",
+  "amaya-mesa": "mesa",
+  "sushi-sharing": "sushi",
+  wine: "wine",
+  bar: "bar",
+};
+
 function MenuPage() {
   const { t, i18n } = useTranslation();
   const lang: Lang = i18n.language?.startsWith("en") ? "en" : "de";
   const [tab, setTab] = useState<TabKey>("weekly");
+  const { data: visibility } = useMenuVisibility();
+  const vis = visibility ?? DEFAULT_MENU_VISIBILITY;
 
-  const tabs: { key: TabKey; label: string }[] = [
+  const allTabs: { key: TabKey; label: string }[] = [
     { key: "weekly", label: t("menu.tabs.weekly") },
     { key: "lunch", label: t("menu.tabs.lunch") },
     { key: "amaya-mesa", label: t("menu.tabs.amayaMesa") },
@@ -55,6 +67,13 @@ function MenuPage() {
     { key: "wine", label: t("menu.tabs.wine") },
     { key: "bar", label: t("menu.tabs.bar") },
   ];
+  const tabs = allTabs.filter((tb) => vis[TAB_VISIBILITY_KEY[tb.key]]);
+
+  useEffect(() => {
+    if (tabs.length && !tabs.some((tb) => tb.key === tab)) setTab(tabs[0].key);
+  }, [tabs.map((tb) => tb.key).join(","), tab]);
+
+  const activeTab = tabs.some((tb) => tb.key === tab) ? tab : tabs[0]?.key;
 
   return (
     <SiteLayout>
@@ -83,7 +102,7 @@ function MenuPage() {
           <div className="sm:hidden">
             <div className="relative mx-auto max-w-xs rounded-full bg-[#0D2517]/80 backdrop-blur-xl border border-[#E9A580]/30 shadow-lg shadow-black/30">
               <select
-                value={tab}
+                value={activeTab}
                 onChange={(e) => setTab(e.target.value as TabKey)}
                 aria-label="Speisekarte auswählen"
                 className="appearance-none w-full bg-transparent text-[#E9A580] font-semibold uppercase tracking-[0.2em] text-sm px-6 py-3 pr-12 focus:outline-none"
@@ -109,7 +128,7 @@ function MenuPage() {
           <div className="hidden sm:flex justify-center">
             <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar rounded-full bg-[#0D2517]/70 backdrop-blur-xl border border-[#E9A580]/20 px-2 py-2 shadow-lg shadow-black/20">
               {tabs.map((tb) => {
-                const active = tab === tb.key;
+                const active = activeTab === tb.key;
                 return (
                   <button
                     key={tb.key}
@@ -132,18 +151,12 @@ function MenuPage() {
 
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          {tab === "weekly" && <WeeklyView lang={lang} />}
-          {tab === "lunch" && (
-            <LunchView lang={lang} />
-          )}
-          {tab === "amaya-mesa" && (
-            <MesaView lang={lang} />
-          )}
-          {tab === "sushi-sharing" && (
-            <SushiView lang={lang} />
-          )}
-          {tab === "wine" && <WineView lang={lang} />}
-          {tab === "bar" && <BarView lang={lang} />}
+          {activeTab === "weekly" && <WeeklyView lang={lang} />}
+          {activeTab === "lunch" && <LunchView lang={lang} />}
+          {activeTab === "amaya-mesa" && <MesaView lang={lang} />}
+          {activeTab === "sushi-sharing" && <SushiView lang={lang} />}
+          {activeTab === "wine" && <WineView lang={lang} />}
+          {activeTab === "bar" && <BarView lang={lang} />}
 
           {/* Allergen note + CTA */}
           <div className="mt-24 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center border-t border-border/60 pt-10">
