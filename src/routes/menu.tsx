@@ -102,7 +102,7 @@ function MenuPage() {
           <div className="sm:hidden">
             <div className="relative mx-auto max-w-xs rounded-full bg-[#0D2517]/80 backdrop-blur-xl border border-[#E9A580]/30 shadow-lg shadow-black/30">
               <select
-                value={tab}
+                value={activeTab}
                 onChange={(e) => setTab(e.target.value as TabKey)}
                 aria-label="Speisekarte auswählen"
                 className="appearance-none w-full bg-transparent text-[#E9A580] font-semibold uppercase tracking-[0.2em] text-sm px-6 py-3 pr-12 focus:outline-none"
@@ -128,7 +128,7 @@ function MenuPage() {
           <div className="hidden sm:flex justify-center">
             <div className="flex gap-2 sm:gap-3 overflow-x-auto no-scrollbar rounded-full bg-[#0D2517]/70 backdrop-blur-xl border border-[#E9A580]/20 px-2 py-2 shadow-lg shadow-black/20">
               {tabs.map((tb) => {
-                const active = tab === tb.key;
+                const active = activeTab === tb.key;
                 return (
                   <button
                     key={tb.key}
