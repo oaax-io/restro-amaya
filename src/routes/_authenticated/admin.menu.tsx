@@ -7,6 +7,7 @@ import { Trash2, Plus, Upload, Download, ExternalLink, Wand2, FileDown } from "l
 import { parseWeeklyPdf, generateWeeklyPdf, type ParsedWeekly } from "@/lib/menu-pdf";
 import { toast } from "sonner";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
+import { useMenuVisibility, saveMenuVisibility, MENU_KEYS, MENU_LABELS, DEFAULT_MENU_VISIBILITY, type MenuKey } from "@/lib/menu-visibility";
 
 export const Route = createFileRoute("/_authenticated/admin/menu")({
   component: MenuAdmin,
