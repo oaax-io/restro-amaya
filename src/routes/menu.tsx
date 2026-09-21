@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useMenuVisibility, DEFAULT_MENU_VISIBILITY, type MenuKey } from "@/lib/menu-visibility";
 import { SiteLayout } from "@/components/layout/SiteLayout";
 import {
   type MenuItem,
@@ -150,18 +151,12 @@ function MenuPage() {
 
       <section className="py-16 lg:py-24">
         <div className="mx-auto max-w-7xl px-6 lg:px-10">
-          {tab === "weekly" && <WeeklyView lang={lang} />}
-          {tab === "lunch" && (
-            <LunchView lang={lang} />
-          )}
-          {tab === "amaya-mesa" && (
-            <MesaView lang={lang} />
-          )}
-          {tab === "sushi-sharing" && (
-            <SushiView lang={lang} />
-          )}
-          {tab === "wine" && <WineView lang={lang} />}
-          {tab === "bar" && <BarView lang={lang} />}
+          {activeTab === "weekly" && <WeeklyView lang={lang} />}
+          {activeTab === "lunch" && <LunchView lang={lang} />}
+          {activeTab === "amaya-mesa" && <MesaView lang={lang} />}
+          {activeTab === "sushi-sharing" && <SushiView lang={lang} />}
+          {activeTab === "wine" && <WineView lang={lang} />}
+          {activeTab === "bar" && <BarView lang={lang} />}
 
           {/* Allergen note + CTA */}
           <div className="mt-24 grid gap-8 lg:grid-cols-[1fr_auto] lg:items-center border-t border-border/60 pt-10">
