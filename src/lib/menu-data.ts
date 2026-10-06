@@ -172,6 +172,9 @@ export function usePdfUrl(menu_type: MenuType, fallback: string) {
   const q = useQuery({
     queryKey: ["menu-pdf", menu_type],
     queryFn: () => pdfUrlFor(menu_type, fallback),
+    staleTime: 0,
+    refetchOnMount: "always",
+    refetchOnWindowFocus: true,
   });
   return q.data ?? fallback;
 }
