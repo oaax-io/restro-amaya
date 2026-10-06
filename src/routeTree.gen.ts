@@ -37,6 +37,7 @@ import { Route as AuthenticatedAdminGalleryRouteImport } from './routes/_authent
 import { Route as AuthenticatedAdminEventsRouteImport } from './routes/_authenticated/admin.events'
 import { Route as AuthenticatedAdminApplicationsRouteImport } from './routes/_authenticated/admin.applications'
 import { Route as AuthenticatedAdminAnalyticsRouteImport } from './routes/_authenticated/admin.analytics'
+import { Route as ApiPublicMenuPdfMenuTypeRouteImport } from './routes/api/public/menu-pdf/$menuType'
 
 const ReservationRoute = ReservationRouteImport.update({
   id: '/reservation',
@@ -187,6 +188,12 @@ const AuthenticatedAdminAnalyticsRoute =
     path: '/analytics',
     getParentRoute: () => AuthenticatedAdminRoute,
   } as any)
+const ApiPublicMenuPdfMenuTypeRoute =
+  ApiPublicMenuPdfMenuTypeRouteImport.update({
+    id: '/api/public/menu-pdf/$menuType',
+    path: '/api/public/menu-pdf/$menuType',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -216,6 +223,7 @@ export interface FileRoutesByFullPath {
   '/admin/reservations': typeof AuthenticatedAdminReservationsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/menu-pdf/$menuType': typeof ApiPublicMenuPdfMenuTypeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -244,6 +252,7 @@ export interface FileRoutesByTo {
   '/admin/reservations': typeof AuthenticatedAdminReservationsRoute
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
+  '/api/public/menu-pdf/$menuType': typeof ApiPublicMenuPdfMenuTypeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -275,6 +284,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/reservations': typeof AuthenticatedAdminReservationsRoute
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/api/public/menu-pdf/$menuType': typeof ApiPublicMenuPdfMenuTypeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -306,6 +316,7 @@ export interface FileRouteTypes {
     | '/admin/reservations'
     | '/admin/settings'
     | '/admin/'
+    | '/api/public/menu-pdf/$menuType'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -334,6 +345,7 @@ export interface FileRouteTypes {
     | '/admin/reservations'
     | '/admin/settings'
     | '/admin'
+    | '/api/public/menu-pdf/$menuType'
   id:
     | '__root__'
     | '/'
@@ -364,6 +376,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/reservations'
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/'
+    | '/api/public/menu-pdf/$menuType'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -380,6 +393,7 @@ export interface RootRouteChildren {
   LoungeRoute: typeof LoungeRoute
   MenuRoute: typeof MenuRoute
   ReservationRoute: typeof ReservationRoute
+  ApiPublicMenuPdfMenuTypeRoute: typeof ApiPublicMenuPdfMenuTypeRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -580,6 +594,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminAnalyticsRouteImport
       parentRoute: typeof AuthenticatedAdminRoute
     }
+    '/api/public/menu-pdf/$menuType': {
+      id: '/api/public/menu-pdf/$menuType'
+      path: '/api/public/menu-pdf/$menuType'
+      fullPath: '/api/public/menu-pdf/$menuType'
+      preLoaderRoute: typeof ApiPublicMenuPdfMenuTypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -645,6 +666,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoungeRoute: LoungeRoute,
   MenuRoute: MenuRoute,
   ReservationRoute: ReservationRoute,
+  ApiPublicMenuPdfMenuTypeRoute: ApiPublicMenuPdfMenuTypeRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

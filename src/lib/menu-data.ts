@@ -161,11 +161,10 @@ export function useMenuMeta(menu_type: MenuType) {
 }
 
 export async function pdfUrlFor(menu_type: MenuType, fallback: string): Promise<string> {
+  // Always serve through our own domain so no storage URL is ever exposed.
   const { data } = await supabase.from("menu_meta").select("pdf_url").eq("menu_type", menu_type).maybeSingle();
   if (!data?.pdf_url) return fallback;
-  if (data.pdf_url.startsWith("http")) return data.pdf_url;
-  const { data: signed } = await supabase.storage.from("menu-pdfs").createSignedUrl(data.pdf_url, 60 * 60 * 24);
-  return signed?.signedUrl ?? fallback;
+  return `/api/public/menu-pdf/${menu_type}?v=${encodeURIComponent(data.pdf_url)}`;
 }
 
 export function usePdfUrl(menu_type: MenuType, fallback: string) {
