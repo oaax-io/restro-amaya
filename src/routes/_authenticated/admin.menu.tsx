@@ -375,7 +375,9 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
     toast.success(`Fertig – ${parsed.items.length} Einträge übernommen.`);
   }
 
-  async function generatePdf() {
+  const [genChoiceOpen, setGenChoiceOpen] = useState(false);
+  async function generatePdf(mode: "replace" | "download") {
+    setGenChoiceOpen(false);
     setGenerating(true);
     try {
       const { data: cats } = await supabase.from("menu_categories").select("*").eq("menu_type", "weekly").order("sort_order");
@@ -391,21 +393,27 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
           name: i.name_de, description: i.description_de ?? "", price: i.price_text ?? "",
         })),
       });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url; a.download = `Wochengerichte_${new Date().toISOString().slice(0,10)}.pdf`;
-      a.click(); URL.revokeObjectURL(url);
+      if (mode === "download") {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url; a.download = `Wochengerichte_${new Date().toISOString().slice(0,10)}.pdf`;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 2000);
+        toast.success("PDF heruntergeladen.");
+        return;
+      }
       // Automatisch als Download-PDF auf der Website hinterlegen (ersetzt das bisherige)
       // Eindeutiger Dateiname, damit Browser/CDN nie die alte Version aus dem Cache liefern
       const path = `${type}/generated-${Date.now()}.pdf`;
-      const up = await supabase.storage.from("menu-pdfs").upload(path, blob, { upsert: true, contentType: "application/pdf" });
+      const up = await supabase.storage.from("menu-pdfs").upload(path, blob, { contentType: "application/pdf" });
       if (up.error) throw up.error;
       if (meta?.pdf_url && !meta.pdf_url.startsWith("http") && meta.pdf_url !== path) {
         await supabase.storage.from("menu-pdfs").remove([meta.pdf_url]);
       }
       await upsert({ pdf_url: path });
       qc.invalidateQueries({ queryKey: ["menu-pdf", type] });
-      toast.success("PDF erzeugt und als Download auf der Website hinterlegt.");
+      qc.invalidateQueries();
+      toast.success("Aktuelles PDF ersetzt – die Website zeigt jetzt die neue Karte.");
     } catch (err: any) {
       toast.error("Fehler beim Erzeugen: " + (err?.message ?? err));
     } finally { setGenerating(false); }
@@ -425,6 +433,21 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
             <Btn variant={confirmState.variant === "danger" ? "danger" : "primary"} onClick={() => closeConfirm(true)}>
               {confirmState.confirmLabel ?? "Bestätigen"}
             </Btn>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog open={genChoiceOpen} onOpenChange={setGenChoiceOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>PDF aus Einträgen erzeugen</DialogTitle>
+            <DialogDescription>Was soll mit dem erzeugten PDF passieren?</DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="gap-2 sm:justify-between">
+            <Btn variant="ghost" onClick={() => setGenChoiceOpen(false)}>Abbrechen</Btn>
+            <div className="flex gap-2">
+              <Btn variant="ghost" onClick={() => generatePdf("download")}>Download</Btn>
+              <Btn onClick={() => generatePdf("replace")}>Aktuelles PDF ersetzen</Btn>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -452,7 +475,7 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
                   <span className="inline-flex items-center gap-2"><Wand2 size={14} />{parsing ? "Lese aus…" : "Aus PDF übernehmen"}</span>
                 </Btn>
               )}
-              <Btn variant="ghost" onClick={generatePdf} disabled={generating}>
+              <Btn variant="ghost" onClick={() => setGenChoiceOpen(true)} disabled={generating}>
                 <span className="inline-flex items-center gap-2"><FileDown size={14} />{generating ? "Erzeuge…" : "PDF aus Einträgen erzeugen"}</span>
               </Btn>
             </div>
