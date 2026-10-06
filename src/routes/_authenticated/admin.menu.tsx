@@ -395,6 +395,16 @@ function MetaEditor({ type, meta, onSaved }: { type: MenuType; meta: any; onSave
       const a = document.createElement("a");
       a.href = url; a.download = `Wochengerichte_${new Date().toISOString().slice(0,10)}.pdf`;
       a.click(); URL.revokeObjectURL(url);
+      // Automatisch als Download-PDF auf der Website hinterlegen (ersetzt das bisherige)
+      const path = `${type}/generated.pdf`;
+      const up = await supabase.storage.from("menu-pdfs").upload(path, blob, { upsert: true, contentType: "application/pdf" });
+      if (up.error) throw up.error;
+      if (meta?.pdf_url && !meta.pdf_url.startsWith("http") && meta.pdf_url !== path) {
+        await supabase.storage.from("menu-pdfs").remove([meta.pdf_url]);
+      }
+      await upsert({ pdf_url: path });
+      qc.invalidateQueries({ queryKey: ["menu-pdf", type] });
+      toast.success("PDF erzeugt und als Download auf der Website hinterlegt.");
     } catch (err: any) {
       toast.error("Fehler beim Erzeugen: " + (err?.message ?? err));
     } finally { setGenerating(false); }
