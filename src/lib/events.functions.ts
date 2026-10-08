@@ -111,7 +111,7 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
   if (s.status !== "complete") return b;
   if (b.status !== "pending") return b;
 
-  const patch: Record<string, unknown> = { status: "confirmed" };
+  const patch: Record<string, string | number | null> = { status: "confirmed" };
   if (s.mode === "setup") {
     const si = s.setup_intent as { payment_method?: string | { id: string } } | null;
     const pm = typeof si?.payment_method === "string" ? si.payment_method : si?.payment_method?.id;
@@ -125,7 +125,7 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
     patch.stripe_payment_intent_id = pi?.id ?? null;
     patch.stripe_payment_method_id = typeof pi?.payment_method === "string" ? pi.payment_method : pi?.payment_method?.id ?? null;
   }
-  const { data: updated } = await supabaseAdmin.from("event_bookings").update(patch).eq("id", bookingId).select("*").single();
+  const { data: updated } = await supabaseAdmin.from("event_bookings").update(patch as never).eq("id", bookingId).select("*").single();
   return updated;
 }
 

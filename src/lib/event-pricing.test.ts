@@ -1,3 +1,4 @@
+// @ts-ignore bun test runner types
 import { describe, expect, test } from "bun:test";
 import { cancellationFee, noShowFee, totalFor, type EventPricing } from "./event-pricing";
 
