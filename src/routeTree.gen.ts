@@ -38,6 +38,7 @@ import { Route as AuthenticatedAdminNewsletterRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminReservationsRouteImport } from './routes/_authenticated/admin.reservations'
 import { Route as AuthenticatedAdminSettingsRouteImport } from './routes/_authenticated/admin.settings'
 import { Route as ApiPublicMenuPdfMenuTypeRouteImport } from './routes/api/public/menu-pdf/$menuType'
+import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -194,6 +195,12 @@ const ApiPublicMenuPdfMenuTypeRoute =
     path: '/api/public/menu-pdf/$menuType',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicPaymentsWebhookRoute =
+  ApiPublicPaymentsWebhookRouteImport.update({
+    id: '/api/public/payments/webhook',
+    path: '/api/public/payments/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -224,6 +231,7 @@ export interface FileRoutesByFullPath {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/menu-pdf/$menuType': typeof ApiPublicMenuPdfMenuTypeRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -253,6 +261,7 @@ export interface FileRoutesByTo {
   '/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/api/public/menu-pdf/$menuType': typeof ApiPublicMenuPdfMenuTypeRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -285,6 +294,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/settings': typeof AuthenticatedAdminSettingsRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/api/public/menu-pdf/$menuType': typeof ApiPublicMenuPdfMenuTypeRoute
+  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -317,6 +327,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin/'
     | '/api/public/menu-pdf/$menuType'
+    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -346,6 +357,7 @@ export interface FileRouteTypes {
     | '/admin/settings'
     | '/admin'
     | '/api/public/menu-pdf/$menuType'
+    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -377,6 +389,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/settings'
     | '/_authenticated/admin/'
     | '/api/public/menu-pdf/$menuType'
+    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -394,6 +407,7 @@ export interface RootRouteChildren {
   MenuRoute: typeof MenuRoute
   ReservationRoute: typeof ReservationRoute
   ApiPublicMenuPdfMenuTypeRoute: typeof ApiPublicMenuPdfMenuTypeRoute
+  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -601,6 +615,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMenuPdfMenuTypeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/payments/webhook': {
+      id: '/api/public/payments/webhook'
+      path: '/api/public/payments/webhook'
+      fullPath: '/api/public/payments/webhook'
+      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -667,6 +688,7 @@ const rootRouteChildren: RootRouteChildren = {
   MenuRoute: MenuRoute,
   ReservationRoute: ReservationRoute,
   ApiPublicMenuPdfMenuTypeRoute: ApiPublicMenuPdfMenuTypeRoute,
+  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
