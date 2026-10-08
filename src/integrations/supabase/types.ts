@@ -80,8 +80,87 @@ export type Database = {
         }
         Relationships: []
       }
+      event_bookings: {
+        Row: {
+          amount_chf: number
+          charged_amount_chf: number
+          created_at: string
+          email: string
+          environment: string
+          event_id: string
+          id: string
+          name: string
+          notes: string | null
+          payment_mode: string
+          payment_status: string
+          persons: number
+          phone: string | null
+          status: string
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          stripe_payment_method_id: string | null
+          stripe_session_id: string | null
+          unit_price_chf: number
+          updated_at: string
+        }
+        Insert: {
+          amount_chf?: number
+          charged_amount_chf?: number
+          created_at?: string
+          email: string
+          environment?: string
+          event_id: string
+          id?: string
+          name: string
+          notes?: string | null
+          payment_mode?: string
+          payment_status?: string
+          persons?: number
+          phone?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_payment_method_id?: string | null
+          stripe_session_id?: string | null
+          unit_price_chf?: number
+          updated_at?: string
+        }
+        Update: {
+          amount_chf?: number
+          charged_amount_chf?: number
+          created_at?: string
+          email?: string
+          environment?: string
+          event_id?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          payment_mode?: string
+          payment_status?: string
+          persons?: number
+          phone?: string | null
+          status?: string
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          stripe_payment_method_id?: string | null
+          stripe_session_id?: string | null
+          unit_price_chf?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_bookings_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       events: {
         Row: {
+          cancel_allowed: boolean
+          cancel_days: number
           capacity: string | null
           created_at: string
           cta_href: string | null
@@ -96,7 +175,12 @@ export type Database = {
           is_published: boolean
           is_recurring: boolean
           kicker: string | null
+          late_fee_chf: number
           location: string | null
+          max_tickets: number | null
+          noshow_fee_chf: number | null
+          payment_mode: string
+          price_chf: number | null
           price_text: string | null
           recurrence: string | null
           sort_order: number
@@ -104,6 +188,8 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          cancel_allowed?: boolean
+          cancel_days?: number
           capacity?: string | null
           created_at?: string
           cta_href?: string | null
@@ -118,7 +204,12 @@ export type Database = {
           is_published?: boolean
           is_recurring?: boolean
           kicker?: string | null
+          late_fee_chf?: number
           location?: string | null
+          max_tickets?: number | null
+          noshow_fee_chf?: number | null
+          payment_mode?: string
+          price_chf?: number | null
           price_text?: string | null
           recurrence?: string | null
           sort_order?: number
@@ -126,6 +217,8 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          cancel_allowed?: boolean
+          cancel_days?: number
           capacity?: string | null
           created_at?: string
           cta_href?: string | null
@@ -140,7 +233,12 @@ export type Database = {
           is_published?: boolean
           is_recurring?: boolean
           kicker?: string | null
+          late_fee_chf?: number
           location?: string | null
+          max_tickets?: number | null
+          noshow_fee_chf?: number | null
+          payment_mode?: string
+          price_chf?: number | null
           price_text?: string | null
           recurrence?: string | null
           sort_order?: number
@@ -690,6 +788,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      event_booked_count: { Args: { _event_id: string }; Returns: number }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]

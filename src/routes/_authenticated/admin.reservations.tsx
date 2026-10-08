@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn } from "@/components/admin/ui";
+import { EventBookings } from "@/components/admin/EventBookings";
 
 export const Route = createFileRoute("/_authenticated/admin/reservations")({
   component: ReservationsAdmin,
@@ -21,6 +22,22 @@ const STATUS_COLOR: Record<Status, string> = {
 };
 
 function ReservationsAdmin() {
+  const [view, setView] = useState<"restaurant" | "events">("restaurant");
+  return (
+    <div>
+      <PageHeader title="Reservierungen" subtitle="Tischreservierungen und Event-Teilnehmer an einem Ort." />
+      <div className="mt-6 inline-flex rounded-full border border-black/15 bg-white p-1">
+        {([["restaurant", "Restaurant"], ["events", "Event-Teilnehmer"]] as const).map(([k, l]) => (
+          <button key={k} onClick={() => setView(k)}
+            className={`px-4 py-1.5 text-xs uppercase tracking-wider rounded-full ${view === k ? "bg-[#0D2517] text-[#F3E7D7]" : "text-black/60"}`}>{l}</button>
+        ))}
+      </div>
+      <div className="mt-6">{view === "restaurant" ? <RestaurantReservations /> : <EventBookings />}</div>
+    </div>
+  );
+}
+
+function RestaurantReservations() {
   const qc = useQueryClient();
   const [filter, setFilter] = useState<Status | "all">("all");
 
@@ -44,8 +61,7 @@ function ReservationsAdmin() {
 
   return (
     <div>
-      <PageHeader title="Reservierungen" subtitle="Alle Anfragen bestätigen, ablehnen oder abschließen." />
-      <div className="mt-6 flex flex-wrap gap-2">
+      <div className="flex flex-wrap gap-2">
         {(["all","pending","confirmed","declined","cancelled","completed"] as const).map((s) => (
           <button key={s} onClick={() => setFilter(s)}
             className={`px-3 py-1.5 text-xs uppercase tracking-wider rounded-full border ${filter===s ? "bg-[#0D2517] text-[#F3E7D7] border-[#0D2517]" : "bg-white border-black/15"}`}>
