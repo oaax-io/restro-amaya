@@ -26,6 +26,13 @@ type EventRow = {
   recurrence: string | null;
   is_published: boolean;
   sort_order: number;
+  price_chf: number | null;
+  payment_mode: "direct" | "guarantee";
+  cancel_allowed: boolean;
+  cancel_days: number;
+  late_fee_chf: number;
+  noshow_fee_chf: number | null;
+  max_tickets: number | null;
 };
 
 export const Route = createFileRoute("/_authenticated/admin/events")({
@@ -301,11 +308,7 @@ function EventCard({ ev, first, last, onUpdate, onRemove, onMove, onUploadFlyer 
             </Field>
           </div>
 
-          {ev.is_paid && (
-            <Field label="Preis (Anzeige)">
-              <Input defaultValue={ev.price_text ?? ""} placeholder="CHF 45 pro Person" onBlur={(e) => onUpdate({ price_text: e.target.value || null })} />
-            </Field>
-          )}
+          {ev.is_paid && <PricingPanel ev={ev} onUpdate={onUpdate} />}
 
           <div className="grid gap-3 sm:grid-cols-2">
             <Field label="Button-Text">
@@ -318,5 +321,76 @@ function EventCard({ ev, first, last, onUpdate, onRemove, onMove, onUploadFlyer 
         </div>
       </div>
     </Card>
+  );
+}
+function numOrNull(v: string): number | null {
+  const n = parseFloat(v.replace(",", "."));
+  return Number.isFinite(n) ? n : null;
+}
+
+function PricingPanel({ ev, onUpdate }: { ev: EventRow; onUpdate: (patch: Partial<EventRow>) => void }) {
+  const modes: { key: EventRow["payment_mode"]; title: string; desc: string }[] = [
+    { key: "direct", title: "Direktzahlung", desc: "Ticket wird bei der Buchung sofort bezahlt." },
+    { key: "guarantee", title: "Kartengarantie", desc: "Nichts wird abgebucht – Karte nur als Sicherheit für Storno/No-Show." },
+  ];
+  return (
+    <div className="rounded-xl border border-[#E9A580]/40 bg-[#E9A580]/5 p-4 space-y-4">
+      <div className="text-xs uppercase tracking-widest text-[#0D2517]/70 font-semibold">Ticketing & Bezahlung</div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <Field label="Eintrittspreis pro Person (CHF)">
+          <Input type="number" min="0" step="0.5" defaultValue={ev.price_chf ?? ""} placeholder="45"
+            onBlur={(e) => onUpdate({ price_chf: numOrNull(e.target.value) })} />
+        </Field>
+        <Field label="Max. Plätze (leer = unbegrenzt)">
+          <Input type="number" min="1" defaultValue={ev.max_tickets ?? ""} placeholder="60"
+            onBlur={(e) => { const n = numOrNull(e.target.value); onUpdate({ max_tickets: n ? Math.floor(n) : null }); }} />
+        </Field>
+      </div>
+
+      <div>
+        <Label>Abrechnungsmodell (nur eines pro Event)</Label>
+        <div className="mt-1 grid gap-2 sm:grid-cols-2">
+          {modes.map((m) => {
+            const active = ev.payment_mode === m.key;
+            return (
+              <button key={m.key} type="button" onClick={() => onUpdate({ payment_mode: m.key })}
+                className={`text-left rounded-lg border p-3 transition ${active ? "border-[#0D2517] bg-[#0D2517] text-[#F3E7D7]" : "border-black/15 bg-white hover:border-[#0D2517]/40"}`}>
+                <div className="flex items-center gap-2 text-sm font-semibold">
+                  <span className={`h-3.5 w-3.5 rounded-full border-2 ${active ? "border-[#E9A580] bg-[#E9A580]" : "border-black/30"}`} />
+                  {m.title}
+                </div>
+                <div className={`mt-1 text-xs ${active ? "text-[#F3E7D7]/75" : "text-black/55"}`}>{m.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        <label className="flex items-center gap-2 text-sm cursor-pointer">
+          <input type="checkbox" checked={ev.cancel_allowed} onChange={(e) => onUpdate({ cancel_allowed: e.target.checked })} />
+          Stornierung erlaubt
+        </label>
+        {ev.cancel_allowed ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            <Field label="Kostenlos bis (Tage vorher)">
+              <Input type="number" min="0" defaultValue={ev.cancel_days}
+                onBlur={(e) => onUpdate({ cancel_days: Math.max(0, Math.floor(numOrNull(e.target.value) ?? 7)) })} />
+            </Field>
+            <Field label="Spätstorno CHF / Person">
+              <Input type="number" min="0" step="0.5" defaultValue={ev.late_fee_chf}
+                onBlur={(e) => onUpdate({ late_fee_chf: numOrNull(e.target.value) ?? 0 })} />
+            </Field>
+            <Field label="No-Show CHF / Person">
+              <Input type="number" min="0" step="0.5" defaultValue={ev.noshow_fee_chf ?? ""} placeholder="voller Betrag"
+                onBlur={(e) => onUpdate({ noshow_fee_chf: numOrNull(e.target.value) })} />
+            </Field>
+          </div>
+        ) : (
+          <p className="text-xs text-black/55">Keine Stornierung möglich – bei Absage oder No-Show gilt der volle Eintrittspreis.</p>
+        )}
+      </div>
+      {!ev.price_chf && <p className="text-xs text-red-700">Bitte Eintrittspreis eintragen, sonst ist keine Online-Buchung möglich.</p>}
+    </div>
   );
 }
