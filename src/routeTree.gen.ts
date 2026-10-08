@@ -15,6 +15,7 @@ import { Route as AboutRouteImport } from './routes/about'
 import { Route as AgbRouteImport } from './routes/agb'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as DatenschutzRouteImport } from './routes/datenschutz'
+import { Route as EventBookingRouteImport } from './routes/event-booking'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as GalleryRouteImport } from './routes/gallery'
 import { Route as ImpressumRouteImport } from './routes/impressum'
@@ -67,6 +68,11 @@ const AuthRoute = AuthRouteImport.update({
 const DatenschutzRoute = DatenschutzRouteImport.update({
   id: '/datenschutz',
   path: '/datenschutz',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventBookingRoute = EventBookingRouteImport.update({
+  id: '/event-booking',
+  path: '/event-booking',
   getParentRoute: () => rootRouteImport,
 } as any)
 const EventsRoute = EventsRouteImport.update({
@@ -208,6 +214,7 @@ export interface FileRoutesByFullPath {
   '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
+  '/event-booking': typeof EventBookingRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/impressum': typeof ImpressumRoute
@@ -239,6 +246,7 @@ export interface FileRoutesByTo {
   '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
+  '/event-booking': typeof EventBookingRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/impressum': typeof ImpressumRoute
@@ -271,6 +279,7 @@ export interface FileRoutesById {
   '/agb': typeof AgbRoute
   '/auth': typeof AuthRoute
   '/datenschutz': typeof DatenschutzRoute
+  '/event-booking': typeof EventBookingRoute
   '/events': typeof EventsRoute
   '/gallery': typeof GalleryRoute
   '/impressum': typeof ImpressumRoute
@@ -304,6 +313,7 @@ export interface FileRouteTypes {
     | '/agb'
     | '/auth'
     | '/datenschutz'
+    | '/event-booking'
     | '/events'
     | '/gallery'
     | '/impressum'
@@ -335,6 +345,7 @@ export interface FileRouteTypes {
     | '/agb'
     | '/auth'
     | '/datenschutz'
+    | '/event-booking'
     | '/events'
     | '/gallery'
     | '/impressum'
@@ -366,6 +377,7 @@ export interface FileRouteTypes {
     | '/agb'
     | '/auth'
     | '/datenschutz'
+    | '/event-booking'
     | '/events'
     | '/gallery'
     | '/impressum'
@@ -399,6 +411,7 @@ export interface RootRouteChildren {
   AgbRoute: typeof AgbRoute
   AuthRoute: typeof AuthRoute
   DatenschutzRoute: typeof DatenschutzRoute
+  EventBookingRoute: typeof EventBookingRoute
   EventsRoute: typeof EventsRoute
   GalleryRoute: typeof GalleryRoute
   ImpressumRoute: typeof ImpressumRoute
@@ -452,6 +465,13 @@ declare module '@tanstack/react-router' {
       path: '/datenschutz'
       fullPath: '/datenschutz'
       preLoaderRoute: typeof DatenschutzRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/event-booking': {
+      id: '/event-booking'
+      path: '/event-booking'
+      fullPath: '/event-booking'
+      preLoaderRoute: typeof EventBookingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/events': {
@@ -680,6 +700,7 @@ const rootRouteChildren: RootRouteChildren = {
   AgbRoute: AgbRoute,
   AuthRoute: AuthRoute,
   DatenschutzRoute: DatenschutzRoute,
+  EventBookingRoute: EventBookingRoute,
   EventsRoute: EventsRoute,
   GalleryRoute: GalleryRoute,
   ImpressumRoute: ImpressumRoute,

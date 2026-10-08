@@ -1,5 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
+import { EventBookingModal, type BookableEvent } from "@/components/site/EventBookingModal";
+import { formatChf } from "@/lib/event-pricing";
 import { useTranslation } from "react-i18next";
 import { Calendar, Clock, MapPin, Users, ArrowRight, Tag } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
@@ -24,6 +27,13 @@ type EventRow = {
   is_recurring: boolean;
   recurrence: string | null;
   sort_order: number;
+  price_chf: number | null;
+  payment_mode: "direct" | "guarantee";
+  cancel_allowed: boolean;
+  cancel_days: number;
+  late_fee_chf: number;
+  noshow_fee_chf: number | null;
+  max_tickets: number | null;
 };
 
 function formatDate(row: EventRow): string {
@@ -44,6 +54,10 @@ export const Route = createFileRoute("/events")({
   head: () => ({
     meta: [
       { title: "Events — Amaya Restaurant & Bar" },
+      { property: "og:title", content: "Events — Amaya Restaurant & Bar" },
+      { property: "og:description", content: "DJ Nights, Cigar Tastings und Dinner-Events im Amaya Rothenburg – Tickets online sichern." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       {
         name: "description",
         content:
@@ -67,6 +81,20 @@ function EventsPage() {
         .order("event_date", { ascending: true });
       if (error) throw error;
       return (data ?? []) as unknown as EventRow[];
+    },
+  });
+  const [booking, setBooking] = useState<BookableEvent | null>(null);
+  const capped = events.filter((e) => e.is_paid && e.max_tickets);
+  const { data: booked = {} } = useQuery({
+    queryKey: ["public", "event-booked", capped.map((e) => e.id).join(",")],
+    enabled: capped.length > 0,
+    queryFn: async () => {
+      const out: Record<string, number> = {};
+      await Promise.all(capped.map(async (e) => {
+        const { data } = await supabase.rpc("event_booked_count", { _event_id: e.id });
+        out[e.id] = (data as number) ?? 0;
+      }));
+      return out;
     },
   });
   return (
@@ -103,6 +131,9 @@ function EventsPage() {
             const isExternal = ctaHref.startsWith("mailto:") || ctaHref.startsWith("http") || ctaHref.startsWith("tel:");
             const dateStr = formatDate(ev);
             const timeStr = formatTime(ev);
+            const bookable = ev.is_paid && Number(ev.price_chf ?? 0) > 0;
+            const remaining = ev.max_tickets ? Math.max(0, ev.max_tickets - (booked[ev.id] ?? 0)) : null;
+            const soldOut = remaining === 0;
             return (
               <article
                 key={ev.id}
@@ -142,7 +173,7 @@ function EventsPage() {
                         </span>
                       )}
                       <span className={`rounded-full text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1 ${ev.is_paid ? "bg-white/90 text-[#0D2517]" : "bg-emerald-500/90 text-white"}`}>
-                        {ev.is_paid ? (ev.price_text ?? t("events.ticket")) : t("events.freeEntry")}
+                        {ev.is_paid ? (ev.price_chf ? formatChf(Number(ev.price_chf)) : (ev.price_text ?? t("events.ticket"))) : t("events.freeEntry")}
                       </span>
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-white">
@@ -169,11 +200,27 @@ function EventsPage() {
                     {timeStr && <Meta icon={<Clock size={16} />} label={t("events.time")} value={timeStr} />}
                     {ev.location && <Meta icon={<MapPin size={16} />} label={t("events.location")} value={ev.location} />}
                     {ev.capacity && <Meta icon={<Users size={16} />} label={t("events.capacity")} value={ev.capacity} />}
-                    {ev.is_paid && ev.price_text && <Meta icon={<Tag size={16} />} label={t("events.price")} value={ev.price_text} />}
+                    {ev.is_paid && (ev.price_chf || ev.price_text) && <Meta icon={<Tag size={16} />} label={t("events.price")} value={ev.price_chf ? `${formatChf(Number(ev.price_chf))} pro Person` : (ev.price_text ?? "")} />}
+                    {remaining !== null && !soldOut && remaining <= 20 && <Meta icon={<Users size={16} />} label="Verfügbar" value={`Noch ${remaining} Plätze`} />}
                   </dl>
 
                   <div className="mt-10">
-                    {isExternal ? (
+                    {bookable ? (
+                      <button
+                        disabled={soldOut}
+                        onClick={() => setBooking({
+                          id: ev.id, title: ev.title, dateLabel: [dateStr, timeStr].filter(Boolean).join(" · "),
+                          remaining, price_chf: Number(ev.price_chf), payment_mode: ev.payment_mode,
+                          cancel_allowed: ev.cancel_allowed, cancel_days: ev.cancel_days,
+                          late_fee_chf: Number(ev.late_fee_chf),
+                          noshow_fee_chf: ev.noshow_fee_chf != null ? Number(ev.noshow_fee_chf) : null,
+                        })}
+                        className="inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-7 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {soldOut ? "Ausgebucht" : (ev.cta_label && ev.cta_label !== "Jetzt teilnehmen" ? ev.cta_label : ev.payment_mode === "guarantee" ? "Platz sichern" : "Ticket kaufen")}
+                        {!soldOut && <ArrowRight size={16} />}
+                      </button>
+                    ) : isExternal ? (
                       <a
                         href={ctaHref}
                         className="inline-flex items-center gap-2 rounded-full bg-accent text-[#0D2517] px-7 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold hover:bg-accent/90 transition-colors"
@@ -226,6 +273,8 @@ function EventsPage() {
           </div>
         </div>
       </section>
+
+      {booking && <EventBookingModal ev={booking} onClose={() => setBooking(null)} />}
 
       <style>{`
         @keyframes floaty {
