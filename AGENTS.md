@@ -1,2 +1,3 @@
 - Event ticketing: pricing/cancellation rules live as pure functions in src/lib/event-pricing.ts (tested); payment calls go only through src/lib/events.functions.ts using the gateway client in src/lib/stripe.server.ts — keeps fee math testable and payment access in one place.
 - Event bookings are finalized idempotently by both the return page and the payments webhook (finalizeSession) — the webhook may not deliver checkout events, so the return page is the guaranteed path.
+- Admin logout clears app-scoped credentials through the configured preview/browser storage, clears private query data, and reloads the login page without awaiting a remote logout — auth outages must not prevent local sign-out.
