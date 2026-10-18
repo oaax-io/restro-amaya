@@ -1,3 +1,4 @@
-- [ ] Resume Lovable Cloud with the owner's approval and confirm availability.
-- [ ] Make admin logout independent of Cloud availability and test credential removal.
-- [ ] Explain the unverified pause cause and lack of an always-on guarantee.
+- [ ] Resume Lovable Cloud — blocked: resume tool is disabled for this project; owner must check Cloud Overview/support.
+- [x] Make admin logout independent of Cloud availability; credential-removal tests pass and login page renders with auth unavailable.
+- [x] Explain the unverified pause cause and lack of a documented always-on guarantee.
+- [ ] Verify mnw@gastroverse.ch admin sign-in after Cloud activation — blocked: paused auth, no auth logs today, session mint unavailable.
