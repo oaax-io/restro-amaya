@@ -1,3 +1,4 @@
 - [ ] Resume Lovable Cloud with the owner's approval and confirm availability.
 - [ ] Make admin logout independent of Cloud availability and test credential removal.
 - [ ] Explain the unverified pause cause and lack of an always-on guarantee.
+- [ ] Investigate why mnw@gastroverse.ch could not sign in to admin.
