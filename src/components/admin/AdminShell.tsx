@@ -1,7 +1,9 @@
-import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { Link, useRouterState, useRouter } from "@tanstack/react-router";
 import { LayoutDashboard, CalendarCheck, Image as ImageIcon, UtensilsCrossed, Clock, Briefcase, Mail, LogOut, Menu, X, PartyPopper, Inbox, Crown, Cigarette, Settings, BarChart3 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
+import { brokeredPreviewStorage } from "@/integrations/supabase/previewAuthStorage";
+import { clearLocalSession } from "@/lib/local-sign-out";
 
 type NavItem = { to: string; label: string; icon: typeof LayoutDashboard; exact?: boolean };
 const NAV: NavItem[] = [
@@ -23,12 +25,20 @@ const NAV: NavItem[] = [
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const navigate = useNavigate();
+  const router = useRouter();
   const [mobileOpen, setMobileOpen] = useState(false);
 
   async function signOut() {
-    await supabase.auth.signOut();
-    navigate({ to: "/auth", replace: true });
+    const storage = brokeredPreviewStorage();
+    if (!storage) return;
+    // The SDK's signOut (even scope: local) calls the service before clearing
+    // credentials. Clear the actual storage directly so outages cannot trap users.
+    void supabase.auth.stopAutoRefresh();
+    const host = new URL(import.meta.env.VITE_SUPABASE_URL).hostname.split(".")[0];
+    await clearLocalSession(storage, `sb-${host}-auth-token`);
+    router.options.context.queryClient.clear();
+    // A full navigation also discards in-memory auth and protected route data.
+    window.location.replace("/auth");
   }
 
   const isActive = (to: string, exact?: boolean) => exact ? pathname === to : pathname === to || pathname.startsWith(to + "/");
