@@ -1,4 +1,4 @@
-- [ ] Resume Lovable Cloud — blocked: resume tool is disabled for this project; owner must check Cloud Overview/support.
+- [x] Resume Lovable Cloud — resumed, auth and database reachable.
 - [x] Make admin logout independent of Cloud availability; credential-removal tests pass and login page renders with auth unavailable.
 - [x] Explain the unverified pause cause and lack of a documented always-on guarantee.
-- [ ] Verify mnw@gastroverse.ch admin sign-in after Cloud activation — blocked: paused auth, no auth logs today, session mint unavailable.
+- [x] Verify mnw@gastroverse.ch admin account — confirmed, not banned, admin role present.
