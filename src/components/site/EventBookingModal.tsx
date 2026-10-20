@@ -4,6 +4,7 @@ import { X, Minus, Plus, ShieldCheck, CreditCard } from "lucide-react";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { createEventCheckout } from "@/lib/events.functions";
 import { MAX_PERSONS, conditionsText, formatChf, totalFor, type EventPricing } from "@/lib/event-pricing";
+import { PaymentTestModeBanner } from "@/components/site/PaymentTestModeBanner";
 
 export type BookableEvent = EventPricing & {
   id: string;
@@ -47,7 +48,8 @@ export function EventBookingModal({ ev, onClose }: { ev: BookableEvent; onClose:
         <button onClick={onClose} aria-label="Schliessen" className="absolute top-4 right-4 text-muted-foreground hover:text-accent">
           <X size={20} />
         </button>
-        <p className="text-[10px] tracking-[0.35em] uppercase text-accent">{guarantee ? "Platz sichern" : "Ticket kaufen"}</p>
+        <PaymentTestModeBanner />
+        <p className="mt-4 text-[10px] tracking-[0.35em] uppercase text-accent">{guarantee ? "Platz sichern" : "Ticket kaufen"}</p>
         <h3 className="font-display text-3xl uppercase font-bold mt-2 text-gradient-gold leading-tight pr-8">{ev.title}</h3>
         {ev.dateLabel && <p className="mt-1 text-sm text-muted-foreground">{ev.dateLabel}</p>}
 

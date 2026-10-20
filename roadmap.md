@@ -5,6 +5,7 @@
 - [x] Inspect existing sale offerings and payment catalog — four published paid events have numeric prices; event checkout exists; test product catalog is empty; lounge memberships currently use an application form.
 - [x] Add four priced Event-Ticket products to the test payment catalog and connect existing checkout; current admin prices remain authoritative.
 - [x] Exclude membership checkout and subscriptions as requested.
-- [ ] Verify QR tickets and atomic admin check-in end to end.
+- [x] Verify real-event test checkout end to end — test card paid CHF 15; return page displays downloadable QR-ticket; booking reads back confirmed/paid.
+- [ ] Verify admin check-in end to end — blocked: no requesting-user app account/session; admin must sign in to the preview. Atomic check-in and ticket validity rules implemented; 11 tests pass.
 - [ ] Send booking confirmation email with QR-ticket link — blocked: Amaya sender domain must be configured by the user.
 - [ ] Enable suitable event tax automation — blocked: provider rejects event tax codes on catalog products; preserve current amounts without misclassifying tickets, disclose limitation.
