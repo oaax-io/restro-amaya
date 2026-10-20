@@ -5,6 +5,7 @@ import { SiteLayout } from "@/components/layout/SiteLayout";
 import { confirmEventBooking } from "@/lib/events.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { formatChf } from "@/lib/event-pricing";
+import QRCode from "qrcode";
 
 export const Route = createFileRoute("/event-booking")({
   validateSearch: (s: Record<string, unknown>): { session_id?: string } => ({
@@ -24,12 +25,21 @@ export const Route = createFileRoute("/event-booking")({
   component: BookingReturn,
 });
 
-type Info = { status: string; paymentStatus: string; mode: string; persons: number; amount: number; title: string; eventDate: string | null };
+type Info = { status: string; paymentStatus: string; mode: string; persons: number; amount: number; title: string; eventDate: string | null; ticketToken: string | null };
 
 function BookingReturn() {
   const { session_id } = Route.useSearch();
   const [info, setInfo] = useState<Info | null>(null);
   const [err, setErr] = useState<string | null>(null);
+  const [qr, setQr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!info?.ticketToken) { setQr(null); return; }
+    let active = true;
+    void QRCode.toDataURL(info.ticketToken, { width: 280, margin: 3, errorCorrectionLevel: "M" })
+      .then((image) => { if (active) setQr(image); }).catch(() => setQr(null));
+    return () => { active = false; };
+  }, [info?.ticketToken]);
 
   useEffect(() => {
     if (!session_id) { setErr("Keine Buchung gefunden."); return; }
@@ -38,7 +48,7 @@ function BookingReturn() {
       .catch((e) => setErr(String(e?.message ?? e)));
   }, [session_id]);
 
-  const ok = info && info.status !== "pending";
+  const ok = info && ["confirmed", "attended"].includes(info.status);
 
   return (
     <SiteLayout>
@@ -59,8 +69,13 @@ function BookingReturn() {
                 <br />
                 {info.mode === "guarantee"
                   ? "Deine Karte ist als Garantie hinterlegt – es wurde nichts abgebucht."
-                  : "Dein Ticket ist bezahlt. Eine Quittung erhältst du per E-Mail."}
+                  : "Dein Ticket ist bezahlt."}
               </p>
+              {qr && <div className="mt-8">
+                <img src={qr} alt="QR-Ticket für den Einlass" className="mx-auto h-[280px] w-[280px] max-w-full" />
+                <p className="mt-3 text-sm text-muted-foreground">{info.persons} Personen · Einlass-Ticket</p>
+                <a href={qr} download="amaya-event-ticket.png" className="mt-3 inline-flex text-accent underline">QR-Ticket herunterladen</a>
+              </div>}
               <Link to="/events" className="mt-10 inline-flex rounded-full bg-accent text-[#0D2517] px-8 py-3.5 text-sm uppercase tracking-[0.25em] font-semibold">
                 Zurück zu den Events
               </Link>

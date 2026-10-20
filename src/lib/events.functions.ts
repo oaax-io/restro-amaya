@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 import { MAX_PERSONS, totalFor } from "@/lib/event-pricing";
+import { eventPriceKey, ticketToken, ticketIsValid } from "@/lib/event-tickets";
 
 type Result<T> = T | { error: string };
 
@@ -66,6 +67,16 @@ export const createEventCheckout = createServerFn({ method: "POST" })
         ? data.returnUrl
         : `${data.returnUrl}${data.returnUrl.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`;
 
+      const prices = mode === "direct"
+        ? await stripe.prices.list({ lookup_keys: [eventPriceKey(ev.id)], active: true, limit: 1 })
+        : null;
+      const catalogPrice = prices?.data[0];
+      const productId = typeof catalogPrice?.product === "string" ? catalogPrice.product : catalogPrice?.product?.id;
+      const lineItem = catalogPrice?.unit_amount === Math.round(unit * 100) && catalogPrice.currency === "chf"
+        ? { quantity: data.persons, price: catalogPrice.id }
+        : { quantity: data.persons, price_data: { currency: "chf", unit_amount: Math.round(unit * 100),
+            ...(productId ? { product: productId } : { product_data: { name: `Ticket: ${ev.title}` } }) } };
+
       const session = mode === "guarantee"
         ? await stripe.checkout.sessions.create({
             mode: "setup",
@@ -82,10 +93,7 @@ export const createEventCheckout = createServerFn({ method: "POST" })
             customer: customerId,
             return_url: returnUrl,
             metadata,
-            line_items: [{
-              quantity: data.persons,
-              price_data: { currency: "chf", unit_amount: Math.round(unit * 100), product_data: { name: `Ticket: ${ev.title}` } },
-            }],
+            line_items: [lineItem],
             payment_intent_data: { description, metadata, setup_future_usage: "off_session" },
           });
 
@@ -107,7 +115,7 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
   const bookingId = s.metadata?.booking_id;
   if (!bookingId) return null;
   const { data: b } = await supabaseAdmin.from("event_bookings").select("*").eq("id", bookingId).maybeSingle();
-  if (!b) return null;
+  if (!b || b.environment !== env || b.stripe_session_id !== sessionId) return null;
   if (s.status !== "complete") return b;
   if (b.status !== "pending") return b;
 
@@ -125,7 +133,8 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
     patch.stripe_payment_intent_id = pi?.id ?? null;
     patch.stripe_payment_method_id = typeof pi?.payment_method === "string" ? pi.payment_method : pi?.payment_method?.id ?? null;
   }
-  const { data: updated } = await supabaseAdmin.from("event_bookings").update(patch as never).eq("id", bookingId).select("*").single();
+  const { data: updated } = await supabaseAdmin.from("event_bookings").update(patch as never).eq("id", bookingId).eq("status", "pending").select("*").maybeSingle();
+  if (!updated) return (await supabaseAdmin.from("event_bookings").select("*").eq("id", bookingId).maybeSingle()).data;
   return updated;
 }
 
@@ -134,7 +143,7 @@ export const confirmEventBooking = createServerFn({ method: "POST" })
     if (!/^cs_[A-Za-z0-9_]+$/.test(d.sessionId)) throw new Error("Invalid session");
     return { sessionId: d.sessionId, environment: validEnv(d.environment) };
   })
-  .handler(async ({ data }): Promise<Result<{ status: string; paymentStatus: string; mode: string; persons: number; amount: number; title: string; eventDate: string | null }>> => {
+  .handler(async ({ data }): Promise<Result<{ status: string; paymentStatus: string; mode: string; persons: number; amount: number; title: string; eventDate: string | null; ticketToken: string | null }>> => {
     try {
       const b = await finalizeSession(data.sessionId, data.environment);
       if (!b) return { error: "Buchung nicht gefunden." };
@@ -143,6 +152,7 @@ export const confirmEventBooking = createServerFn({ method: "POST" })
       return {
         status: b.status, paymentStatus: b.payment_status, mode: b.payment_mode,
         persons: b.persons, amount: Number(b.amount_chf), title: ev?.title ?? "", eventDate: ev?.event_date ?? null,
+        ticketToken: ticketIsValid(b.status, b.payment_status) ? b.ticket_token : null,
       };
     } catch (e) {
       return { error: getStripeErrorMessage(e) };
@@ -153,6 +163,23 @@ async function assertAdmin(context: { supabase: any; userId: string }) {
   const { data } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "admin" });
   if (!data) throw new Error("Forbidden");
 }
+
+export const checkInEventTicket = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { token: string; environment: StripeEnv; eventId?: string }) => ({
+    token: ticketToken(data.token), environment: validEnv(data.environment),
+    eventId: data.eventId ? ticketToken(data.eventId) : undefined,
+  }))
+  .handler(async ({ data, context }): Promise<Result<{ ok: true; name: string; persons: number }>> => {
+    try {
+      await assertAdmin(context);
+      const result = await context.supabase.rpc("check_in_event_ticket", {
+        _token: data.token, _environment: data.environment, _event_id: data.eventId,
+      });
+      if (result.error) return { error: result.error.message };
+      return result.data as { ok: true; name: string; persons: number } | { error: string };
+    } catch (error) { return { error: error instanceof Error ? error.message : "Ticketprüfung fehlgeschlagen." }; }
+  });
 
 /** Admin: charge a fee (late cancel / no-show) on the saved card. */
 export const chargeBookingFee = createServerFn({ method: "POST" })
