@@ -2,3 +2,6 @@
 - [x] Make admin logout independent of Cloud availability; credential-removal tests pass and login page renders with auth unavailable.
 - [x] Explain the unverified pause cause and lack of a documented always-on guarantee.
 - [x] Verify mnw@gastroverse.ch admin account — confirmed, not banned, admin role present.
+- [x] Inspect existing sale offerings and payment catalog — four published paid events have numeric prices; event checkout exists; test product catalog is empty; lounge memberships currently use an application form.
+- [ ] Add existing offerings to the payment catalog and connect checkout — waiting for the user's purchase scope and fulfillment rules.
+- [ ] Implement subscription lifecycle if requested — waiting for renewal, cancellation, and plan-change rules.
