@@ -6,6 +6,7 @@ import { confirmEventBooking } from "@/lib/events.functions";
 import { getStripeEnvironment } from "@/lib/stripe";
 import { formatChf } from "@/lib/event-pricing";
 import QRCode from "qrcode";
+import { PaymentTestModeBanner } from "@/components/site/PaymentTestModeBanner";
 
 export const Route = createFileRoute("/event-booking")({
   validateSearch: (s: Record<string, unknown>): { session_id?: string } => ({
@@ -53,6 +54,7 @@ function BookingReturn() {
   return (
     <SiteLayout>
       <section className="pt-40 pb-28">
+        <PaymentTestModeBanner />
         <div className="mx-auto max-w-xl px-6 text-center">
           {!info && !err && <Loader2 className="mx-auto animate-spin text-accent" size={40} />}
           {err && (<><AlertCircle className="mx-auto text-accent" size={44} /><p className="mt-4 text-muted-foreground">{err}</p></>)}
