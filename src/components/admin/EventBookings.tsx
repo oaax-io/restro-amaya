@@ -6,6 +6,8 @@ import { Card, Btn, Input } from "@/components/admin/ui";
 import { chargeBookingFee, refundBooking } from "@/lib/events.functions";
 import { cancellationFee, noShowFee, formatChf, type EventPricing } from "@/lib/event-pricing";
 import { Download, X } from "lucide-react";
+import { EventTicketScanner } from "@/components/admin/EventTicketScanner";
+import { getStripeEnvironment } from "@/lib/stripe";
 
 type Booking = {
   id: string; event_id: string; name: string; email: string; phone: string | null; persons: number; notes: string | null;
@@ -41,7 +43,7 @@ export function EventBookings() {
     queryKey: ["admin", "event-bookings"],
     queryFn: async () => {
       const [b, e] = await Promise.all([
-        supabase.from("event_bookings").select("*").order("created_at", { ascending: false }),
+        supabase.from("event_bookings").select("*").eq("environment", getStripeEnvironment()).order("created_at", { ascending: false }),
         supabase.from("events").select("id,title,event_date,price_chf,payment_mode,cancel_allowed,cancel_days,late_fee_chf,noshow_fee_chf"),
       ]);
       if (b.error) throw b.error;
@@ -116,6 +118,7 @@ export function EventBookings() {
         <Btn variant="ghost" onClick={exportCsv} className="px-3 py-2 text-xs inline-flex items-center gap-1.5"><Download size={13} /> Liste exportieren</Btn>
       </div>
 
+      <EventTicketScanner eventId={eventFilter === "all" ? undefined : eventFilter} onCheckedIn={refresh} />
       <Card className="mt-4 p-0 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
