@@ -3,5 +3,5 @@
 - [x] Explain the unverified pause cause and lack of a documented always-on guarantee.
 - [x] Verify mnw@gastroverse.ch admin account — confirmed, not banned, admin role present.
 - [x] Inspect existing sale offerings and payment catalog — four published paid events have numeric prices; event checkout exists; test product catalog is empty; lounge memberships currently use an application form.
-- [ ] Add existing offerings to the payment catalog and connect checkout — waiting for the user's purchase scope and fulfillment rules.
+- [ ] Add existing offerings to the payment catalog and connect checkout — four Event-Ticket products attempted; provider rejected the event tax code (only supported by Tax Calculation API). Waiting for purchase scope and fulfillment rules; resolve event tax handling without misclassifying products.
 - [ ] Implement subscription lifecycle if requested — waiting for renewal, cancellation, and plan-change rules.
