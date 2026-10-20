@@ -84,6 +84,7 @@ export type Database = {
         Row: {
           amount_chf: number
           charged_amount_chf: number
+          checked_in_at: string | null
           created_at: string
           email: string
           environment: string
@@ -100,12 +101,14 @@ export type Database = {
           stripe_payment_intent_id: string | null
           stripe_payment_method_id: string | null
           stripe_session_id: string | null
+          ticket_token: string
           unit_price_chf: number
           updated_at: string
         }
         Insert: {
           amount_chf?: number
           charged_amount_chf?: number
+          checked_in_at?: string | null
           created_at?: string
           email: string
           environment?: string
@@ -122,12 +125,14 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           stripe_payment_method_id?: string | null
           stripe_session_id?: string | null
+          ticket_token?: string
           unit_price_chf?: number
           updated_at?: string
         }
         Update: {
           amount_chf?: number
           charged_amount_chf?: number
+          checked_in_at?: string | null
           created_at?: string
           email?: string
           environment?: string
@@ -144,6 +149,7 @@ export type Database = {
           stripe_payment_intent_id?: string | null
           stripe_payment_method_id?: string | null
           stripe_session_id?: string | null
+          ticket_token?: string
           unit_price_chf?: number
           updated_at?: string
         }
@@ -788,6 +794,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      check_in_event_ticket: {
+        Args: { _environment: string; _event_id?: string; _token: string }
+        Returns: Json
+      }
       event_booked_count: { Args: { _event_id: string }; Returns: number }
       has_role: {
         Args: {
