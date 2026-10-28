@@ -207,6 +207,9 @@ export function ReservationChat() {
                   <p className="mono-label mt-2 text-center text-neutral-400">
                     Jederzeit verfügbar
                   </p>
+                  <div className="mt-2 border-t border-gold/15 pt-3">
+                    <EventPromoSlider onLeave={close} />
+                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col p-3 pb-8">
