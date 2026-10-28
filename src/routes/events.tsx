@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { EventBookingModal, type BookableEvent } from "@/components/site/EventBookingModal";
-import { formatChf } from "@/lib/event-pricing";
+import { formatChf, parseTicketOptions, hasBookablePrice } from "@/lib/event-pricing";
 import { useTranslation } from "react-i18next";
 import { Calendar, Clock, MapPin, Users, ArrowRight, Tag } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
