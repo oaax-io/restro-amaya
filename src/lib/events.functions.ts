@@ -135,6 +135,24 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
   }
   const { data: updated } = await supabaseAdmin.from("event_bookings").update(patch as never).eq("id", bookingId).eq("status", "pending").select("*").maybeSingle();
   if (!updated) return (await supabaseAdmin.from("event_bookings").select("*").eq("id", bookingId).maybeSingle()).data;
+  // Only the call that performed the pending→confirmed transition sends the ticket email.
+  try {
+    const { data: ev } = await supabaseAdmin.from("events").select("title,event_date").eq("id", updated.event_id).maybeSingle();
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    const date = ev?.event_date
+      ? new Date(ev.event_date).toLocaleString("de-CH", { timeZone: "Europe/Zurich", dateStyle: "long", timeStyle: "short" })
+      : undefined;
+    await sendTemplateEmail("event-ticket", updated.email, {
+      templateData: {
+        name: updated.name, title: ev?.title, eventDate: date, persons: updated.persons,
+        amount: Number(updated.amount_chf).toFixed(2), guarantee: updated.payment_mode === "guarantee",
+        ticketUrl: `https://www.amaya-restaurant.ch/event-booking?session_id=${encodeURIComponent(sessionId)}`,
+      },
+      idempotencyKey: `event-ticket-${updated.id}`,
+    });
+  } catch (e) {
+    console.error("Ticket email failed:", e);
+  }
   return updated;
 }
 
