@@ -190,6 +190,14 @@ const resources = {
         ownTitle: "Plane deine eigene Nacht.",
         ownBody: "Firmenanlass, Hochzeit, Release-Party — wir kuratieren Menü, Musik und Atmosphäre nach deinen Vorstellungen.",
         ownCta: "Anfrage senden",
+        promo: {
+          eyebrow: "Event-Tipps",
+          cta: "Tickets & Event-Dinner buchen",
+          click: "Hier klicken",
+          seeAll: "Alle Events ansehen",
+          prev: "Vorheriges Event",
+          next: "Nächstes Event",
+        },
       },
       legal: {
         kicker: "Rechtliches",
@@ -386,6 +394,14 @@ const resources = {
         ownTitle: "Plan your own night.",
         ownBody: "Corporate event, wedding, release party — we curate menu, music and atmosphere to your vision.",
         ownCta: "Send request",
+        promo: {
+          eyebrow: "Event picks",
+          cta: "Book tickets & event dinner",
+          click: "Click here",
+          seeAll: "View all events",
+          prev: "Previous event",
+          next: "Next event",
+        },
       },
       legal: {
         kicker: "Legal",
