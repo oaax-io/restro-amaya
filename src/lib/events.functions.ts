@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
-import { MAX_PERSONS, totalFor } from "@/lib/event-pricing";
+import { MAX_PERSONS, parseTicketOptions, quoteBooking, hasBookablePrice } from "@/lib/event-pricing";
 import { eventPriceKey, ticketToken, ticketIsValid } from "@/lib/event-tickets";
 
 type Result<T> = T | { error: string };
@@ -15,6 +15,7 @@ export const createEventCheckout = createServerFn({ method: "POST" })
   .inputValidator((d: {
     eventId: string; persons: number; name: string; email: string;
     phone?: string; notes?: string; returnUrl: string; environment: StripeEnv;
+    ticketId?: string | null; addonIds?: string[];
   }) => {
     if (!/^[0-9a-f-]{36}$/i.test(d.eventId)) throw new Error("Ungültiges Event");
     const persons = Math.floor(Number(d.persons));
@@ -29,6 +30,8 @@ export const createEventCheckout = createServerFn({ method: "POST" })
       phone: d.phone ? String(d.phone).slice(0, 40) : null,
       notes: d.notes ? String(d.notes).slice(0, 1000) : null,
       returnUrl: d.returnUrl, environment: validEnv(d.environment),
+      ticketId: d.ticketId ? String(d.ticketId).slice(0, 40) : null,
+      addonIds: Array.isArray(d.addonIds) ? d.addonIds.slice(0, 20).map((x) => String(x).slice(0, 40)) : [],
     };
   })
   .handler(async ({ data }): Promise<Result<{ clientSecret: string }>> => {
@@ -36,7 +39,8 @@ export const createEventCheckout = createServerFn({ method: "POST" })
       const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       const { data: ev, error } = await supabaseAdmin.from("events").select("*").eq("id", data.eventId).maybeSingle();
       if (error || !ev || !ev.is_published) return { error: "Event nicht gefunden." };
-      if (!ev.is_paid || !ev.price_chf || Number(ev.price_chf) <= 0) return { error: "Für dieses Event ist keine Ticketbuchung aktiv." };
+      const options = parseTicketOptions((ev as { ticket_options?: unknown }).ticket_options);
+      if (!ev.is_paid || !hasBookablePrice(ev.price_chf, options)) return { error: "Für dieses Event ist keine Ticketbuchung aktiv." };
 
       if (ev.max_tickets) {
         const { data: booked } = await supabaseAdmin.rpc("event_booked_count", { _event_id: ev.id });
@@ -45,14 +49,18 @@ export const createEventCheckout = createServerFn({ method: "POST" })
         }
       }
 
-      const unit = Number(ev.price_chf);
-      const amount = totalFor(unit, data.persons);
+      let quote;
+      try { quote = quoteBooking(ev.price_chf, options, data.persons, data.ticketId, data.addonIds); }
+      catch (e) { return { error: e instanceof Error ? e.message : "Ungültige Auswahl" }; }
+      const unit = quote.unit;
+      const amount = quote.total;
+      if (amount <= 0) return { error: "Für diese Auswahl ist keine Online-Buchung möglich." };
       const mode = ev.payment_mode === "guarantee" ? "guarantee" : "direct";
 
       const { data: booking, error: bErr } = await supabaseAdmin.from("event_bookings").insert({
         event_id: ev.id, name: data.name, email: data.email, phone: data.phone, notes: data.notes,
         persons: data.persons, unit_price_chf: unit, amount_chf: amount, payment_mode: mode,
-        environment: data.environment,
+        environment: data.environment, selections: quote.lines,
       }).select("id").single();
       if (bErr || !booking) return { error: bErr?.message ?? "Buchung fehlgeschlagen" };
 
@@ -61,21 +69,27 @@ export const createEventCheckout = createServerFn({ method: "POST" })
       const customerId = existing.data[0]?.id
         ?? (await stripe.customers.create({ email: data.email, name: data.name, phone: data.phone ?? undefined })).id;
 
-      const description = `${ev.title} – ${data.persons} Person${data.persons > 1 ? "en" : ""}`;
+      const description = `${ev.title} – ${data.persons} Person${data.persons > 1 ? "en" : ""} – ${quote.lines.map((l) => l.label).join(" + ")}`;
       const metadata = { booking_id: booking.id, event_id: ev.id, kind: "event_booking" };
       const returnUrl = data.returnUrl.includes("{CHECKOUT_SESSION_ID}")
         ? data.returnUrl
         : `${data.returnUrl}${data.returnUrl.includes("?") ? "&" : "?"}session_id={CHECKOUT_SESSION_ID}`;
 
+      // Base-only events reuse the catalog price when it matches; categories/add-ons use inline prices on the same product.
       const prices = mode === "direct"
         ? await stripe.prices.list({ lookup_keys: [eventPriceKey(ev.id)], active: true, limit: 1 })
         : null;
       const catalogPrice = prices?.data[0];
       const productId = typeof catalogPrice?.product === "string" ? catalogPrice.product : catalogPrice?.product?.id;
-      const lineItem = catalogPrice?.unit_amount === Math.round(unit * 100) && catalogPrice.currency === "chf"
-        ? { quantity: data.persons, price: catalogPrice.id }
-        : { quantity: data.persons, price_data: { currency: "chf", unit_amount: Math.round(unit * 100),
-            ...(productId ? { product: productId } : { product_data: { name: `Ticket: ${ev.title}` } }) } };
+      const lineItems = quote.lines.map((l) => {
+        const cents = Math.round(l.unit_chf * 100);
+        if (l.kind === "base" && catalogPrice?.unit_amount === cents && catalogPrice.currency === "chf") {
+          return { quantity: l.quantity, price: catalogPrice.id };
+        }
+        const name = l.kind === "base" ? `Ticket: ${ev.title}` : `${ev.title} – ${l.label}`;
+        return { quantity: l.quantity, price_data: { currency: "chf", unit_amount: cents,
+          ...(productId && l.kind === "base" ? { product: productId } : { product_data: { name } }) } };
+      }).filter((li) => !("price_data" in li) || (li.price_data?.unit_amount ?? 0) > 0);
 
       const session = mode === "guarantee"
         ? await stripe.checkout.sessions.create({
@@ -93,7 +107,7 @@ export const createEventCheckout = createServerFn({ method: "POST" })
             customer: customerId,
             return_url: returnUrl,
             metadata,
-            line_items: [lineItem],
+            line_items: lineItems,
             payment_intent_data: { description, metadata, setup_future_usage: "off_session" },
           });
 

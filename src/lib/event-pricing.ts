@@ -71,3 +71,49 @@ export function conditionsText(ev: EventPricing): string[] {
   }
   return out;
 }
+
+// ---- Ticket categories & add-ons (admin-defined per event) ----
+export type TicketOption = { id: string; label: string; price_chf: number; kind: "ticket" | "addon" };
+export type QuoteLine = { id: string; label: string; kind: "ticket" | "addon" | "base"; unit_chf: number; quantity: number };
+
+export function parseTicketOptions(raw: unknown): TicketOption[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((o) => {
+    if (!o || typeof o !== "object") return [];
+    const r = o as Record<string, unknown>;
+    const id = String(r.id ?? "").slice(0, 40);
+    const label = String(r.label ?? "").trim().slice(0, 80);
+    const price = Number(r.price_chf);
+    if (!id || !label || !Number.isFinite(price) || price < 0) return [];
+    return [{ id, label, price_chf: Math.round(price * 100) / 100, kind: r.kind === "addon" ? "addon" : "ticket" } as TicketOption];
+  });
+}
+
+/** Server-authoritative price quote. Throws on invalid selections. */
+export function quoteBooking(
+  basePrice: number | null, options: TicketOption[], persons: number, ticketId: string | null, addonIds: string[],
+): { lines: QuoteLine[]; unit: number; total: number } {
+  const tickets = options.filter((o) => o.kind === "ticket");
+  const addons = options.filter((o) => o.kind === "addon");
+  const lines: QuoteLine[] = [];
+  if (tickets.length) {
+    const t = tickets.find((x) => x.id === ticketId);
+    if (!t) throw new Error("Bitte eine Ticket-Kategorie wählen.");
+    lines.push({ id: t.id, label: t.label, kind: "ticket", unit_chf: t.price_chf, quantity: persons });
+  } else {
+    lines.push({ id: "base", label: "Eintritt", kind: "base", unit_chf: Math.max(0, Number(basePrice ?? 0)), quantity: persons });
+  }
+  for (const id of new Set(addonIds)) {
+    const a = addons.find((x) => x.id === id);
+    if (!a) throw new Error("Ungültige Zusatzoption.");
+    lines.push({ id: a.id, label: a.label, kind: "addon", unit_chf: a.price_chf, quantity: persons });
+  }
+  const unit = Math.round(lines.reduce((s, l) => s + l.unit_chf, 0) * 100) / 100;
+  return { lines, unit, total: totalFor(unit, persons) };
+}
+
+/** True when the event can be booked online (has a positive price somewhere). */
+export function hasBookablePrice(basePrice: number | null, options: TicketOption[]): boolean {
+  const tickets = options.filter((o) => o.kind === "ticket");
+  return tickets.length ? tickets.some((t) => t.price_chf > 0) : Number(basePrice ?? 0) > 0;
+}

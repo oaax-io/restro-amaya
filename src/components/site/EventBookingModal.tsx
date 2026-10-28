@@ -3,7 +3,7 @@ import { EmbeddedCheckoutProvider, EmbeddedCheckout } from "@stripe/react-stripe
 import { X, Minus, Plus, ShieldCheck, CreditCard } from "lucide-react";
 import { getStripe, getStripeEnvironment } from "@/lib/stripe";
 import { createEventCheckout } from "@/lib/events.functions";
-import { MAX_PERSONS, conditionsText, formatChf, totalFor, type EventPricing } from "@/lib/event-pricing";
+import { MAX_PERSONS, conditionsText, formatChf, totalFor, type EventPricing, type TicketOption } from "@/lib/event-pricing";
 import { PaymentTestModeBanner } from "@/components/site/PaymentTestModeBanner";
 
 export type BookableEvent = EventPricing & {
@@ -11,6 +11,7 @@ export type BookableEvent = EventPricing & {
   title: string;
   dateLabel: string;
   remaining: number | null;
+  ticket_options: TicketOption[];
 };
 
 export function EventBookingModal({ ev, onClose }: { ev: BookableEvent; onClose: () => void }) {
@@ -21,14 +22,20 @@ export function EventBookingModal({ ev, onClose }: { ev: BookableEvent; onClose:
   const [err, setErr] = useState<string | null>(null);
 
   const maxPersons = Math.min(MAX_PERSONS, ev.remaining ?? MAX_PERSONS);
-  const total = totalFor(ev.price_chf, persons);
+  const tickets = ev.ticket_options.filter((o) => o.kind === "ticket");
+  const addons = ev.ticket_options.filter((o) => o.kind === "addon");
+  const [ticketId, setTicketId] = useState<string | null>(tickets[0]?.id ?? null);
+  const [addonIds, setAddonIds] = useState<string[]>([]);
+  const baseUnit = tickets.length ? (tickets.find((t) => t.id === ticketId)?.price_chf ?? 0) : Number(ev.price_chf ?? 0);
+  const unit = baseUnit + addons.filter((a) => addonIds.includes(a.id)).reduce((s, a) => s + a.price_chf, 0);
+  const total = totalFor(unit, persons);
   const guarantee = ev.payment_mode === "guarantee";
-  const canSubmit = form.name.trim() && /\S+@\S+\.\S+/.test(form.email) && accepted && persons >= 1;
+  const canSubmit = form.name.trim() && /\S+@\S+\.\S+/.test(form.email) && accepted && persons >= 1 && total > 0 && (!tickets.length || !!ticketId);
 
   const fetchClientSecret = async () => {
     const res = await createEventCheckout({
       data: {
-        eventId: ev.id, persons, ...form,
+        eventId: ev.id, persons, ...form, ticketId, addonIds,
         returnUrl: `${window.location.origin}/event-booking?session_id={CHECKOUT_SESSION_ID}`,
         environment: getStripeEnvironment(),
       },
@@ -58,7 +65,7 @@ export function EventBookingModal({ ev, onClose }: { ev: BookableEvent; onClose:
             <div className="flex items-center justify-between rounded-2xl border border-accent/20 bg-background/40 px-4 py-3">
               <div>
                 <div className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">Personen</div>
-                <div className="text-sm text-foreground">{formatChf(Number(ev.price_chf ?? 0))} pro Person</div>
+                <div className="text-sm text-foreground">{formatChf(unit)} pro Person</div>
               </div>
               <div className="flex items-center gap-3">
                 <button onClick={() => setPersons((p) => Math.max(1, p - 1))} className="h-9 w-9 rounded-full border border-accent/40 text-accent flex items-center justify-center disabled:opacity-40" disabled={persons <= 1}><Minus size={14} /></button>
@@ -66,6 +73,39 @@ export function EventBookingModal({ ev, onClose }: { ev: BookableEvent; onClose:
                 <button onClick={() => setPersons((p) => Math.min(maxPersons, p + 1))} className="h-9 w-9 rounded-full border border-accent/40 text-accent flex items-center justify-center disabled:opacity-40" disabled={persons >= maxPersons}><Plus size={14} /></button>
               </div>
             </div>
+
+            {tickets.length > 0 && (
+              <div>
+                <div className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">Ticket-Kategorie</div>
+                <div className="grid gap-2">
+                  {tickets.map((t) => (
+                    <label key={t.id} className={`flex items-center justify-between rounded-xl border px-4 py-3 cursor-pointer ${ticketId === t.id ? "border-accent bg-accent/10" : "border-accent/20 bg-background/40"}`}>
+                      <span className="flex items-center gap-3 text-sm text-foreground">
+                        <input type="radio" name="ticket" checked={ticketId === t.id} onChange={() => setTicketId(t.id)} className="accent-[#E9A580]" />
+                        {t.label}
+                      </span>
+                      <span className="text-sm text-accent">{formatChf(t.price_chf)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
+            {addons.length > 0 && (
+              <div>
+                <div className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground mb-2">Zusatzoptionen (pro Person)</div>
+                <div className="grid gap-2">
+                  {addons.map((a) => (
+                    <label key={a.id} className={`flex items-center justify-between rounded-xl border px-4 py-3 cursor-pointer ${addonIds.includes(a.id) ? "border-accent bg-accent/10" : "border-accent/20 bg-background/40"}`}>
+                      <span className="flex items-center gap-3 text-sm text-foreground">
+                        <input type="checkbox" checked={addonIds.includes(a.id)} onChange={(e) => setAddonIds((ids) => e.target.checked ? [...ids, a.id] : ids.filter((x) => x !== a.id))} className="accent-[#E9A580]" />
+                        {a.label}
+                      </span>
+                      <span className="text-sm text-accent">+ {formatChf(a.price_chf)}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
+            )}
 
             <div className="grid gap-3 sm:grid-cols-2">
               <input className={field} placeholder="Vor- und Nachname *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />

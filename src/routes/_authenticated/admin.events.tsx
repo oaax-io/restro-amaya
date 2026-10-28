@@ -3,6 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRef, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { PageHeader, Card, Btn, Input, Textarea, Field, Label } from "@/components/admin/ui";
+import { parseTicketOptions, type TicketOption } from "@/lib/event-pricing";
 import { Trash2, ArrowUp, ArrowDown, Upload, Plus, Eye, EyeOff, Repeat } from "lucide-react";
 
 const SIGN_TTL = 60 * 60 * 24 * 365 * 5;
@@ -33,6 +34,7 @@ type EventRow = {
   late_fee_chf: number;
   noshow_fee_chf: number | null;
   max_tickets: number | null;
+  ticket_options: TicketOption[];
 };
 
 export const Route = createFileRoute("/_authenticated/admin/events")({
@@ -390,7 +392,36 @@ function PricingPanel({ ev, onUpdate }: { ev: EventRow; onUpdate: (patch: Partia
           <p className="text-xs text-black/55">Keine Stornierung möglich – bei Absage oder No-Show gilt der volle Eintrittspreis.</p>
         )}
       </div>
-      {!ev.price_chf && <p className="text-xs text-red-700">Bitte Eintrittspreis eintragen, sonst ist keine Online-Buchung möglich.</p>}
+      <OptionsEditor value={parseTicketOptions(ev.ticket_options)} onChange={(ticket_options) => onUpdate({ ticket_options })} />
+      {!ev.price_chf && !parseTicketOptions(ev.ticket_options).some((o) => o.kind === "ticket" && o.price_chf > 0) && <p className="text-xs text-red-700">Bitte Eintrittspreis oder Ticket-Kategorie eintragen, sonst ist keine Online-Buchung möglich.</p>}
+    </div>
+  );
+}
+
+function OptionsEditor({ value, onChange }: { value: TicketOption[]; onChange: (v: TicketOption[]) => void }) {
+  const add = (kind: TicketOption["kind"]) =>
+    onChange([...value, { id: Math.random().toString(36).slice(2, 10), label: kind === "ticket" ? "Dinner + Eintritt" : "Champagner", price_chf: 0, kind }]);
+  const patch = (id: string, p: Partial<TicketOption>) => onChange(value.map((o) => (o.id === id ? { ...o, ...p } : o)));
+  const section = (kind: TicketOption["kind"], title: string, hint: string) => (
+    <div>
+      <Label>{title}</Label>
+      <p className="text-xs text-black/55 mb-2">{hint}</p>
+      <div className="space-y-2">
+        {value.filter((o) => o.kind === kind).map((o) => (
+          <div key={o.id} className="grid grid-cols-[1fr_120px_auto] gap-2">
+            <Input defaultValue={o.label} placeholder="Bezeichnung" onBlur={(e) => e.target.value.trim() && patch(o.id, { label: e.target.value.trim() })} />
+            <Input type="number" min="0" step="0.5" defaultValue={o.price_chf} placeholder="CHF" onBlur={(e) => patch(o.id, { price_chf: Math.max(0, numOrNull(e.target.value) ?? 0) })} />
+            <Btn variant="ghost" className="p-2" onClick={() => onChange(value.filter((x) => x.id !== o.id))}><Trash2 size={14} /></Btn>
+          </div>
+        ))}
+        <Btn variant="ghost" onClick={() => add(kind)} className="text-xs"><span className="inline-flex items-center gap-1"><Plus size={14} />Hinzufügen</span></Btn>
+      </div>
+    </div>
+  );
+  return (
+    <div className="space-y-4 border-t border-black/10 pt-4">
+      {section("ticket", "Ticket-Kategorien (Gast wählt eine)", "z. B. „Eintritt“ CHF 30 und „Dinner + Eintritt“ CHF 120 – pro Person. Leer = Eintrittspreis oben gilt.")}
+      {section("addon", "Zusatzoptionen (frei wählbar)", "z. B. Champagner, VIP-Tisch, Weinbegleitung – wird pro Person zum Ticket addiert.")}
     </div>
   );
 }

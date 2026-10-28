@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
 import { EventBookingModal, type BookableEvent } from "@/components/site/EventBookingModal";
-import { formatChf } from "@/lib/event-pricing";
+import { formatChf, parseTicketOptions, hasBookablePrice } from "@/lib/event-pricing";
 import { useTranslation } from "react-i18next";
 import { Calendar, Clock, MapPin, Users, ArrowRight, Tag } from "lucide-react";
 import { SiteLayout } from "@/components/layout/SiteLayout";
@@ -28,6 +28,7 @@ type EventRow = {
   recurrence: string | null;
   sort_order: number;
   price_chf: number | null;
+  ticket_options: unknown;
   payment_mode: "direct" | "guarantee";
   cancel_allowed: boolean;
   cancel_days: number;
@@ -131,7 +132,9 @@ function EventsPage() {
             const isExternal = ctaHref.startsWith("mailto:") || ctaHref.startsWith("http") || ctaHref.startsWith("tel:");
             const dateStr = formatDate(ev);
             const timeStr = formatTime(ev);
-            const bookable = ev.is_paid && Number(ev.price_chf ?? 0) > 0;
+            const opts = parseTicketOptions(ev.ticket_options);
+            const bookable = ev.is_paid && hasBookablePrice(ev.price_chf, opts);
+            const fromPrice = opts.some((o) => o.kind === "ticket") ? Math.min(...opts.filter((o) => o.kind === "ticket").map((o) => o.price_chf)) : Number(ev.price_chf ?? 0);
             const remaining = ev.max_tickets ? Math.max(0, ev.max_tickets - (booked[ev.id] ?? 0)) : null;
             const soldOut = remaining === 0;
             return (
@@ -173,7 +176,7 @@ function EventsPage() {
                         </span>
                       )}
                       <span className={`rounded-full text-[10px] tracking-[0.25em] uppercase font-semibold px-3 py-1 ${ev.is_paid ? "bg-white/90 text-[#0D2517]" : "bg-emerald-500/90 text-white"}`}>
-                        {ev.is_paid ? (ev.price_chf ? formatChf(Number(ev.price_chf)) : (ev.price_text ?? t("events.ticket"))) : t("events.freeEntry")}
+                        {ev.is_paid ? (fromPrice > 0 ? (opts.some((o) => o.kind === "ticket") ? `ab ${formatChf(fromPrice)}` : formatChf(fromPrice)) : (ev.price_text ?? t("events.ticket"))) : t("events.freeEntry")}
                       </span>
                     </div>
                     <div className="absolute bottom-5 left-5 right-5 text-white">
@@ -200,7 +203,7 @@ function EventsPage() {
                     {timeStr && <Meta icon={<Clock size={16} />} label={t("events.time")} value={timeStr} />}
                     {ev.location && <Meta icon={<MapPin size={16} />} label={t("events.location")} value={ev.location} />}
                     {ev.capacity && <Meta icon={<Users size={16} />} label={t("events.capacity")} value={ev.capacity} />}
-                    {ev.is_paid && (ev.price_chf || ev.price_text) && <Meta icon={<Tag size={16} />} label={t("events.price")} value={ev.price_chf ? `${formatChf(Number(ev.price_chf))} pro Person` : (ev.price_text ?? "")} />}
+                    {ev.is_paid && (fromPrice > 0 || ev.price_text) && <Meta icon={<Tag size={16} />} label={t("events.price")} value={fromPrice > 0 ? `${opts.some((o) => o.kind === "ticket") ? "ab " : ""}${formatChf(fromPrice)} pro Person` : (ev.price_text ?? "")} />}
                     {remaining !== null && !soldOut && remaining <= 20 && <Meta icon={<Users size={16} />} label="Verfügbar" value={`Noch ${remaining} Plätze`} />}
                   </dl>
 
@@ -210,7 +213,7 @@ function EventsPage() {
                         disabled={soldOut}
                         onClick={() => setBooking({
                           id: ev.id, title: ev.title, dateLabel: [dateStr, timeStr].filter(Boolean).join(" · "),
-                          remaining, price_chf: Number(ev.price_chf), payment_mode: ev.payment_mode,
+                          remaining, price_chf: Number(ev.price_chf ?? 0), ticket_options: opts, payment_mode: ev.payment_mode,
                           cancel_allowed: ev.cancel_allowed, cancel_days: ev.cancel_days,
                           late_fee_chf: Number(ev.late_fee_chf),
                           noshow_fee_chf: ev.noshow_fee_chf != null ? Number(ev.noshow_fee_chf) : null,
