@@ -99,11 +99,13 @@ export function EventPromoSlider({ onLeave }: { onLeave: () => void }) {
         </span>
       </div>
 
-      <button
-        type="button"
+      <div
+        role="button"
+        tabIndex={0}
         onClick={go}
+        onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") go(); }}
         aria-label={`${current.title} — ${t("events.promo.seeAll")}`}
-        className="group relative block w-full overflow-hidden rounded-xl border border-gold/30 bg-background text-left shadow-[0_10px_28px_-14px_rgba(13,37,23,0.55)] transition-all duration-300 hover:border-gold/70 hover:shadow-[0_14px_34px_-12px_rgba(233,165,128,0.55)]"
+        className="group relative block w-full cursor-pointer overflow-hidden rounded-xl border border-gold/30 bg-background text-left shadow-[0_10px_28px_-14px_rgba(13,37,23,0.55)] transition-all duration-300 hover:border-gold/70 hover:shadow-[0_14px_34px_-12px_rgba(233,165,128,0.55)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gold/60"
       >
         {/* Slide area */}
         <div className="relative h-36 w-full overflow-hidden">
