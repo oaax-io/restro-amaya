@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { CalendarCheck, ShoppingBag, Gift, ArrowLeft, X } from "lucide-react";
 import { GastronoviWidget, type GastronoviEntryPoint } from "./GastronoviWidget";
+import { EventPromoSlider } from "./EventPromoSlider";
 
 const TILES: {
   key: GastronoviEntryPoint;
