@@ -13,6 +13,7 @@ type Booking = {
   id: string; event_id: string; name: string; email: string; phone: string | null; persons: number; notes: string | null;
   amount_chf: number; payment_mode: string; status: string; payment_status: string; charged_amount_chf: number;
   stripe_payment_method_id: string | null; stripe_payment_intent_id: string | null; environment: string; created_at: string;
+  selections?: { label: string; kind: string }[] | null;
 };
 type Ev = EventPricing & { id: string; title: string; event_date: string | null };
 
@@ -144,7 +145,7 @@ export function EventBookings() {
                       {b.phone && <div className="text-xs text-black/60"><a href={`tel:${b.phone}`}>{b.phone}</a></div>}
                       {b.notes && <div className="text-xs text-black/60 mt-1 max-w-xs">{b.notes}</div>}
                     </td>
-                    <td className="p-3">{b.persons}</td>
+                    <td className="p-3">{b.persons}{(b.selections ?? []).filter((x) => x.kind !== "base").length > 0 && <div className="text-[11px] text-black/60">{(b.selections ?? []).filter((x) => x.kind !== "base").map((x) => x.label).join(" + ")}</div>}</td>
                     <td className="p-3 whitespace-nowrap">
                       {formatChf(Number(b.amount_chf))}
                       <div className="text-[11px] text-black/50">{b.payment_mode === "guarantee" ? "Kartengarantie" : "Direktzahlung"}</div>
