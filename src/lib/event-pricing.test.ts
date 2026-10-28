@@ -28,3 +28,24 @@ describe("event pricing", () => {
     expect(cancellationFee({ ...dinner, cancel_allowed: false, price_chf: 15 }, 2, "2026-12-01", now)).toBe(30);
   });
 });
+
+import { quoteBooking, parseTicketOptions } from "./event-pricing";
+describe("ticket options", () => {
+  const opts = parseTicketOptions([
+    { id: "entry", label: "Eintritt", price_chf: 30, kind: "ticket" },
+    { id: "dinner", label: "Dinner + Eintritt", price_chf: 120, kind: "ticket" },
+    { id: "champ", label: "Champagner", price_chf: 25, kind: "addon" },
+  ]);
+  test("dinner ticket with add-on for 2 persons = 290", () => {
+    expect(quoteBooking(null, opts, 2, "dinner", ["champ"]).total).toBe(290);
+  });
+  test("ticket required when categories exist", () => {
+    expect(() => quoteBooking(null, opts, 1, null, [])).toThrow();
+  });
+  test("unknown add-on rejected", () => {
+    expect(() => quoteBooking(null, opts, 1, "entry", ["x"])).toThrow();
+  });
+  test("no categories falls back to base price", () => {
+    expect(quoteBooking(45, [], 3, null, []).total).toBe(135);
+  });
+});
