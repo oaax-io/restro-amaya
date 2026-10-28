@@ -96,6 +96,7 @@ export type Database = {
           payment_status: string
           persons: number
           phone: string | null
+          selections: Json
           status: string
           stripe_customer_id: string | null
           stripe_payment_intent_id: string | null
@@ -120,6 +121,7 @@ export type Database = {
           payment_status?: string
           persons?: number
           phone?: string | null
+          selections?: Json
           status?: string
           stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
@@ -144,6 +146,7 @@ export type Database = {
           payment_status?: string
           persons?: number
           phone?: string | null
+          selections?: Json
           status?: string
           stripe_customer_id?: string | null
           stripe_payment_intent_id?: string | null
@@ -190,6 +193,7 @@ export type Database = {
           price_text: string | null
           recurrence: string | null
           sort_order: number
+          ticket_options: Json
           title: string
           updated_at: string
         }
@@ -219,6 +223,7 @@ export type Database = {
           price_text?: string | null
           recurrence?: string | null
           sort_order?: number
+          ticket_options?: Json
           title: string
           updated_at?: string
         }
@@ -248,6 +253,7 @@ export type Database = {
           price_text?: string | null
           recurrence?: string | null
           sort_order?: number
+          ticket_options?: Json
           title?: string
           updated_at?: string
         }
