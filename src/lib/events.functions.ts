@@ -89,7 +89,7 @@ export const createEventCheckout = createServerFn({ method: "POST" })
         const name = l.kind === "base" ? `Ticket: ${ev.title}` : `${ev.title} – ${l.label}`;
         return { quantity: l.quantity, price_data: { currency: "chf", unit_amount: cents,
           ...(productId && l.kind === "base" ? { product: productId } : { product_data: { name } }) } };
-      }).filter((li) => !("price_data" in li) || li.price_data.unit_amount > 0);
+      }).filter((li) => !("price_data" in li) || (li.price_data?.unit_amount ?? 0) > 0);
 
       const session = mode === "guarantee"
         ? await stripe.checkout.sessions.create({
