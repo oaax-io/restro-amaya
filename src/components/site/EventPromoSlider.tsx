@@ -122,7 +122,7 @@ export function EventPromoSlider({ onLeave }: { onLeave: () => void }) {
               style={{ background: "linear-gradient(135deg, #0d2517 0%, #14382a 55%, #1d4a33 100%)" }}
             />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/45 to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-background via-background/45 to-transparent" />
 
           {/* Slide dots + arrows */}
           {promo.length > 1 && (
@@ -162,7 +162,7 @@ export function EventPromoSlider({ onLeave }: { onLeave: () => void }) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.35 }}
-              className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3"
+              className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-2 p-3"
             >
               <div className="min-w-0">
                 {current.kicker && (
@@ -194,7 +194,7 @@ export function EventPromoSlider({ onLeave }: { onLeave: () => void }) {
             <ArrowRight className="h-4 w-4" />
           </span>
         </div>
-      </button>
+      </div>
 
       <button
         type="button"
