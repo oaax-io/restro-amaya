@@ -204,12 +204,12 @@ export function ReservationChat() {
                       <ArrowLeft className="h-4 w-4 shrink-0 rotate-180 text-gold/60 transition-transform duration-300 group-hover:translate-x-0.5" />
                     </motion.button>
                   ))}
+                  <div className="mt-1 border-t border-gold/15 pt-3">
+                    <EventPromoSlider onLeave={close} />
+                  </div>
                   <p className="mono-label mt-2 text-center text-neutral-400">
                     Jederzeit verfügbar
                   </p>
-                  <div className="mt-2 border-t border-gold/15 pt-3">
-                    <EventPromoSlider onLeave={close} />
-                  </div>
                 </div>
               ) : (
                 <div className="flex flex-col p-3 pb-8">
