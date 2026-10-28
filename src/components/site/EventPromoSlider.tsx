@@ -17,6 +17,7 @@ type PromoEvent = {
   recurrence: string | null;
   is_paid: boolean;
   price_chf: number | null;
+  price_text: string | null;
   ticket_options: unknown;
 };
 
