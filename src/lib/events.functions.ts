@@ -151,11 +151,14 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
   if (!updated) return (await supabaseAdmin.from("event_bookings").select("*").eq("id", bookingId).maybeSingle()).data;
   // Only the call that performed the pending→confirmed transition sends the ticket email.
   try {
-    const { data: ev } = await supabaseAdmin.from("events").select("title,event_date").eq("id", updated.event_id).maybeSingle();
+    const { data: ev } = await supabaseAdmin.from("events").select("title,event_date,event_time").eq("id", updated.event_id).maybeSingle();
     const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-    const date = ev?.event_date
-      ? new Date(ev.event_date).toLocaleString("de-CH", { timeZone: "Europe/Zurich", dateStyle: "long", timeStyle: "short" })
+    // event_date is date-only (midnight UTC) — never render a clock time from it,
+    // otherwise Zurich formatting shows "01:00". Real start time lives in event_time.
+    const dateOnly = ev?.event_date
+      ? new Date(ev.event_date).toLocaleDateString("de-CH", { timeZone: "UTC", dateStyle: "long" })
       : undefined;
+    const date = dateOnly ? (ev?.event_time ? `${dateOnly}, ${ev.event_time} Uhr` : dateOnly) : undefined;
     await sendTemplateEmail("event-ticket", updated.email, {
       templateData: {
         name: updated.name, title: ev?.title, eventDate: date, persons: updated.persons,
