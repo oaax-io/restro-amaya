@@ -167,6 +167,27 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
       },
       idempotencyKey: `event-ticket-${updated.id}`,
     });
+    const picks = Array.isArray(updated.selections)
+      ? (updated.selections as { label?: string }[]).map((x) => x?.label).filter(Boolean).join(", ")
+      : "";
+    await sendTemplateEmail("owner-notification", "reservation@amaya-restaurant.ch", {
+      templateData: {
+        kind: "Ticketkauf",
+        heading: `Neuer Ticketkauf: ${updated.name}, ${updated.persons} Pers. – ${ev?.title ?? "Event"}`,
+        rows: [
+          { label: "Event", value: ev?.title ?? "–" },
+          { label: "Datum", value: date ?? "–" },
+          { label: "Personen", value: String(updated.persons) },
+          ...(picks ? [{ label: "Auswahl", value: picks }] : []),
+          { label: "Betrag", value: `CHF ${Number(updated.amount_chf).toFixed(2)}${updated.payment_mode === "guarantee" ? " (Karte hinterlegt)" : " (bezahlt)"}` },
+          { label: "Name", value: updated.name },
+          { label: "E-Mail", value: updated.email },
+          { label: "Telefon", value: updated.phone ?? "–" },
+          ...(updated.notes ? [{ label: "Bemerkung", value: updated.notes }] : []),
+        ],
+      },
+      idempotencyKey: `owner-ticket-${updated.id}`,
+    });
   } catch (e) {
     console.error("Ticket email failed:", e);
   }
