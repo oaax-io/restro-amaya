@@ -50,8 +50,10 @@ export function ReservationCard({ variant = "overlay" }: ReservationCardProps) {
         status: "pending" as const,
       };
 
-      const { error } = await supabase.from("reservations").insert(payload);
-      if (error) throw error;
+      const { status: _s, ...input } = payload;
+      void _s;
+      const res = await submitReservation({ data: input });
+      if ("error" in res) throw new Error(res.error);
 
       setDone(true);
       toast.success("Anfrage gesendet! Wir melden uns per E-Mail.");

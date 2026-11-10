@@ -162,10 +162,17 @@ function ReservationWidget() {
       notes: String(fd.get("notes") || "").trim() || null,
       status: "pending" as const,
     };
-    const { error } = await supabase.from("reservations").insert(payload);
+    const { status: _s, ...input } = payload;
+    void _s;
+    let res: { ok: true } | { error: string };
+    try {
+      res = await submitReservation({ data: input });
+    } catch (ex) {
+      res = { error: ex instanceof Error ? ex.message : "Senden fehlgeschlagen" };
+    }
     setLoading(false);
-    if (error) {
-      setErr(error.message);
+    if ("error" in res) {
+      setErr(res.error);
       return;
     }
     setStep("done");
