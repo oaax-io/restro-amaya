@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { supabase } from "@/integrations/supabase/client";
 import { Card, Btn, Input } from "@/components/admin/ui";
-import { chargeBookingFee, refundBooking } from "@/lib/events.functions";
+import { chargeBookingFee, refundBooking, setEventBookingStatus } from "@/lib/events.functions";
 import { cancellationFee, noShowFee, formatChf, type EventPricing } from "@/lib/event-pricing";
 import { Download, X } from "lucide-react";
 import { EventTicketScanner } from "@/components/admin/EventTicketScanner";
@@ -34,6 +34,7 @@ export function EventBookings() {
   const qc = useQueryClient();
   const charge = useServerFn(chargeBookingFee);
   const refund = useServerFn(refundBooking);
+  const setStatus = useServerFn(setEventBookingStatus);
   const [eventFilter, setEventFilter] = useState<string>("all");
   const [showPending, setShowPending] = useState(false);
   const [modal, setModal] = useState<Pending | null>(null);
@@ -60,8 +61,9 @@ export function EventBookings() {
 
   const refresh = () => qc.invalidateQueries({ queryKey: ["admin", "event-bookings"] });
 
-  async function setStatus(b: Booking, status: string) {
-    await supabase.from("event_bookings").update({ status }).eq("id", b.id);
+  async function markStatus(b: Booking, status: string) {
+    const r = await setStatus({ data: { bookingId: b.id, status } });
+    if ("error" in r) setMsg(r.error);
     refresh();
   }
 
@@ -80,7 +82,8 @@ export function EventBookings() {
         const r = await refund({ data: { bookingId: modal.b.id, amountChf: amt || undefined } });
         if ("error" in r) throw new Error(r.error);
       } else if (amt <= 0) {
-        await supabase.from("event_bookings").update({ status: modal.kind }).eq("id", modal.b.id);
+        const r = await setStatus({ data: { bookingId: modal.b.id, status: modal.kind } });
+        if ("error" in r) throw new Error(r.error);
       } else {
         const r = await charge({ data: { bookingId: modal.b.id, amountChf: amt, reason: modal.kind } });
         if ("error" in r) throw new Error(r.error);
@@ -158,11 +161,11 @@ export function EventBookings() {
                     </td>
                     <td className="p-3">
                       <div className="flex flex-wrap gap-1.5">
-                        {open && <Btn onClick={() => setStatus(b, "attended")} className="px-2 py-1 text-xs">Teilgenommen</Btn>}
+                        {open && <Btn onClick={() => markStatus(b, "attended")} className="px-2 py-1 text-xs">Teilgenommen</Btn>}
                         {open && b.payment_mode === "guarantee" && <Btn variant="ghost" onClick={() => openFee(b, "cancelled")} className="px-2 py-1 text-xs">Stornieren</Btn>}
                         {open && b.payment_mode === "guarantee" && <Btn variant="danger" onClick={() => openFee(b, "no_show")} className="px-2 py-1 text-xs">No-Show</Btn>}
                         {open && b.payment_mode === "direct" && <Btn variant="ghost" onClick={() => setModal({ b, kind: "refund", amount: Number(b.charged_amount_chf).toFixed(2) })} className="px-2 py-1 text-xs">Stornieren & erstatten</Btn>}
-                        {open && b.payment_mode === "direct" && <Btn variant="danger" onClick={() => setStatus(b, "no_show")} className="px-2 py-1 text-xs">No-Show</Btn>}
+                        {open && b.payment_mode === "direct" && <Btn variant="danger" onClick={() => markStatus(b, "no_show")} className="px-2 py-1 text-xs">No-Show</Btn>}
                       </div>
                     </td>
                   </tr>

@@ -3,12 +3,34 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib/stripe.server";
 import { MAX_PERSONS, parseTicketOptions, quoteBooking, hasBookablePrice } from "@/lib/event-pricing";
 import { eventPriceKey, ticketToken, ticketIsValid } from "@/lib/event-tickets";
+import {
+  feeNotice, formatEventDate, ownerRows, refundNotice, statusNotice,
+  type NoticeEvent, type OwnerNotice,
+} from "@/lib/event-notices";
 
 type Result<T> = T | { error: string };
 
 function validEnv(env: unknown): StripeEnv {
   if (env !== "sandbox" && env !== "live") throw new Error("Invalid environment");
   return env;
+}
+
+/** Fixed-template mail to the restaurant. Recipient and template are never taken from the browser. */
+async function notifyOwner(notice: OwnerNotice) {
+  try {
+    const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+    await sendTemplateEmail("owner-notification", "reservation@amaya-restaurant.ch", {
+      templateData: { kind: notice.kind, heading: notice.heading, rows: notice.rows },
+      idempotencyKey: notice.idempotencyKey,
+    });
+  } catch (e) {
+    console.error("Owner notify failed:", e);
+  }
+}
+
+async function loadEvent(supabaseAdmin: any, eventId: string): Promise<NoticeEvent | null> {
+  const { data } = await supabaseAdmin.from("events").select("title,event_date,event_time").eq("id", eventId).maybeSingle();
+  return (data ?? null) as NoticeEvent | null;
 }
 
 export const createEventCheckout = createServerFn({ method: "POST" })
@@ -151,14 +173,9 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
   if (!updated) return (await supabaseAdmin.from("event_bookings").select("*").eq("id", bookingId).maybeSingle()).data;
   // Only the call that performed the pending→confirmed transition sends the ticket email.
   try {
-    const { data: ev } = await supabaseAdmin.from("events").select("title,event_date,event_time").eq("id", updated.event_id).maybeSingle();
+    const ev = await loadEvent(supabaseAdmin, updated.event_id);
     const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-    // event_date is date-only (midnight UTC) — never render a clock time from it,
-    // otherwise Zurich formatting shows "01:00". Real start time lives in event_time.
-    const dateOnly = ev?.event_date
-      ? new Date(ev.event_date).toLocaleDateString("de-CH", { timeZone: "UTC", dateStyle: "long" })
-      : undefined;
-    const date = dateOnly ? (ev?.event_time ? `${dateOnly}, ${ev.event_time} Uhr` : dateOnly) : undefined;
+    const date = formatEventDate(ev?.event_date ?? null, ev?.event_time ?? null);
     await sendTemplateEmail("event-ticket", updated.email, {
       templateData: {
         name: updated.name, title: ev?.title, eventDate: date, persons: updated.persons,
@@ -167,25 +184,12 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
       },
       idempotencyKey: `event-ticket-${updated.id}`,
     });
-    const picks = Array.isArray(updated.selections)
-      ? (updated.selections as { label?: string }[]).map((x) => x?.label).filter(Boolean).join(", ")
-      : "";
-    await sendTemplateEmail("owner-notification", "reservation@amaya-restaurant.ch", {
-      templateData: {
-        kind: "Ticketkauf",
-        heading: `Neuer Ticketkauf: ${updated.name}, ${updated.persons} Pers. – ${ev?.title ?? "Event"}`,
-        rows: [
-          { label: "Event", value: ev?.title ?? "–" },
-          { label: "Datum", value: date ?? "–" },
-          { label: "Personen", value: String(updated.persons) },
-          ...(picks ? [{ label: "Auswahl", value: picks }] : []),
-          { label: "Betrag", value: `CHF ${Number(updated.amount_chf).toFixed(2)}${updated.payment_mode === "guarantee" ? " (Karte hinterlegt)" : " (bezahlt)"}` },
-          { label: "Name", value: updated.name },
-          { label: "E-Mail", value: updated.email },
-          { label: "Telefon", value: updated.phone ?? "–" },
-          ...(updated.notes ? [{ label: "Bemerkung", value: updated.notes }] : []),
-        ],
-      },
+    await notifyOwner({
+      kind: "Ticketkauf",
+      heading: `Neuer Ticketkauf: ${updated.name}, ${updated.persons} Pers. – ${ev?.title ?? "Event"}`,
+      rows: ownerRows(updated, ev, [
+        { label: "Betrag", value: `CHF ${Number(updated.amount_chf).toFixed(2)}${updated.payment_mode === "guarantee" ? " (Karte hinterlegt)" : " (bezahlt)"}` },
+      ]),
       idempotencyKey: `owner-ticket-${updated.id}`,
     });
   } catch (e) {
@@ -237,6 +241,34 @@ export const checkInEventTicket = createServerFn({ method: "POST" })
     } catch (error) { return { error: error instanceof Error ? error.message : "Ticketprüfung fehlgeschlagen." }; }
   });
 
+const BOOKING_STATUSES = ["attended", "cancelled", "no_show"] as const;
+
+/** Admin: set a booking status. Cancellations and no-shows also mail the restaurant. */
+export const setEventBookingStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: { bookingId: string; status: string }) => {
+    if (!/^[0-9a-f-]{36}$/i.test(d.bookingId)) throw new Error("Ungültige Buchung");
+    if (!BOOKING_STATUSES.includes(d.status as (typeof BOOKING_STATUSES)[number])) throw new Error("Ungültiger Status");
+    return { bookingId: d.bookingId, status: d.status as (typeof BOOKING_STATUSES)[number] };
+  })
+  .handler(async ({ data, context }): Promise<Result<{ ok: true }>> => {
+    try {
+      await assertAdmin(context);
+      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+      const { data: b } = await supabaseAdmin.from("event_bookings").select("*").eq("id", data.bookingId).maybeSingle();
+      if (!b) return { error: "Buchung nicht gefunden." };
+      const { error } = await supabaseAdmin.from("event_bookings").update({ status: data.status }).eq("id", b.id);
+      if (error) return { error: error.message };
+      if (data.status !== "attended") {
+        const ev = await loadEvent(supabaseAdmin, b.event_id);
+        await notifyOwner(statusNotice(b, ev, data.status));
+      }
+      return { ok: true };
+    } catch (e) {
+      return { error: e instanceof Error ? e.message : "Statusänderung fehlgeschlagen." };
+    }
+  });
+
 /** Admin: charge a fee (late cancel / no-show) on the saved card. */
 export const chargeBookingFee = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -253,7 +285,7 @@ export const chargeBookingFee = createServerFn({ method: "POST" })
       const { data: b } = await supabaseAdmin.from("event_bookings").select("*").eq("id", data.bookingId).maybeSingle();
       if (!b) return { error: "Buchung nicht gefunden." };
       if (!b.stripe_customer_id || !b.stripe_payment_method_id) return { error: "Keine hinterlegte Karte vorhanden." };
-      const { data: ev } = await supabaseAdmin.from("events").select("title").eq("id", b.event_id).maybeSingle();
+      const ev = await loadEvent(supabaseAdmin, b.event_id);
       const stripe = createStripeClient(validEnv(b.environment));
       const pi = await stripe.paymentIntents.create({
         amount: Math.round(data.amountChf * 100),
@@ -271,6 +303,7 @@ export const chargeBookingFee = createServerFn({ method: "POST" })
         charged_amount_chf: Number(b.charged_amount_chf) + data.amountChf,
         stripe_payment_intent_id: pi.id,
       }).eq("id", b.id);
+      await notifyOwner(feeNotice(b, ev, data.amountChf, data.reason, pi.id));
       return { ok: true };
     } catch (e) {
       return { error: getStripeErrorMessage(e) };
@@ -289,13 +322,15 @@ export const refundBooking = createServerFn({ method: "POST" })
       if (!b?.stripe_payment_intent_id) return { error: "Keine Zahlung zum Erstatten gefunden." };
       const stripe = createStripeClient(validEnv(b.environment));
       const amount = data.amountChf ? Math.round(data.amountChf * 100) : undefined;
-      await stripe.refunds.create({ payment_intent: b.stripe_payment_intent_id, ...(amount && { amount }) });
+      const refundObj = await stripe.refunds.create({ payment_intent: b.stripe_payment_intent_id, ...(amount && { amount }) });
       const refunded = amount ? amount / 100 : Number(b.charged_amount_chf);
       await supabaseAdmin.from("event_bookings").update({
         status: "cancelled",
         payment_status: "refunded",
         charged_amount_chf: Math.max(0, Number(b.charged_amount_chf) - refunded),
       }).eq("id", b.id);
+      const ev = await loadEvent(supabaseAdmin, b.event_id);
+      await notifyOwner(refundNotice(b, ev, refunded, refundObj.id));
       return { ok: true };
     } catch (e) {
       return { error: getStripeErrorMessage(e) };
