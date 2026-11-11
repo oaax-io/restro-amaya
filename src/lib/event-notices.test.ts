@@ -1,3 +1,4 @@
+// @ts-ignore bun test runner types
 import { test, expect } from "bun:test";
 import {
   feeNotice, formatEventDate, refundNotice, statusNotice,
