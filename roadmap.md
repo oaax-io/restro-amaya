@@ -6,6 +6,9 @@
 - [x] Add four priced Event-Ticket products to the test payment catalog and connect existing checkout; current admin prices remain authoritative.
 - [x] Exclude membership checkout and subscriptions as requested.
 - [x] Verify real-event test checkout end to end — test card paid CHF 15; return page displays downloadable QR-ticket; booking reads back confirmed/paid.
-- [ ] Verify admin check-in end to end — blocked: no requesting-user app account/session; admin must sign in to the preview. Atomic check-in and ticket validity rules implemented; 11 tests pass.
-- [ ] Send booking confirmation email with QR-ticket link — blocked: Amaya sender domain must be configured by the user.
+- [x] Verify admin check-in end to end — manual ticket-code entry confirmed admission ("Einlass bestätigt: Bilel Chagra · 4 Personen"), second scan refused ("Ticket wurde bereits eingelöst."), checked_in_at stored.
+- [x] Send booking confirmation email with QR-ticket link — sender domain notify.amaya-restaurant.ch is active; delivery logs show mails leaving the project.
+- [x] Notify reservation@ on cancellations, refunds and no-shows — admin refund cancelled the test booking (status cancelled, payment refunded) and an owner mail was delivered to reservation@amaya-restaurant.ch.
 - [ ] Enable suitable event tax automation — blocked: provider rejects event tax codes on catalog products; preserve current amounts without misclassifying tickets, disclose limitation.
+- [ ] Switch payments to live — blocked: user must run the readiness check in the payments dashboard.
+- [ ] Publish the app so the live site carries the ticketing, ticket-option and notification changes.
