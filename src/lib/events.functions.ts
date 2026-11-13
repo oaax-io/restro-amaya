@@ -175,7 +175,7 @@ export async function finalizeSession(sessionId: string, env: StripeEnv) {
   try {
     const ev = await loadEvent(supabaseAdmin, updated.event_id);
     const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-    const date = formatEventDate(ev?.event_date ?? null, ev?.event_time ?? null);
+    const date = formatEventDate(ev?.event_date ?? null, bookingTime(updated, ev ?? null));
     await sendTemplateEmail("event-ticket", updated.email, {
       templateData: {
         name: updated.name, title: ev?.title, eventDate: date, persons: updated.persons,
