@@ -1,4 +1,5 @@
 // Pure builders for the restaurant's owner notifications (no I/O).
+import { parseTicketOptions } from "@/lib/event-pricing";
 // The recipient is always the restaurant address; nothing here takes a recipient
 // or a template name from the browser.
 
@@ -8,6 +9,7 @@ export interface NoticeEvent {
   title: string;
   event_date: string | null;
   event_time: string | null;
+  ticket_options?: unknown;
 }
 
 export interface NoticeBooking {
@@ -35,13 +37,27 @@ export function formatEventDate(date: string | null, time: string | null): strin
   return time ? `${d}, ${time} Uhr` : d;
 }
 
+// The time a booking actually starts: a chosen ticket category may carry its
+// own start time (e.g. "Late-Dinner" at 20:45 while the event opens at 18:30).
+export function bookingTime(b: NoticeBooking, ev: NoticeEvent | null): string | null {
+  if (ev) {
+    const options = parseTicketOptions(ev.ticket_options);
+    const selected = Array.isArray(b.selections) ? (b.selections as { id?: string; kind?: string }[]) : [];
+    for (const s of selected) {
+      const opt = options.find((o) => o.id === s?.id && o.kind === "ticket");
+      if (opt?.time) return opt.time;
+    }
+  }
+  return ev?.event_time ?? null;
+}
+
 export function ownerRows(b: NoticeBooking, ev: NoticeEvent | null, extra: OwnerRow[]): OwnerRow[] {
   const picks = Array.isArray(b.selections)
     ? (b.selections as { label?: string }[]).map((x) => x?.label).filter(Boolean).join(", ")
     : "";
   return [
     { label: "Event", value: ev?.title ?? "–" },
-    { label: "Datum", value: formatEventDate(ev?.event_date ?? null, ev?.event_time ?? null) ?? "–" },
+    { label: "Datum", value: formatEventDate(ev?.event_date ?? null, bookingTime(b, ev)) ?? "–" },
     { label: "Personen", value: String(b.persons) },
     ...(picks ? [{ label: "Auswahl", value: picks }] : []),
     ...extra,
