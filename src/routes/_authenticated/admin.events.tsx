@@ -408,9 +408,12 @@ function OptionsEditor({ value, onChange }: { value: TicketOption[]; onChange: (
       <p className="text-xs text-black/55 mb-2">{hint}</p>
       <div className="space-y-2">
         {value.filter((o) => o.kind === kind).map((o) => (
-          <div key={o.id} className="grid grid-cols-[1fr_120px_auto] gap-2">
+          <div key={o.id} className={`grid gap-2 ${kind === "ticket" ? "grid-cols-[1fr_100px_90px_auto]" : "grid-cols-[1fr_120px_auto]"}`}>
             <Input defaultValue={o.label} placeholder="Bezeichnung" onBlur={(e) => e.target.value.trim() && patch(o.id, { label: e.target.value.trim() })} />
             <Input type="number" min="0" step="0.5" defaultValue={o.price_chf} placeholder="CHF" onBlur={(e) => patch(o.id, { price_chf: Math.max(0, numOrNull(e.target.value) ?? 0) })} />
+            {kind === "ticket" && (
+              <Input defaultValue={o.time ?? ""} placeholder="Uhrzeit" title="Eigene Startzeit (leer = Event-Startzeit)" onBlur={(e) => { const v = e.target.value.trim(); patch(o.id, { time: v || undefined }); }} />
+            )}
             <Btn variant="ghost" className="p-2" onClick={() => onChange(value.filter((x) => x.id !== o.id))}><Trash2 size={14} /></Btn>
           </div>
         ))}
