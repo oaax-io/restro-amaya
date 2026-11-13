@@ -4,7 +4,7 @@ import { type StripeEnv, createStripeClient, getStripeErrorMessage } from "@/lib
 import { MAX_PERSONS, parseTicketOptions, quoteBooking, hasBookablePrice } from "@/lib/event-pricing";
 import { eventPriceKey, ticketToken, ticketIsValid } from "@/lib/event-tickets";
 import {
-  feeNotice, formatEventDate, ownerRows, refundNotice, statusNotice,
+  bookingTime, feeNotice, formatEventDate, ownerRows, refundNotice, statusNotice,
   type NoticeEvent, type OwnerNotice,
 } from "@/lib/event-notices";
 
@@ -29,7 +29,7 @@ async function notifyOwner(notice: OwnerNotice) {
 }
 
 async function loadEvent(supabaseAdmin: any, eventId: string): Promise<NoticeEvent | null> {
-  const { data } = await supabaseAdmin.from("events").select("title,event_date,event_time").eq("id", eventId).maybeSingle();
+  const { data } = await supabaseAdmin.from("events").select("title,event_date,event_time,ticket_options").eq("id", eventId).maybeSingle();
   return (data ?? null) as NoticeEvent | null;
 }
 
