@@ -73,7 +73,7 @@ export function conditionsText(ev: EventPricing): string[] {
 }
 
 // ---- Ticket categories & add-ons (admin-defined per event) ----
-export type TicketOption = { id: string; label: string; price_chf: number; kind: "ticket" | "addon" };
+export type TicketOption = { id: string; label: string; price_chf: number; kind: "ticket" | "addon"; time?: string };
 export type QuoteLine = { id: string; label: string; kind: "ticket" | "addon" | "base"; unit_chf: number; quantity: number };
 
 export function parseTicketOptions(raw: unknown): TicketOption[] {
@@ -85,7 +85,8 @@ export function parseTicketOptions(raw: unknown): TicketOption[] {
     const label = String(r.label ?? "").trim().slice(0, 80);
     const price = Number(r.price_chf);
     if (!id || !label || !Number.isFinite(price) || price < 0) return [];
-    return [{ id, label, price_chf: Math.round(price * 100) / 100, kind: r.kind === "addon" ? "addon" : "ticket" } as TicketOption];
+    const time = typeof r.time === "string" && /^\d{1,2}:\d{2}/.test(r.time.trim()) ? r.time.trim().slice(0, 5) : undefined;
+    return [{ id, label, price_chf: Math.round(price * 100) / 100, kind: r.kind === "addon" ? "addon" : "ticket", ...(time ? { time } : {}) } as TicketOption];
   });
 }
 
