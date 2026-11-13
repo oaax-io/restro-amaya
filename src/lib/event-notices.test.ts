@@ -45,6 +45,20 @@ test("refund notice states the refunded amount and is keyed by the refund", () =
   expect(n.idempotencyKey).toBe("owner-cancel-re_1Qxyz");
 });
 
+test("a ticket category with its own start time overrides the event time", () => {
+  const nye: NoticeEvent = {
+    title: "NEW YEAR'S EVE 2026", event_date: "2026-12-31", event_time: "18:30",
+    ticket_options: [
+      { id: "t1", label: "Eintritt", price_chf: 30, kind: "ticket" },
+      { id: "t2", label: "Late Dinner inkl. Eintritt", price_chf: 119, kind: "ticket", time: "20:45" },
+    ],
+  };
+  const late: NoticeBooking = { ...b, selections: [{ id: "t2", label: "Late Dinner inkl. Eintritt", kind: "ticket" }] };
+  expect(row(statusNotice(late, nye, "cancelled"), "Datum")).toBe("31. Dezember 2026, 20:45 Uhr");
+  const entry: NoticeBooking = { ...b, selections: [{ id: "t1", label: "Eintritt", kind: "ticket" }] };
+  expect(row(statusNotice(entry, nye, "cancelled"), "Datum")).toBe("31. Dezember 2026, 18:30 Uhr");
+});
+
 test("charged cancellation fee is reported with its amount", () => {
   const n = feeNotice(b, ev, 50, "cancelled", "pi_1Qabc");
   expect(n.kind).toBe("Stornogebühr");
