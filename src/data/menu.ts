@@ -424,8 +424,8 @@ export const AMAYA_MESA: MenuSection[] = [
       {
         name: { de: "Wagyu", en: "Wagyu" },
         desc: {
-          de: "+1 Beilage Mesa Amaya +29.00",
-          en: "+1 side dish Mesa Amaya +29.00",
+          de: "+1 Beilage Dinner Card +29.00",
+          en: "+1 side dish Dinner Card +29.00",
         },
         price: "150g 79.00",
         allergens: "F, L",
@@ -434,7 +434,7 @@ export const AMAYA_MESA: MenuSection[] = [
       },
       {
         name: { de: "Tenderloin", en: "Tenderloin" },
-        desc: { de: "+1 Beilage Mesa Amaya +9.00", en: "+1 side dish Mesa Amaya +9.00" },
+        desc: { de: "+1 Beilage Dinner Card +9.00", en: "+1 side dish Dinner Card +9.00" },
         price: "180g 65.00",
         allergens: "L",
         highlight: true,
