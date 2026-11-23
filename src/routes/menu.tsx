@@ -27,16 +27,16 @@ type TabKey = "weekly" | "lunch" | "amaya-mesa" | "sushi-sharing" | "wine" | "ba
 export const Route = createFileRoute("/menu")({
   head: () => ({
     meta: [
-      { title: "Speisekarte — Wochen-, Lunch-, Dinner Card, Asian Fusion, Wein & Bar | Amaya Restaurant" },
+      { title: "Speisekarte — Wochen-, Lunch-, Mesa Amaya, Asian Fusion, Wein & Bar | Amaya Restaurant" },
       {
         name: "description",
         content:
-          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Dinner Card, Asian Fusion, Wein Karte und Bar in Rothenburg LU.",
+          "Entdecken Sie die Amaya Speisekarte: Wochenmenü, Lunch Karte, Mesa Amaya, Asian Fusion, Wein Karte und Bar in Rothenburg LU.",
       },
       { property: "og:title", content: "Speisekarte — Amaya Restaurant" },
       {
         property: "og:description",
-        content: "Wochenmenü, Lunch, Dinner Card, Asian Fusion, Wein Karte und Bar — Küche zwischen Dschungel und Stadt.",
+        content: "Wochenmenü, Lunch, Mesa Amaya, Asian Fusion, Wein Karte und Bar — Küche zwischen Dschungel und Stadt.",
       },
     ],
   }),
@@ -683,13 +683,13 @@ function MesaView({ lang }: { lang: Lang }) {
       <div className="mt-8 flex flex-wrap items-center gap-4">
         <a
           href={mesaPdfUrl}
-          download="Amaya-Dinner-Card.pdf"
+          download="Amaya-Mesa-Amaya.pdf"
           target="_blank"
           rel="noopener"
           className="inline-flex items-center gap-2 rounded-full bg-[#E9A580] text-[#0D2517] hover:bg-[#f1b596] transition-colors px-6 py-3 text-xs font-semibold uppercase tracking-[0.2em]"
         >
           <Download className="size-4" />
-          {lang === "de" ? "Dinner Card als PDF" : "Dinner Card as PDF"}
+          {lang === "de" ? "Mesa Amaya als PDF" : "Mesa Amaya as PDF"}
         </a>
       </div>
 
@@ -718,12 +718,12 @@ function MesaView({ lang }: { lang: Lang }) {
               className="mt-4 italic font-light text-4xl sm:text-5xl"
               style={{ fontFamily: "'Playfair Display', serif", color: "#E9A580" }}
             >
-              Dinner Card
+              Mesa AMAYA
             </h3>
             <p className="mt-5 text-[#F3E7D7]/85 leading-relaxed max-w-xl">
               {lang === "de"
-                ? "Das perfekte Erlebnis für Gruppen ab 2 Personen (ab 11 Personen auf Vorbestellung). Teilen Sie besondere Momente und geniessen Sie ein von der Dinner Card zusammengestelltes Sharing-Menu, das alle Sinne anspricht."
-                : "The perfect experience for groups from 2 people (from 11 people by reservation). Share special moments and enjoy a Dinner Card sharing menu that engages all the senses."}
+                ? "Das perfekte Erlebnis für Gruppen ab 2 Personen (ab 11 Personen auf Vorbestellung). Teilen Sie besondere Momente und geniessen Sie ein von der Mesa Amaya zusammengestelltes Sharing-Menu, das alle Sinne anspricht."
+                : "The perfect experience for groups from 2 people (from 11 people by reservation). Share special moments and enjoy a Mesa Amaya sharing menu that engages all the senses."}
             </p>
 
             <div className="mt-8 grid sm:grid-cols-3 gap-6 text-sm">

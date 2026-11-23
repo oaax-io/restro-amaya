@@ -9,7 +9,7 @@ export type MenuKey = (typeof MENU_KEYS)[number];
 export const MENU_LABELS: Record<MenuKey, string> = {
   weekly: "Wochenmenü",
   lunch: "Lunch",
-  mesa: "Dinner Card",
+  mesa: "Mesa Amaya",
   sushi: "Asian Fusion / Sushi",
   wine: "Weinkarte",
   bar: "Bar",

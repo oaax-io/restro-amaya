@@ -16,7 +16,7 @@ export const Route = createFileRoute("/_authenticated/admin/menu")({
 const TYPES = [
   { key: "weekly", label: "Wochenmenü" },
   { key: "lunch", label: "Lunch" },
-  { key: "mesa", label: "Dinner Card" },
+  { key: "mesa", label: "Mesa Amaya" },
   { key: "sushi", label: "Asian Fusion / Sushi" },
   { key: "wine", label: "Weinkarte" },
 ] as const;
@@ -26,7 +26,7 @@ function MenuAdmin() {
   const [type, setType] = useState<MenuType>("weekly");
   return (
     <div>
-      <PageHeader title="Speisekarte" subtitle="Alle Karten (Wochen, Lunch, Dinner Card, Sushi, Wein) — Kategorien, Gerichte und PDF." />
+      <PageHeader title="Speisekarte" subtitle="Alle Karten (Wochen, Lunch, Mesa Amaya, Sushi, Wein) — Kategorien, Gerichte und PDF." />
       <div className="mt-6"><VisibilityCard /></div>
       <div className="mt-6 flex flex-wrap gap-2">
         {TYPES.map((t) => (
